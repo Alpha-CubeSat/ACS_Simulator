@@ -4,21 +4,18 @@
 
 static Plantv50ModelClass plantObj;
 static StarshotACS0ModelClass starshotObj;
-int start_time = 0;
 int imu_delay = 400;
 int program_start = 0;
+float plantsim_step_size = 10;
 
 void setup(){  
   plantObj.initialize();
   starshotObj.initialize();
   delay(3000); 
-  start_time = millis();
   program_start = millis();
 }
 
 void loop(){
-
-
   starshotObj.step();
 
   plantObj.rtU.current[0] = starshotObj.rtY.detumble[0];
@@ -40,10 +37,9 @@ void loop(){
   Serial.println(plantObj.rtU.current[2]);
 
 
-  while(millis()-start_time <= imu_delay){
+  for(int i = 0; i < imu_delay/plantsim_step_size; i++){
     plantObj.step();
   }
-  start_time = millis();
   
   starshotObj.rtU.w[0] = plantObj.rtY.angularvelocity[0];
   starshotObj.rtU.w[1] = plantObj.rtY.angularvelocity[1];

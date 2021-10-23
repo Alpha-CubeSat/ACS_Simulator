@@ -9,7 +9,7 @@
 //
 // Model version                  : 1.77
 // Simulink Coder version         : 9.1 (R2019a) 23-Nov-2018
-// C/C++ source code generated on : Fri Oct 22 23:47:34 2021
+// C/C++ source code generated on : Sat Oct 23 12:00:04 2021
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: ARM Compatible->ARM Cortex
@@ -85,7 +85,7 @@ void StarshotACSModelClass::step()
   //  About '<S5>/TSamp':
   //   y = u * K where K = 1 / ( w * Ts )
 
-  rtb_TSamp[0] = rtU.w[0] * 100.0;
+  rtb_TSamp[0] = rtU.w[0] * 333.33333333333331;
 
   // S-Function (sdsp2norm2): '<S2>/Normalization' incorporates:
   //   Inport: '<Root>/Bfield_body'
@@ -98,7 +98,7 @@ void StarshotACSModelClass::step()
   //  About '<S5>/TSamp':
   //   y = u * K where K = 1 / ( w * Ts )
 
-  rtb_TSamp[1] = rtU.w[1] * 100.0;
+  rtb_TSamp[1] = rtU.w[1] * 333.33333333333331;
 
   // S-Function (sdsp2norm2): '<S2>/Normalization' incorporates:
   //   Inport: '<Root>/Bfield_body'
@@ -111,7 +111,7 @@ void StarshotACSModelClass::step()
   //  About '<S5>/TSamp':
   //   y = u * K where K = 1 / ( w * Ts )
 
-  rtb_TSamp[2] = rtU.w[2] * 100.0;
+  rtb_TSamp[2] = rtU.w[2] * 333.33333333333331;
 
   // Product: '<S4>/Product2'
   rtb_Saturation3 = rtb_Gain[0];
@@ -229,7 +229,7 @@ void StarshotACSModelClass::step()
   //  About '<S7>/TSamp':
   //   y = u * K where K = 1 / ( w * Ts )
 
-  rtb_Gain8_idx_1 = rtb_TrigonometricFunction5 * 100.0;
+  rtb_Gain8_idx_1 = rtb_TrigonometricFunction5 * 333.33333333333331;
 
   // Switch: '<S11>/Switch' incorporates:
   //   Constant: '<S11>/Constant3'
@@ -289,7 +289,7 @@ void StarshotACSModelClass::step()
 
   for (i = 0; i < 9; i++) {
     rtb_VectorConcatenate_0[i] = rtb_VectorConcatenate[i] +
-      rtConstPStar.Identitymatrix_Value[i];
+      rtConstP.Identitymatrix_Value[i];
   }
 
   // End of Sum: '<S2>/Sum10'
@@ -315,7 +315,7 @@ void StarshotACSModelClass::step()
       rtDW.UD_DSTATE[i])) - ((476.1904761904762 * -rtb_Product1_idx_0 * 0.004 *
       rtb_VectorConcatenate_0[i] + 476.1904761904762 * -rtb_Product1_idx_1 *
       0.004 * rtb_VectorConcatenate_0[i + 3]) + 476.1904761904762 *
-      -rtb_Product1 * 0.004 * rtb_VectorConcatenate_0[i + 6])) * 0.01;
+      -rtb_Product1 * 0.004 * rtb_VectorConcatenate_0[i + 6])) * 0.003;
 
     // Update for UnitDelay: '<S5>/UD' incorporates:
     //   Product: '<S2>/Product1'

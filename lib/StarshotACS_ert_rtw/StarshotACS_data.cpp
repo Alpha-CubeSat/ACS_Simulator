@@ -9,7 +9,7 @@
 //
 // Model version                  : 1.77
 // Simulink Coder version         : 9.1 (R2019a) 23-Nov-2018
-// C/C++ source code generated on : Fri Oct 22 23:47:34 2021
+// C/C++ source code generated on : Sat Oct 23 12:00:04 2021
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: ARM Compatible->ARM Cortex
@@ -37,7 +37,7 @@ const ConstB rtConstB = {
 };
 
 // Constant parameters (default storage)
-const ConstPStar rtConstPStar = {
+const ConstP rtConstP = {
   // Expression: [1 0 0;0 1 0;0 0 1]
   //  Referenced by: '<S2>/Identity matrix'
 

@@ -9,7 +9,7 @@
 //
 // Model version                  : 1.77
 // Simulink Coder version         : 9.1 (R2019a) 23-Nov-2018
-// C/C++ source code generated on : Fri Oct 22 23:47:34 2021
+// C/C++ source code generated on : Sat Oct 23 12:00:04 2021
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: ARM Compatible->ARM Cortex
@@ -56,7 +56,7 @@ typedef struct {
   //  Referenced by: '<S2>/Identity matrix'
 
   real_T Identitymatrix_Value[9];
-} ConstPStar;
+} ConstP;
 
 // External inputs (root inport signals with default storage)
 typedef struct {
@@ -78,7 +78,7 @@ struct tag_RTM {
 extern const ConstB rtConstB;          // constant block i/o
 
 // Constant parameters (default storage)
-extern const ConstPStar rtConstPStar;
+extern const ConstP rtConstP;
 
 // Class declaration for model StarshotACS
 class StarshotACSModelClass {

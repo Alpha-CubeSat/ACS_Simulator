@@ -4,9 +4,9 @@
 
 static Plantv50ModelClass plantObj;
 static StarshotACSModelClass starshotObj;
-int imu_delay = 10;
+int imu_delay = 3;
 int iteration = 0;
-float plantsim_step_size = 10;
+float plantsim_step_size = 3;
 
 void setup(){  
   //sqrt(x^2 + y^2 + z^2) < 5 degrees
@@ -22,26 +22,28 @@ void loop(){
   plantObj.rtU.current[1] = starshotObj.rtY.detumble[1];
   plantObj.rtU.current[2] = starshotObj.rtY.detumble[2];
 
-  Serial.print(iteration*imu_delay);
-  Serial.print(",");
-  Serial.print(starshotObj.rtU.w[0]);
-  Serial.print(",");
-  Serial.print(starshotObj.rtU.w[1]);
-  Serial.print(",");
-  Serial.print(starshotObj.rtU.w[2]);
-  Serial.print(",");
-  Serial.print(plantObj.rtU.current[0]);
-  Serial.print(",");
-  Serial.print(plantObj.rtU.current[1]);
-  Serial.print(",");
-  Serial.println(plantObj.rtU.current[2]);
+  if(iteration%500 == 0){
+      Serial.print(iteration*imu_delay);
+    Serial.print(",");
+    Serial.print(starshotObj.rtU.w[0]);
+    Serial.print(",");
+    Serial.print(starshotObj.rtU.w[1]);
+    Serial.print(",");
+    Serial.print(starshotObj.rtU.w[2]);
+    Serial.print(",");
+    Serial.print(plantObj.rtU.current[0]);
+    Serial.print(",");
+    Serial.print(plantObj.rtU.current[1]);
+    Serial.print(",");
+    Serial.println(plantObj.rtU.current[2]);
+  }
+
 
 
   for(int i = 0; i < imu_delay/plantsim_step_size; i++){
     plantObj.step();
   }
 
-  delay(500);
   
   starshotObj.rtU.w[0] = plantObj.rtY.angularvelocity[0];
   starshotObj.rtU.w[1] = plantObj.rtY.angularvelocity[1];

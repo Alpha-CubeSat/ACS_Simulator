@@ -5,14 +5,13 @@
 static Plantv50ModelClass plantObj;
 static StarshotACS0ModelClass starshotObj;
 int imu_delay = 400;
-int program_start = 0;
+int iteration = 0;
 float plantsim_step_size = 10;
 
 void setup(){  
   plantObj.initialize();
   starshotObj.initialize();
   delay(3000); 
-  program_start = millis();
 }
 
 void loop(){
@@ -22,7 +21,7 @@ void loop(){
   plantObj.rtU.current[1] = starshotObj.rtY.detumble[1];
   plantObj.rtU.current[2] = starshotObj.rtY.detumble[2];
 
-  Serial.print(millis() - program_start);
+  Serial.print(iteration*imu_delay);
   Serial.print(",");
   Serial.print(starshotObj.rtU.w[0]);
   Serial.print(",");
@@ -47,5 +46,7 @@ void loop(){
   starshotObj.rtU.Bfield_body[0] = plantObj.rtY.magneticfield[0];
   starshotObj.rtU.Bfield_body[1] = plantObj.rtY.magneticfield[1];
   starshotObj.rtU.Bfield_body[2] = plantObj.rtY.magneticfield[2];
+
+  iteration++;
 }
 

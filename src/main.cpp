@@ -1,17 +1,18 @@
 #include <Plantv50.h>
-#include <StarshotACS0.h>
+#include <StarshotACS.h>
 #include "Arduino.h"
 
 static Plantv50ModelClass plantObj;
-static StarshotACS0ModelClass starshotObj;
-int imu_delay = 400;
+static StarshotACSModelClass starshotObj;
+int imu_delay = 10;
 int iteration = 0;
 float plantsim_step_size = 10;
 
 void setup(){  
-  plantObj.initialize();
+  //sqrt(x^2 + y^2 + z^2) < 5 degrees
+  plantObj.initialize(0.6,-0.5,0.7);
   starshotObj.initialize();
-  delay(3000); 
+  delay(10000); 
 }
 
 void loop(){
@@ -39,6 +40,8 @@ void loop(){
   for(int i = 0; i < imu_delay/plantsim_step_size; i++){
     plantObj.step();
   }
+
+  delay(500);
   
   starshotObj.rtU.w[0] = plantObj.rtY.angularvelocity[0];
   starshotObj.rtU.w[1] = plantObj.rtY.angularvelocity[1];

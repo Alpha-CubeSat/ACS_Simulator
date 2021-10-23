@@ -7,12 +7,12 @@
 //
 // Code generated for Simulink model 'Plantv50'.
 //
-// Model version                  : 9.1
-// Simulink Coder version         : 9.5 (R2021a) 14-Nov-2020
-// C/C++ source code generated on : Tue Sep 28 14:41:31 2021
+// Model version                  : 1.79
+// Simulink Coder version         : 9.1 (R2019a) 23-Nov-2018
+// C/C++ source code generated on : Fri Oct 22 23:44:40 2021
 //
 // Target selection: ert.tlc
-// Embedded hardware selection: ARM Compatible->ARM Cortex-M
+// Embedded hardware selection: ARM Compatible->ARM Cortex
 // Code generation objectives:
 //    1. Execution efficiency
 //    2. RAM efficiency
@@ -22,14 +22,16 @@
 #define RTW_HEADER_Plantv50_h_
 #include <stddef.h>
 #include <cmath>
+#include <math.h>
+#ifndef Plantv50_COMMON_INCLUDES_
+# define Plantv50_COMMON_INCLUDES_
 #include "rtwtypes.h"
-
-// Model Code Variants
+#endif                                 // Plantv50_COMMON_INCLUDES_
 
 // Macros for accessing real-time model data structure
 
 // Block signals and states (default storage) for system '<Root>'
-struct DWPlant {
+typedef struct {
   real_T DiscreteTimeIntegrator1_DSTATE[4];// '<S5>/Discrete-Time Integrator1'
   real_T DiscreteTimeIntegrator_DSTATE;// '<S1>/Discrete-Time Integrator'
   real_T DiscreteTimeIntegrator1_DSTAT_l;// '<S1>/Discrete-Time Integrator1'
@@ -40,10 +42,10 @@ struct DWPlant {
   real_T DiscreteTimeIntegrator4_DSTATE;// '<S6>/Discrete-Time Integrator4'
   real_T DiscreteTimeIntegrator5_DSTATE;// '<S6>/Discrete-Time Integrator5'
   real_T DiscreteTimeIntegrator6_DSTATE;// '<S6>/Discrete-Time Integrator6'
-};
+} DWPlant;
 
 // Constant parameters (default storage)
-struct ConstPPlant {
+typedef struct {
   // Expression: starshot.IC.massproperties.I
   //  Referenced by: '<S3>/Constant'
 
@@ -58,71 +60,26 @@ struct ConstPPlant {
   //  Referenced by: '<S7>/Matrix Gain'
 
   real_T MatrixGain_Gain[9];
-};
+} ConstP;
 
 // External inputs (root inport signals with default storage)
-struct ExtUPlant {
+typedef struct {
   real_T current[3];                   // '<Root>/current'
-};
+} ExtUPlant;
 
 // External outputs (root outports fed by signals with default storage)
-struct ExtYPlant {
+typedef struct {
   real_T angularvelocity[3];           // '<Root>/angular velocity'
   real_T magneticfield[3];             // '<Root>/magnetic field'
   real_T xyzposition[3];               // '<Root>/xyzposition'
   real_T quaternion[4];                // '<Root>/quaternion'
-};
+} ExtYPlant;
 
 // Constant parameters (default storage)
-extern const ConstPPlant rtConstPPlant;
-extern "C" {
-  static real_T rtGetNaN(void);
-  static real32_T rtGetNaNF(void);
-}                                      // extern "C"
-  extern "C"
-{
-  extern real_T rtInf;
-  extern real_T rtMinusInf;
-  extern real_T rtNaN;
-  extern real32_T rtInfF;
-  extern real32_T rtMinusInfF;
-  extern real32_T rtNaNF;
-  static void rt_InitInfAndNaN(size_t realSize);
-  static boolean_T rtIsInf(real_T value);
-  static boolean_T rtIsInfF(real32_T value);
-  static boolean_T rtIsNaN(real_T value);
-  static boolean_T rtIsNaNF(real32_T value);
-  struct BigEndianIEEEDouble {
-    struct {
-      uint32_T wordH;
-      uint32_T wordL;
-    } words;
-  };
+extern const ConstP rtConstP;
 
-  struct LittleEndianIEEEDouble {
-    struct {
-      uint32_T wordL;
-      uint32_T wordH;
-    } words;
-  };
-
-  struct IEEESingle {
-    union {
-      real32_T wordLreal;
-      uint32_T wordLuint;
-    } wordL;
-  };
-}                                      // extern "C"
-
-extern "C" {
-  static real_T rtGetInf(void);
-  static real32_T rtGetInfF(void);
-  static real_T rtGetMinusInf(void);
-  static real32_T rtGetMinusInfF(void);
-}                                      // extern "C"
-  // Class declaration for model Plantv50
-  class Plantv50ModelClass
-{
+// Class declaration for model Plantv50
+class Plantv50ModelClass {
   // public data and function members
  public:
   // External inputs
@@ -132,7 +89,7 @@ extern "C" {
   ExtYPlant rtY;
 
   // model initialize function
-  void initialize();
+  void initialize(float DiscreteTimeIntegrator_DSTATE, float DiscreteTimeIntegrator1_DSTAT_l, float DiscreteTimeIntegrator2_DSTATE);
 
   // model step function
   void step();
@@ -147,9 +104,7 @@ extern "C" {
  private:
   // Block signals and states
   DWPlant rtDW;
-}
-
-;
+};
 
 //-
 //  These blocks were eliminated from the model due to optimizations:

@@ -7,12 +7,12 @@
 //
 // Code generated for Simulink model 'Plantv50'.
 //
-// Model version                  : 9.1
-// Simulink Coder version         : 9.5 (R2021a) 14-Nov-2020
-// C/C++ source code generated on : Tue Sep 28 14:41:31 2021
+// Model version                  : 1.79
+// Simulink Coder version         : 9.1 (R2019a) 23-Nov-2018
+// C/C++ source code generated on : Fri Oct 22 23:44:40 2021
 //
 // Target selection: ert.tlc
-// Embedded hardware selection: ARM Compatible->ARM Cortex-M
+// Embedded hardware selection: ARM Compatible->ARM Cortex
 // Code generation objectives:
 //    1. Execution efficiency
 //    2. RAM efficiency
@@ -24,18 +24,18 @@
 
 // Logical type definitions
 #if (!defined(__cplusplus))
-#ifndef false
-#define false                          (0U)
-#endif
+#  ifndef false
+#   define false                       (0U)
+#  endif
 
-#ifndef true
-#define true                           (1U)
-#endif
+#  ifndef true
+#   define true                        (1U)
+#  endif
 #endif
 
 //=======================================================================*
 //  Target hardware information
-//    Device type: ARM Compatible->ARM Cortex-M
+//    Device type: ARM Compatible->ARM Cortex
 //    Number of bits:     char:   8    short:   16    int:  32
 //                        long:  32    long long:  64
 //                        native word size:  32

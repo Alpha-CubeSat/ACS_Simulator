@@ -1,2 +1,0 @@
-  StarshotACS0.cpp
-

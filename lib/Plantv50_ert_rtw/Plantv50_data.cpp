@@ -7,12 +7,12 @@
 //
 // Code generated for Simulink model 'Plantv50'.
 //
-// Model version                  : 9.1
-// Simulink Coder version         : 9.5 (R2021a) 14-Nov-2020
-// C/C++ source code generated on : Tue Sep 28 14:41:31 2021
+// Model version                  : 1.79
+// Simulink Coder version         : 9.1 (R2019a) 23-Nov-2018
+// C/C++ source code generated on : Fri Oct 22 23:44:40 2021
 //
 // Target selection: ert.tlc
-// Embedded hardware selection: ARM Compatible->ARM Cortex-M
+// Embedded hardware selection: ARM Compatible->ARM Cortex
 // Code generation objectives:
 //    1. Execution efficiency
 //    2. RAM efficiency
@@ -21,7 +21,7 @@
 #include "Plantv50.h"
 
 // Constant parameters (default storage)
-const ConstPPlant rtConstPPlant = {
+const ConstP rtConstP = {
   // Expression: starshot.IC.massproperties.I
   //  Referenced by: '<S3>/Constant'
 

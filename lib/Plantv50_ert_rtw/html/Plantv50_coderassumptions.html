@@ -17,8 +17,8 @@ List of assumptions that you can check and expected results for selected target 
 <div>
 
 </div>
-<h3 name="sec_C++_Language_Configuration_for_ARM_Compatible->ARM_Cortex-M_Target_Hardware" id="sec_target_hardware">
-C++ Language Configuration for ARM Compatible->ARM Cortex-M Target Hardware
+<h3 name="sec_C++_Language_Configuration_for_ARM_Compatible->ARM_Cortex_Target_Hardware" id="sec_C++_Language_Configuration_for_ARM_Compatible->ARM_Cortex_Target_Hardware">
+C++ Language Configuration for ARM Compatible->ARM Cortex Target Hardware
 </h3>
 <table width="100%" border="0">
 <tr>
@@ -155,7 +155,7 @@ Zero
 </tr>
 
 </table>
-<h3 name="sec_C++_Language_Standard" id="sec_lang_standard">
+<h3 name="sec_C++_Language_Standard" id="sec_C++_Language_Standard">
 C++ Language Standard
 </h3>
 <table width="100%" border="0">
@@ -175,21 +175,12 @@ True
 </td>
 
 </tr>
-<tr class="odd">
-<td align="left" valign="top">
-Initial value of each element of dynamically allocated int array is zero
-</td>
-<td align="left" valign="top">
-True
-</td>
-
-</tr>
 
 </table>
 
 </p>
 <p>
-If the assumption is not correct, remove the optimization through the <a href="matlab:rtw.report.CoderAssumptions.showMemZeroInitParams('Plantv50')">Configuration Parameters > Code Generation > Optimization</a> settings. Alternatively, configure your target environment to make the assumption hold.
+If the assumption is not correct, remove the optimization through the <a href="matlab:configset.showParameterGroup('Plantv50',{'Optimization'})">Configuration Parameters > Code Generation > Optimization</a> settings. Alternatively, configure your target environment to make the assumption hold.
 </p>
 
 </td>
@@ -197,7 +188,7 @@ If the assumption is not correct, remove the optimization through the <a href="m
 </tr>
 
 </table>
-<h3 name="sec_Floating-Point_Numbers" id="sec_floating_point_num">
+<h3 name="sec_Floating-Point_Numbers" id="sec_Floating-Point_Numbers">
 Floating-Point Numbers
 </h3>
 <table width="100%" border="0">

@@ -7,12 +7,12 @@
 //
 // Code generated for Simulink model 'Plantv50'.
 //
-// Model version                  : 9.1
-// Simulink Coder version         : 9.5 (R2021a) 14-Nov-2020
-// C/C++ source code generated on : Tue Sep 28 14:41:31 2021
+// Model version                  : 1.79
+// Simulink Coder version         : 9.1 (R2019a) 23-Nov-2018
+// C/C++ source code generated on : Fri Oct 22 23:44:40 2021
 //
 // Target selection: ert.tlc
-// Embedded hardware selection: ARM Compatible->ARM Cortex-M
+// Embedded hardware selection: ARM Compatible->ARM Cortex
 // Code generation objectives:
 //    1. Execution efficiency
 //    2. RAM efficiency
@@ -22,10 +22,13 @@
 #define NumBitsPerChar                 8U
 
 extern real_T rt_atan2d_snf(real_T u0, real_T u1);
-
-//===========*
-//  Constants *
-// ===========
+extern "C" {
+  extern real_T rtGetNaN(void);
+  extern real32_T rtGetNaNF(void);
+}                                      // extern "C"
+  //===========*
+  //  Constants *
+  // ===========
 #define RT_PI                          3.14159265358979323846
 #define RT_PIF                         3.1415927F
 #define RT_LN_10                       2.30258509299404568402
@@ -41,19 +44,53 @@ extern real_T rt_atan2d_snf(real_T u0, real_T u1);
 //    accessed by the function body.
 
 #ifndef UNUSED_PARAMETER
-#if defined(__LCC__)
-#define UNUSED_PARAMETER(x)                                      // do nothing
-#else
+# if defined(__LCC__)
+#   define UNUSED_PARAMETER(x)                                   // do nothing
+# else
 
 //
 //  This is the semi-ANSI standard way of indicating that an
 //  unused function parameter is required.
 
-#define UNUSED_PARAMETER(x)            (void) (x)
-#endif
+#   define UNUSED_PARAMETER(x)         (void) (x)
+# endif
 #endif
 
 extern "C" {
+  extern real_T rtInf;
+  extern real_T rtMinusInf;
+  extern real_T rtNaN;
+  extern real32_T rtInfF;
+  extern real32_T rtMinusInfF;
+  extern real32_T rtNaNF;
+  extern void rt_InitInfAndNaN(size_t realSize);
+  extern boolean_T rtIsInf(real_T value);
+  extern boolean_T rtIsInfF(real32_T value);
+  extern boolean_T rtIsNaN(real_T value);
+  extern boolean_T rtIsNaNF(real32_T value);
+  typedef struct {
+    struct {
+      uint32_T wordH;
+      uint32_T wordL;
+    } words;
+  } BigEndianIEEEDouble;
+
+  typedef struct {
+    struct {
+      uint32_T wordL;
+      uint32_T wordH;
+    } words;
+  } LittleEndianIEEEDouble;
+
+  typedef struct {
+    union {
+      real32_T wordLreal;
+      uint32_T wordLuint;
+    } wordL;
+  } IEEESingle;
+}                                      // extern "C"
+  extern "C"
+{
   real_T rtInf;
   real_T rtMinusInf;
   real_T rtNaN;
@@ -61,13 +98,20 @@ extern "C" {
   real32_T rtMinusInfF;
   real32_T rtNaNF;
 }
+
+extern "C" {
+  extern real_T rtGetInf(void);
+  extern real32_T rtGetInfF(void);
+  extern real_T rtGetMinusInf(void);
+  extern real32_T rtGetMinusInfF(void);
+}                                      // extern "C"
   extern "C"
 {
   //
   // Initialize rtNaN needed by the generated code.
   // NaN is initialized as non-signaling. Assumes IEEE.
   //
-  static real_T rtGetNaN(void)
+  real_T rtGetNaN(void)
   {
     size_t bitsPerReal = sizeof(real_T) * (NumBitsPerChar);
     real_T nan = 0.0;
@@ -91,9 +135,9 @@ extern "C" {
   // Initialize rtNaNF needed by the generated code.
   // NaN is initialized as non-signaling. Assumes IEEE.
   //
-  static real32_T rtGetNaNF(void)
+  real32_T rtGetNaNF(void)
   {
-    IEEESingle nanF = { { 0.0F } };
+    IEEESingle nanF = { { 0 } };
 
     nanF.wordL.wordLuint = 0xFFC00000U;
     return nanF.wordL.wordLreal;
@@ -105,7 +149,7 @@ extern "C" {
   // Initialize the rtInf, rtMinusInf, and rtNaN needed by the
   // generated code. NaN is initialized as non-signaling. Assumes IEEE.
   //
-  static void rt_InitInfAndNaN(size_t realSize)
+  void rt_InitInfAndNaN(size_t realSize)
   {
     (void) (realSize);
     rtNaN = rtGetNaN();
@@ -117,19 +161,19 @@ extern "C" {
   }
 
   // Test if value is infinite
-  static boolean_T rtIsInf(real_T value)
+  boolean_T rtIsInf(real_T value)
   {
     return (boolean_T)((value==rtInf || value==rtMinusInf) ? 1U : 0U);
   }
 
   // Test if single-precision value is infinite
-  static boolean_T rtIsInfF(real32_T value)
+  boolean_T rtIsInfF(real32_T value)
   {
     return (boolean_T)(((value)==rtInfF || (value)==rtMinusInfF) ? 1U : 0U);
   }
 
   // Test if value is not a number
-  static boolean_T rtIsNaN(real_T value)
+  boolean_T rtIsNaN(real_T value)
   {
     boolean_T result = (boolean_T) 0;
     size_t bitsPerReal = sizeof(real_T) * (NumBitsPerChar);
@@ -152,7 +196,7 @@ extern "C" {
   }
 
   // Test if single-precision value is not a number
-  static boolean_T rtIsNaNF(real32_T value)
+  boolean_T rtIsNaNF(real32_T value)
   {
     IEEESingle tmp;
     tmp.wordL.wordLreal = value;
@@ -166,7 +210,7 @@ extern "C" {
   // Initialize rtInf needed by the generated code.
   // Inf is initialized as non-signaling. Assumes IEEE.
   //
-  static real_T rtGetInf(void)
+  real_T rtGetInf(void)
   {
     size_t bitsPerReal = sizeof(real_T) * (NumBitsPerChar);
     real_T inf = 0.0;
@@ -190,7 +234,7 @@ extern "C" {
   // Initialize rtInfF needed by the generated code.
   // Inf is initialized as non-signaling. Assumes IEEE.
   //
-  static real32_T rtGetInfF(void)
+  real32_T rtGetInfF(void)
   {
     IEEESingle infF;
     infF.wordL.wordLuint = 0x7F800000U;
@@ -201,7 +245,7 @@ extern "C" {
   // Initialize rtMinusInf needed by the generated code.
   // Inf is initialized as non-signaling. Assumes IEEE.
   //
-  static real_T rtGetMinusInf(void)
+  real_T rtGetMinusInf(void)
   {
     size_t bitsPerReal = sizeof(real_T) * (NumBitsPerChar);
     real_T minf = 0.0;
@@ -225,7 +269,7 @@ extern "C" {
   // Initialize rtMinusInfF needed by the generated code.
   // Inf is initialized as non-signaling. Assumes IEEE.
   //
-  static real32_T rtGetMinusInfF(void)
+  real32_T rtGetMinusInfF(void)
   {
     IEEESingle minfF;
     minfF.wordL.wordLuint = 0xFF800000U;
@@ -253,7 +297,7 @@ real_T rt_atan2d_snf(real_T u0, real_T u1)
       u1_0 = -1;
     }
 
-    y = std::atan2(static_cast<real_T>(u0_0), static_cast<real_T>(u1_0));
+    y = atan2((real_T)u0_0, (real_T)u1_0);
   } else if (u1 == 0.0) {
     if (u0 > 0.0) {
       y = RT_PI / 2.0;
@@ -263,7 +307,7 @@ real_T rt_atan2d_snf(real_T u0, real_T u1)
       y = 0.0;
     }
   } else {
-    y = std::atan2(u0, u1);
+    y = atan2(u0, u1);
   }
 
   return y;
@@ -272,32 +316,31 @@ real_T rt_atan2d_snf(real_T u0, real_T u1)
 // Model step function
 void Plantv50ModelClass::step()
 {
-  real_T rtb_Product_0[9];
-  real_T rtb_Sum8[9];
-  real_T tmp[9];
-  real_T rtb_Elementproduct[6];
   real_T rtb_Product[4];
   real_T rtb_Product_j[3];
   real_T rtb_Sum[3];
+  real_T rtb_Elementproduct[6];
+  real_T rtb_TrigonometricFunction;
+  real_T rtb_Sum6;
   real_T rtb_DiscreteTimeIntegrator1;
   real_T rtb_DiscreteTimeIntegrator2;
   real_T rtb_DiscreteTimeIntegrator3;
   real_T rtb_DiscreteTimeIntegrator5;
   real_T rtb_DiscreteTimeIntegrator6;
-  real_T rtb_DotProduct2_0;
-  real_T rtb_Sum6;
-  real_T rtb_TmpSignalConversionAtMatr_0;
-  real_T rtb_TrigonometricFunction;
-  real_T rtb_qd3;
+  real_T rtb_Sum8[9];
   int32_T i;
+  real_T rtb_Product_1[9];
+  real_T tmp[9];
+  real_T rtb_DotProduct2_0;
+  real_T rtb_TmpSignalConversionAtMatr_0;
 
   // Outputs for Atomic SubSystem: '<Root>/Plantv5'
   // Gain: '<S1>/Gain' incorporates:
   //   Inport: '<Root>/current'
 
-  rtb_Product_j[0] = 39.898226700590371 * rtU.current[0];
-  rtb_Product_j[1] = 39.898226700590371 * rtU.current[1];
-  rtb_Product_j[2] = 39.898226700590371 * rtU.current[2];
+  rtb_Product_j[0] = 0.021598 * rtU.current[0];
+  rtb_Product_j[1] = 0.021598 * rtU.current[1];
+  rtb_Product_j[2] = 0.021598 * rtU.current[2];
 
   // DotProduct: '<S10>/Dot Product' incorporates:
   //   DiscreteIntegrator: '<S5>/Discrete-Time Integrator1'
@@ -337,25 +380,24 @@ void Plantv50ModelClass::step()
   // Product: '<S7>/qTq' incorporates:
   //   Math: '<S7>/T2'
 
-  rtb_DiscreteTimeIntegrator5 = 0.0;
+  rtb_DotProduct2_0 = 0.0;
   for (i = 0; i < 3; i++) {
-    rtb_DiscreteTimeIntegrator5 += rtb_Product[i] * rtb_Product[i];
+    rtb_DotProduct2_0 += rtb_Product[i] * rtb_Product[i];
 
     // Product: '<S7>/qqT' incorporates:
     //   Math: '<S7>/T1'
     //   Math: '<S7>/T2'
 
-    rtb_Product_0[3 * i] = rtb_Product[0] * rtb_Product[i];
-    rtb_Product_0[3 * i + 1] = rtb_Product[1] * rtb_Product[i];
-    rtb_Product_0[3 * i + 2] = rtb_Product[2] * rtb_Product[i];
+    rtb_Product_1[i] = rtb_Product[i] * rtb_Product[0];
+    rtb_Product_1[i + 3] = rtb_Product[i] * rtb_Product[1];
+    rtb_Product_1[i + 6] = rtb_Product[i] * rtb_Product[2];
   }
 
   // Sum: '<S7>/Sum1' incorporates:
   //   Product: '<S7>/Product1'
   //   Product: '<S7>/qTq'
 
-  rtb_DotProduct2_0 = rtb_Product[3] * rtb_Product[3] -
-    rtb_DiscreteTimeIntegrator5;
+  rtb_DotProduct2_0 = rtb_Product[3] * rtb_Product[3] - rtb_DotProduct2_0;
 
   // Reshape: '<S12>/3x3' incorporates:
   //   Constant: '<S12>/diag 0 '
@@ -373,9 +415,6 @@ void Plantv50ModelClass::step()
   tmp[7] = -rtb_Product[0];
   tmp[8] = 0.0;
 
-  // Product: '<S7>/Product'
-  rtb_DiscreteTimeIntegrator5 = rtb_Product[3];
-
   // Sum: '<S7>/Sum8' incorporates:
   //   Gain: '<S7>/Gain1'
   //   Gain: '<S7>/Gain2'
@@ -383,8 +422,8 @@ void Plantv50ModelClass::step()
   //   Product: '<S7>/Product'
 
   for (i = 0; i < 9; i++) {
-    rtb_Sum8[i] = (2.0 * rtb_Product_0[i] - tmp[i] * rtb_DiscreteTimeIntegrator5
-                   * 2.0) + rtConstPPlant.MatrixGain_Gain[i] * rtb_DotProduct2_0;
+    rtb_Sum8[i] = (2.0 * rtb_Product_1[i] - tmp[i] * rtb_Product[3] * 2.0) +
+      rtConstP.MatrixGain_Gain[i] * rtb_DotProduct2_0;
   }
 
   // End of Sum: '<S7>/Sum8'
@@ -435,33 +474,33 @@ void Plantv50ModelClass::step()
   //   DotProduct: '<S6>/Dot Product4'
   //   Product: '<S6>/Divide1'
 
-  rtDW.DiscreteTimeIntegrator1_DSTA_ls += 1.0 / rtb_Sum6 *
-    rtDW.DiscreteTimeIntegrator5_DSTATE * rtb_TrigonometricFunction * 0.1;
+  rtDW.DiscreteTimeIntegrator1_DSTA_ls += rtb_TrigonometricFunction * (1.0 /
+    rtb_Sum6 * rtDW.DiscreteTimeIntegrator5_DSTATE) * 0.01;
 
   // Update for DiscreteIntegrator: '<S6>/Discrete-Time Integrator2' incorporates:
   //   DiscreteIntegrator: '<S6>/Discrete-Time Integrator4'
   //   DotProduct: '<S6>/Dot Product5'
   //   Product: '<S6>/Divide1'
 
-  rtDW.DiscreteTimeIntegrator2_DSTAT_e += 1.0 / rtb_Sum6 *
-    rtDW.DiscreteTimeIntegrator4_DSTATE * rtb_TrigonometricFunction * 0.1;
+  rtDW.DiscreteTimeIntegrator2_DSTAT_e += rtb_TrigonometricFunction * (1.0 /
+    rtb_Sum6 * rtDW.DiscreteTimeIntegrator4_DSTATE) * 0.01;
 
   // Update for DiscreteIntegrator: '<S6>/Discrete-Time Integrator3' incorporates:
   //   DiscreteIntegrator: '<S6>/Discrete-Time Integrator6'
   //   DotProduct: '<S6>/Dot Product3'
   //   Product: '<S6>/Divide1'
 
-  rtDW.DiscreteTimeIntegrator3_DSTATE += 1.0 / rtb_Sum6 *
-    rtDW.DiscreteTimeIntegrator6_DSTATE * rtb_TrigonometricFunction * 0.1;
+  rtDW.DiscreteTimeIntegrator3_DSTATE += rtb_TrigonometricFunction * (1.0 /
+    rtb_Sum6 * rtDW.DiscreteTimeIntegrator6_DSTATE) * 0.01;
 
   // Update for DiscreteIntegrator: '<S6>/Discrete-Time Integrator4'
-  rtDW.DiscreteTimeIntegrator4_DSTATE += 0.1 * rtb_DiscreteTimeIntegrator2;
+  rtDW.DiscreteTimeIntegrator4_DSTATE += 0.01 * rtb_DiscreteTimeIntegrator2;
 
   // Update for DiscreteIntegrator: '<S6>/Discrete-Time Integrator5'
-  rtDW.DiscreteTimeIntegrator5_DSTATE += 0.1 * rtb_DiscreteTimeIntegrator1;
+  rtDW.DiscreteTimeIntegrator5_DSTATE += 0.01 * rtb_DiscreteTimeIntegrator1;
 
   // Update for DiscreteIntegrator: '<S6>/Discrete-Time Integrator6'
-  rtDW.DiscreteTimeIntegrator6_DSTATE += 0.1 * rtb_DiscreteTimeIntegrator3;
+  rtDW.DiscreteTimeIntegrator6_DSTATE += 0.01 * rtb_DiscreteTimeIntegrator3;
 
   // End of Outputs for SubSystem: '<S1>/Tranlational Dynamics'
 
@@ -509,33 +548,25 @@ void Plantv50ModelClass::step()
 
   rtb_DiscreteTimeIntegrator2 = rtb_Sum6 * std::sin(rtb_TrigonometricFunction);
 
+  // Gain: '<S4>/Gain6'
+  rtb_DiscreteTimeIntegrator3 = -rtb_TrigonometricFunction;
+
   // Outputs for Atomic SubSystem: '<S4>/Dipole->ECI'
-  // Trigonometry: '<S9>/Trigonometric Function8' incorporates:
-  //   Gain: '<S4>/Gain6'
-  //   Trigonometry: '<S9>/Trigonometric Function5'
-
-  rtb_DiscreteTimeIntegrator3 = std::cos(-rtb_TrigonometricFunction);
-
-  // Trigonometry: '<S9>/Trigonometric Function7' incorporates:
-  //   Gain: '<S4>/Gain6'
-  //   Trigonometry: '<S9>/Trigonometric Function6'
-
-  rtb_qd3 = std::sin(-rtb_TrigonometricFunction);
-
   // Sum: '<S9>/Sum6' incorporates:
+  //   Gain: '<S4>/Gain6'
   //   Product: '<S9>/Product3'
   //   Product: '<S9>/Product4'
   //   Trigonometry: '<S9>/Trigonometric Function7'
   //   Trigonometry: '<S9>/Trigonometric Function8'
 
-  rtb_Sum6 = rtb_DiscreteTimeIntegrator3 * rtb_DiscreteTimeIntegrator2 + rtb_qd3
-    * rtb_DiscreteTimeIntegrator1;
+  rtb_Sum6 = std::cos(-rtb_TrigonometricFunction) * rtb_DiscreteTimeIntegrator2
+    + std::sin(-rtb_TrigonometricFunction) * rtb_DiscreteTimeIntegrator1;
 
   // Trigonometry: '<S9>/Trigonometric Function'
   rtb_TrigonometricFunction = rt_atan2d_snf(rtb_DiscreteTimeIntegrator5,
     rtb_DotProduct2_0);
 
-  // SignalConversion generated from: '<S1>/Matrix Multiply' incorporates:
+  // SignalConversion: '<S1>/TmpSignal ConversionAtMatrix MultiplyInport2' incorporates:
   //   Product: '<S9>/Divide'
   //   Product: '<S9>/Divide1'
   //   Product: '<S9>/Product1'
@@ -543,19 +574,20 @@ void Plantv50ModelClass::step()
   //   Sum: '<S9>/Sum5'
   //   Trigonometry: '<S9>/Trigonometric Function1'
   //   Trigonometry: '<S9>/Trigonometric Function2'
+  //   Trigonometry: '<S9>/Trigonometric Function5'
+  //   Trigonometry: '<S9>/Trigonometric Function6'
 
   rtb_TmpSignalConversionAtMatr_0 = rtb_Sum6 * std::cos
     (rtb_TrigonometricFunction);
   rtb_Sum6 *= std::sin(rtb_TrigonometricFunction);
-  rtb_DiscreteTimeIntegrator1 = rtb_DiscreteTimeIntegrator3 *
-    rtb_DiscreteTimeIntegrator1 - rtb_qd3 * rtb_DiscreteTimeIntegrator2;
+  rtb_DiscreteTimeIntegrator1 = std::cos(rtb_DiscreteTimeIntegrator3) *
+    rtb_DiscreteTimeIntegrator1 - std::sin(rtb_DiscreteTimeIntegrator3) *
+    rtb_DiscreteTimeIntegrator2;
 
   // End of Outputs for SubSystem: '<S4>/Dipole->ECI'
   // End of Outputs for SubSystem: '<S1>/Magnetic Field Model'
 
-  // Product: '<S1>/Matrix Multiply1' incorporates:
-  //   Sum: '<S7>/Sum8'
-
+  // Product: '<S1>/Matrix Multiply1'
   for (i = 0; i < 3; i++) {
     rtb_Sum[i] = rtb_Sum8[i + 6] * rtb_DiscreteTimeIntegrator1 + (rtb_Sum8[i + 3]
       * rtb_Sum6 + rtb_Sum8[i] * rtb_TmpSignalConversionAtMatr_0);
@@ -565,11 +597,11 @@ void Plantv50ModelClass::step()
 
   // Product: '<S2>/Element product'
   rtb_Elementproduct[0] = rtb_Product_j[1] * rtb_Sum[2];
-  rtb_Elementproduct[1] = rtb_Sum[0] * rtb_Product_j[2];
+  rtb_Elementproduct[1] = rtb_Product_j[2] * rtb_Sum[0];
   rtb_Elementproduct[2] = rtb_Product_j[0] * rtb_Sum[1];
-  rtb_Elementproduct[3] = rtb_Sum[1] * rtb_Product_j[2];
+  rtb_Elementproduct[3] = rtb_Product_j[2] * rtb_Sum[1];
   rtb_Elementproduct[4] = rtb_Product_j[0] * rtb_Sum[2];
-  rtb_Elementproduct[5] = rtb_Sum[0] * rtb_Product_j[1];
+  rtb_Elementproduct[5] = rtb_Product_j[1] * rtb_Sum[0];
 
   // Outport: '<Root>/angular velocity' incorporates:
   //   DiscreteIntegrator: '<S1>/Discrete-Time Integrator'
@@ -591,9 +623,9 @@ void Plantv50ModelClass::step()
     //   DiscreteIntegrator: '<S1>/Discrete-Time Integrator1'
     //   DiscreteIntegrator: '<S1>/Discrete-Time Integrator2'
 
-    rtb_Product_j[i] = rtConstPPlant.Constant_Value[i + 6] *
-      rtDW.DiscreteTimeIntegrator2_DSTATE + (rtConstPPlant.Constant_Value[i + 3] *
-      rtDW.DiscreteTimeIntegrator1_DSTAT_l + rtConstPPlant.Constant_Value[i] *
+    rtb_Product_j[i] = rtConstP.Constant_Value[i + 6] *
+      rtDW.DiscreteTimeIntegrator2_DSTATE + (rtConstP.Constant_Value[i + 3] *
+      rtDW.DiscreteTimeIntegrator1_DSTAT_l + rtConstP.Constant_Value[i] *
       rtDW.DiscreteTimeIntegrator_DSTATE);
   }
 
@@ -610,19 +642,9 @@ void Plantv50ModelClass::step()
   rtb_DiscreteTimeIntegrator3 = rtb_Sum[1] -
     (rtDW.DiscreteTimeIntegrator2_DSTATE * rtb_Product_j[0] -
      rtDW.DiscreteTimeIntegrator_DSTATE * rtb_Product_j[2]);
-  rtb_qd3 = rtb_Sum[2] - (rtDW.DiscreteTimeIntegrator_DSTATE * rtb_Product_j[1]
-    - rtDW.DiscreteTimeIntegrator1_DSTAT_l * rtb_Product_j[0]);
+  rtb_TrigonometricFunction = rtb_Sum[2] - (rtDW.DiscreteTimeIntegrator_DSTATE *
+    rtb_Product_j[1] - rtDW.DiscreteTimeIntegrator1_DSTAT_l * rtb_Product_j[0]);
 
-  // Product: '<S3>/Product1' incorporates:
-  //   Constant: '<S3>/Constant1'
-
-  for (i = 0; i < 3; i++) {
-    rtb_Product_j[i] = rtConstPPlant.Constant1_Value[i + 6] * rtb_qd3 +
-      (rtConstPPlant.Constant1_Value[i + 3] * rtb_DiscreteTimeIntegrator3 +
-       rtConstPPlant.Constant1_Value[i] * rtb_DiscreteTimeIntegrator2);
-  }
-
-  // End of Product: '<S3>/Product1'
   // End of Outputs for SubSystem: '<S1>/Dynamics'
 
   // Update for DiscreteIntegrator: '<S5>/Discrete-Time Integrator1' incorporates:
@@ -634,53 +656,54 @@ void Plantv50ModelClass::step()
   //   Fcn: '<S11>/qd3'
   //   Fcn: '<S11>/qd4'
 
-  rtb_DiscreteTimeIntegrator2 = rtDW.DiscreteTimeIntegrator1_DSTATE[0];
-  rtb_DiscreteTimeIntegrator3 = rtDW.DiscreteTimeIntegrator1_DSTATE[1];
-  rtb_qd3 = rtDW.DiscreteTimeIntegrator1_DSTATE[2];
-  rtb_TrigonometricFunction = rtDW.DiscreteTimeIntegrator1_DSTATE[3];
-  rtDW.DiscreteTimeIntegrator1_DSTATE[0] = ((rtDW.DiscreteTimeIntegrator_DSTATE *
-    rtb_Product[3] - rtDW.DiscreteTimeIntegrator1_DSTAT_l * rtb_Product[2]) +
-    rtDW.DiscreteTimeIntegrator2_DSTATE * rtb_Product[1]) / 2.0 * 0.1 +
-    rtb_DiscreteTimeIntegrator2;
-  rtDW.DiscreteTimeIntegrator1_DSTATE[1] = ((rtDW.DiscreteTimeIntegrator_DSTATE *
-    rtb_Product[2] + rtDW.DiscreteTimeIntegrator1_DSTAT_l * rtb_Product[3]) -
-    rtDW.DiscreteTimeIntegrator2_DSTATE * rtb_Product[0]) / 2.0 * 0.1 +
-    rtb_DiscreteTimeIntegrator3;
-  rtDW.DiscreteTimeIntegrator1_DSTATE[2] = ((-rtb_Product[1] *
-    rtDW.DiscreteTimeIntegrator_DSTATE + rtDW.DiscreteTimeIntegrator1_DSTAT_l *
-    rtb_Product[0]) + rtDW.DiscreteTimeIntegrator2_DSTATE * rtb_Product[3]) /
-    2.0 * 0.1 + rtb_qd3;
-  rtDW.DiscreteTimeIntegrator1_DSTATE[3] = ((-rtb_Product[0] *
-    rtDW.DiscreteTimeIntegrator_DSTATE - rtDW.DiscreteTimeIntegrator1_DSTAT_l *
-    rtb_Product[1]) - rtDW.DiscreteTimeIntegrator2_DSTATE * rtb_Product[2]) /
-    2.0 * 0.1 + rtb_TrigonometricFunction;
+  rtDW.DiscreteTimeIntegrator1_DSTATE[0] += ((rtb_Product[3] *
+    rtDW.DiscreteTimeIntegrator_DSTATE - rtb_Product[2] *
+    rtDW.DiscreteTimeIntegrator1_DSTAT_l) + rtb_Product[1] *
+    rtDW.DiscreteTimeIntegrator2_DSTATE) / 2.0 * 0.01;
+  rtDW.DiscreteTimeIntegrator1_DSTATE[1] += ((rtb_Product[2] *
+    rtDW.DiscreteTimeIntegrator_DSTATE + rtb_Product[3] *
+    rtDW.DiscreteTimeIntegrator1_DSTAT_l) - rtb_Product[0] *
+    rtDW.DiscreteTimeIntegrator2_DSTATE) / 2.0 * 0.01;
+  rtDW.DiscreteTimeIntegrator1_DSTATE[2] += ((-rtb_Product[1] *
+    rtDW.DiscreteTimeIntegrator_DSTATE + rtb_Product[0] *
+    rtDW.DiscreteTimeIntegrator1_DSTAT_l) + rtb_Product[3] *
+    rtDW.DiscreteTimeIntegrator2_DSTATE) / 2.0 * 0.01;
+  rtDW.DiscreteTimeIntegrator1_DSTATE[3] += ((-rtb_Product[0] *
+    rtDW.DiscreteTimeIntegrator_DSTATE - rtb_Product[1] *
+    rtDW.DiscreteTimeIntegrator1_DSTAT_l) - rtb_Product[2] *
+    rtDW.DiscreteTimeIntegrator2_DSTATE) / 2.0 * 0.01;
 
-  // Update for DiscreteIntegrator: '<S1>/Discrete-Time Integrator'
-  rtDW.DiscreteTimeIntegrator_DSTATE += 0.1 * rtb_Product_j[0];
-
-  // Update for DiscreteIntegrator: '<S1>/Discrete-Time Integrator1'
-  rtDW.DiscreteTimeIntegrator1_DSTAT_l += 0.1 * rtb_Product_j[1];
-
-  // Update for DiscreteIntegrator: '<S1>/Discrete-Time Integrator2'
-  rtDW.DiscreteTimeIntegrator2_DSTATE += 0.1 * rtb_Product_j[2];
-
-  // End of Outputs for SubSystem: '<Root>/Plantv5'
-
-  // Outport: '<Root>/magnetic field' incorporates:
-  //   Product: '<S1>/Matrix Multiply'
-  //   Sum: '<S7>/Sum8'
-
+  // Outputs for Atomic SubSystem: '<S1>/Dynamics'
   for (i = 0; i < 3; i++) {
-    // Outputs for Atomic SubSystem: '<Root>/Plantv5'
+    // Outport: '<Root>/magnetic field' incorporates:
+    //   Product: '<S1>/Matrix Multiply'
+
     rtY.magneticfield[i] = 0.0;
     rtY.magneticfield[i] += rtb_Sum8[i] * rtb_TmpSignalConversionAtMatr_0;
     rtY.magneticfield[i] += rtb_Sum8[i + 3] * rtb_Sum6;
     rtY.magneticfield[i] += rtb_Sum8[i + 6] * rtb_DiscreteTimeIntegrator1;
 
-    // End of Outputs for SubSystem: '<Root>/Plantv5'
+    // Product: '<S3>/Product1' incorporates:
+    //   Constant: '<S3>/Constant1'
+
+    rtb_Product_j[i] = rtConstP.Constant1_Value[i + 6] *
+      rtb_TrigonometricFunction + (rtConstP.Constant1_Value[i + 3] *
+      rtb_DiscreteTimeIntegrator3 + rtConstP.Constant1_Value[i] *
+      rtb_DiscreteTimeIntegrator2);
   }
 
-  // End of Outport: '<Root>/magnetic field'
+  // End of Outputs for SubSystem: '<S1>/Dynamics'
+
+  // Update for DiscreteIntegrator: '<S1>/Discrete-Time Integrator'
+  rtDW.DiscreteTimeIntegrator_DSTATE += 0.01 * rtb_Product_j[0];
+
+  // Update for DiscreteIntegrator: '<S1>/Discrete-Time Integrator1'
+  rtDW.DiscreteTimeIntegrator1_DSTAT_l += 0.01 * rtb_Product_j[1];
+
+  // Update for DiscreteIntegrator: '<S1>/Discrete-Time Integrator2'
+  rtDW.DiscreteTimeIntegrator2_DSTATE += 0.01 * rtb_Product_j[2];
+
+  // End of Outputs for SubSystem: '<Root>/Plantv5'
 
   // Outport: '<Root>/xyzposition'
   rtY.xyzposition[0] = rtb_DotProduct2_0;
@@ -695,7 +718,7 @@ void Plantv50ModelClass::step()
 }
 
 // Model initialize function
-void Plantv50ModelClass::initialize()
+void Plantv50ModelClass::initialize(float DiscreteTimeIntegrator_DSTATE, float DiscreteTimeIntegrator1_DSTAT_l, float DiscreteTimeIntegrator2_DSTATE)
 {
   // Registration code
 
@@ -710,33 +733,30 @@ void Plantv50ModelClass::initialize()
   rtDW.DiscreteTimeIntegrator1_DSTATE[3] = 0.6830127018922193;
 
   // InitializeConditions for DiscreteIntegrator: '<S1>/Discrete-Time Integrator' 
-  rtDW.DiscreteTimeIntegrator_DSTATE = 0.6;
+  rtDW.DiscreteTimeIntegrator_DSTATE = DiscreteTimeIntegrator_DSTATE;
 
   // InitializeConditions for DiscreteIntegrator: '<S1>/Discrete-Time Integrator1' 
-  rtDW.DiscreteTimeIntegrator1_DSTAT_l = -0.5;
+  rtDW.DiscreteTimeIntegrator1_DSTAT_l = DiscreteTimeIntegrator1_DSTAT_l;
 
   // InitializeConditions for DiscreteIntegrator: '<S1>/Discrete-Time Integrator2' 
-  rtDW.DiscreteTimeIntegrator2_DSTATE = 0.7;
+  rtDW.DiscreteTimeIntegrator2_DSTATE = DiscreteTimeIntegrator2_DSTATE;
 
   // SystemInitialize for Atomic SubSystem: '<S1>/Tranlational Dynamics'
   // InitializeConditions for DiscreteIntegrator: '<S6>/Discrete-Time Integrator1' 
-  rtDW.DiscreteTimeIntegrator1_DSTA_ls = 3195.7;
+  rtDW.DiscreteTimeIntegrator1_DSTA_ls = 4748.3154149357551;
 
   // InitializeConditions for DiscreteIntegrator: '<S6>/Discrete-Time Integrator3' 
-  rtDW.DiscreteTimeIntegrator3_DSTATE = 7149.2;
+  rtDW.DiscreteTimeIntegrator3_DSTATE = 5990.8830750989018;
 
   // InitializeConditions for DiscreteIntegrator: '<S6>/Discrete-Time Integrator4' 
-  rtDW.DiscreteTimeIntegrator4_DSTATE = 6.5E+6;
+  rtDW.DiscreteTimeIntegrator4_DSTATE = 450000.0;
 
   // End of SystemInitialize for SubSystem: '<S1>/Tranlational Dynamics'
   // End of SystemInitialize for SubSystem: '<Root>/Plantv5'
 }
 
 // Constructor
-Plantv50ModelClass::Plantv50ModelClass() :
-  rtU(),
-  rtY(),
-  rtDW()
+Plantv50ModelClass::Plantv50ModelClass()
 {
   // Currently there is no constructor body generated.
 }

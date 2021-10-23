@@ -1,4 +1,4 @@
-//
+/*
 // Academic License - for use in teaching, academic research, and meeting
 // course requirements at degree granting institutions only.  Not for
 // government, commercial, or other organizational use.
@@ -7,18 +7,18 @@
 //
 // Code generated for Simulink model 'Plantv50'.
 //
-// Model version                  : 9.1
-// Simulink Coder version         : 9.5 (R2021a) 14-Nov-2020
-// C/C++ source code generated on : Tue Sep 28 14:41:31 2021
+// Model version                  : 1.79
+// Simulink Coder version         : 9.1 (R2019a) 23-Nov-2018
+// C/C++ source code generated on : Fri Oct 22 23:44:40 2021
 //
 // Target selection: ert.tlc
-// Embedded hardware selection: ARM Compatible->ARM Cortex-M
+// Embedded hardware selection: ARM Compatible->ARM Cortex
 // Code generation objectives:
 //    1. Execution efficiency
 //    2. RAM efficiency
 // Validation result: Not run
 //
-/*#include <stddef.h>
+#include <stddef.h>
 #include <stdio.h>                // This ert_main.c example uses printf/fflush
 #include "Plantv50.h"                  // Model's header file
 #include "rtwtypes.h"
@@ -83,7 +83,7 @@ int_T main(int_T argc, const char *argv[])
   rtObj.initialize();
 
   // Attach rt_OneStep to a timer or interrupt service routine with
-  //  period 0.1 seconds (the model's base sample time) here.  The
+  //  period 0.01 seconds (the model's base sample time) here.  The
   //  call syntax for rt_OneStep is
   //
   //   rt_OneStep();
@@ -106,9 +106,10 @@ int_T main(int_T argc, const char *argv[])
 
   return 0;
 }
-*/
+
 //
 // File trailer for generated code.
 //
 // [EOF]
 //
+*/

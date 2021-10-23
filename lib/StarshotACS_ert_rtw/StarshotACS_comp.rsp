@@ -1,0 +1,11 @@
+-IC:/Users/SSDS/Desktop/ACS-main/MATLAB\ Files
+-IC:/Users/SSDS/Desktop/ACS-main/MATLAB\ Files/StarshotACS_ert_rtw
+-IC:/Program\ Files/MATLAB/R2019a/extern/include
+-IC:/Program\ Files/MATLAB/R2019a/simulink/include
+-IC:/Program\ Files/MATLAB/R2019a/rtw/c/src
+-IC:/Program\ Files/MATLAB/R2019a/rtw/c/src/ext_mode/common
+-IC:/Program\ Files/MATLAB/R2019a/rtw/c/ert
+-IC:/Program\ Files/MATLAB/R2019a/toolbox/dsp/include
+-IC:/Program\ Files/MATLAB/R2019a/toolbox/dsp/extern/src/export/include/src
+-IC:/Program\ Files/MATLAB/R2019a/toolbox/dsp/extern/src/export/include
+-IC:/Program\ Files/MATLAB/R2019a/toolbox/shared/dsp/vision/matlab/include

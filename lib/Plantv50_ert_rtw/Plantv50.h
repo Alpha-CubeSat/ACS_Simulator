@@ -92,7 +92,7 @@ class Plantv50ModelClass {
   void initialize(float DiscreteTimeIntegrator_DSTATE, float DiscreteTimeIntegrator1_DSTAT_l, float DiscreteTimeIntegrator2_DSTATE);
 
   // model step function
-  void step();
+  void step(float step_size);
 
   // Constructor
   Plantv50ModelClass();

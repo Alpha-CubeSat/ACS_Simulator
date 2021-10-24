@@ -314,7 +314,7 @@ real_T rt_atan2d_snf(real_T u0, real_T u1)
 }
 
 // Model step function
-void Plantv50ModelClass::step()
+void Plantv50ModelClass::step(float step_size)
 {
   real_T rtb_Product[4];
   real_T rtb_Product_j[3];
@@ -475,7 +475,7 @@ void Plantv50ModelClass::step()
   //   Product: '<S6>/Divide1'
 
   rtDW.DiscreteTimeIntegrator1_DSTA_ls += rtb_TrigonometricFunction * (1.0 /
-    rtb_Sum6 * rtDW.DiscreteTimeIntegrator5_DSTATE) * 0.003;
+    rtb_Sum6 * rtDW.DiscreteTimeIntegrator5_DSTATE) * step_size;
 
   // Update for DiscreteIntegrator: '<S6>/Discrete-Time Integrator2' incorporates:
   //   DiscreteIntegrator: '<S6>/Discrete-Time Integrator4'
@@ -483,7 +483,7 @@ void Plantv50ModelClass::step()
   //   Product: '<S6>/Divide1'
 
   rtDW.DiscreteTimeIntegrator2_DSTAT_e += rtb_TrigonometricFunction * (1.0 /
-    rtb_Sum6 * rtDW.DiscreteTimeIntegrator4_DSTATE) * 0.003;
+    rtb_Sum6 * rtDW.DiscreteTimeIntegrator4_DSTATE) * step_size;
 
   // Update for DiscreteIntegrator: '<S6>/Discrete-Time Integrator3' incorporates:
   //   DiscreteIntegrator: '<S6>/Discrete-Time Integrator6'
@@ -491,16 +491,16 @@ void Plantv50ModelClass::step()
   //   Product: '<S6>/Divide1'
 
   rtDW.DiscreteTimeIntegrator3_DSTATE += rtb_TrigonometricFunction * (1.0 /
-    rtb_Sum6 * rtDW.DiscreteTimeIntegrator6_DSTATE) * 0.003;
+    rtb_Sum6 * rtDW.DiscreteTimeIntegrator6_DSTATE) * step_size;
 
   // Update for DiscreteIntegrator: '<S6>/Discrete-Time Integrator4'
-  rtDW.DiscreteTimeIntegrator4_DSTATE += 0.003 * rtb_DiscreteTimeIntegrator2;
+  rtDW.DiscreteTimeIntegrator4_DSTATE += step_size * rtb_DiscreteTimeIntegrator2;
 
   // Update for DiscreteIntegrator: '<S6>/Discrete-Time Integrator5'
-  rtDW.DiscreteTimeIntegrator5_DSTATE += 0.003 * rtb_DiscreteTimeIntegrator1;
+  rtDW.DiscreteTimeIntegrator5_DSTATE += step_size * rtb_DiscreteTimeIntegrator1;
 
   // Update for DiscreteIntegrator: '<S6>/Discrete-Time Integrator6'
-  rtDW.DiscreteTimeIntegrator6_DSTATE += 0.003 * rtb_DiscreteTimeIntegrator3;
+  rtDW.DiscreteTimeIntegrator6_DSTATE += step_size * rtb_DiscreteTimeIntegrator3;
 
   // End of Outputs for SubSystem: '<S1>/Tranlational Dynamics'
 
@@ -659,19 +659,19 @@ void Plantv50ModelClass::step()
   rtDW.DiscreteTimeIntegrator1_DSTATE[0] += ((rtb_Product[3] *
     rtDW.DiscreteTimeIntegrator_DSTATE - rtb_Product[2] *
     rtDW.DiscreteTimeIntegrator1_DSTAT_l) + rtb_Product[1] *
-    rtDW.DiscreteTimeIntegrator2_DSTATE) / 2.0 * 0.003;
+    rtDW.DiscreteTimeIntegrator2_DSTATE) / 2.0 * step_size;
   rtDW.DiscreteTimeIntegrator1_DSTATE[1] += ((rtb_Product[2] *
     rtDW.DiscreteTimeIntegrator_DSTATE + rtb_Product[3] *
     rtDW.DiscreteTimeIntegrator1_DSTAT_l) - rtb_Product[0] *
-    rtDW.DiscreteTimeIntegrator2_DSTATE) / 2.0 * 0.003;
+    rtDW.DiscreteTimeIntegrator2_DSTATE) / 2.0 * step_size;
   rtDW.DiscreteTimeIntegrator1_DSTATE[2] += ((-rtb_Product[1] *
     rtDW.DiscreteTimeIntegrator_DSTATE + rtb_Product[0] *
     rtDW.DiscreteTimeIntegrator1_DSTAT_l) + rtb_Product[3] *
-    rtDW.DiscreteTimeIntegrator2_DSTATE) / 2.0 * 0.003;
+    rtDW.DiscreteTimeIntegrator2_DSTATE) / 2.0 * step_size;
   rtDW.DiscreteTimeIntegrator1_DSTATE[3] += ((-rtb_Product[0] *
     rtDW.DiscreteTimeIntegrator_DSTATE - rtb_Product[1] *
     rtDW.DiscreteTimeIntegrator1_DSTAT_l) - rtb_Product[2] *
-    rtDW.DiscreteTimeIntegrator2_DSTATE) / 2.0 * 0.003;
+    rtDW.DiscreteTimeIntegrator2_DSTATE) / 2.0 * step_size;
 
   // Outputs for Atomic SubSystem: '<S1>/Dynamics'
   for (i = 0; i < 3; i++) {
@@ -695,13 +695,13 @@ void Plantv50ModelClass::step()
   // End of Outputs for SubSystem: '<S1>/Dynamics'
 
   // Update for DiscreteIntegrator: '<S1>/Discrete-Time Integrator'
-  rtDW.DiscreteTimeIntegrator_DSTATE += 0.003 * rtb_Product_j[0];
+  rtDW.DiscreteTimeIntegrator_DSTATE += step_size * rtb_Product_j[0];
 
   // Update for DiscreteIntegrator: '<S1>/Discrete-Time Integrator1'
-  rtDW.DiscreteTimeIntegrator1_DSTAT_l += 0.003 * rtb_Product_j[1];
+  rtDW.DiscreteTimeIntegrator1_DSTAT_l += step_size * rtb_Product_j[1];
 
   // Update for DiscreteIntegrator: '<S1>/Discrete-Time Integrator2'
-  rtDW.DiscreteTimeIntegrator2_DSTATE += 0.003 * rtb_Product_j[2];
+  rtDW.DiscreteTimeIntegrator2_DSTATE += step_size * rtb_Product_j[2];
 
   // End of Outputs for SubSystem: '<Root>/Plantv5'
 

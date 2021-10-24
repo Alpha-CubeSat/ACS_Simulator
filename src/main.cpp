@@ -6,7 +6,7 @@ static Plantv50ModelClass plantObj;
 static StarshotACSModelClass starshotObj;
 int imu_delay = 3;
 int iteration = 0;
-float plantsim_step_size = 3;
+float plantsim_step_size = 1;
 
 void setup(){  
   //sqrt(x^2 + y^2 + z^2) < 5 degrees
@@ -41,7 +41,7 @@ void loop(){
 
 
   for(int i = 0; i < imu_delay/plantsim_step_size; i++){
-    plantObj.step();
+    plantObj.step(plantsim_step_size/1000);
   }
 
   

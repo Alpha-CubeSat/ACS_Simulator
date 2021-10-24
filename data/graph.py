@@ -6,7 +6,7 @@ av_p = []
 av_q = []
 av_r = []
   
-with open('400delay.csv','r') as csvfile:
+with open('3delay.csv','r') as csvfile:
     plots = csv.reader(csvfile, delimiter = ',')
       
     for row in plots:
@@ -20,6 +20,6 @@ plt.plot(time, av_q, label = "Q Angular Velocity")
 plt.plot(time, av_r, label = "R Angular Velocity")
 
 plt.xlabel('Time (ms)')
-plt.title('IMU Update Speed 400 ms')
+plt.title('IMU Update Speed 3 ms')
 plt.legend()
 plt.show()

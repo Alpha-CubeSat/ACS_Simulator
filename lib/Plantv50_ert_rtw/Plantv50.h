@@ -9,7 +9,7 @@
 //
 // Model version                  : 1.79
 // Simulink Coder version         : 9.1 (R2019a) 23-Nov-2018
-// C/C++ source code generated on : Fri Oct 22 23:44:40 2021
+// C/C++ source code generated on : Sat Oct 23 11:25:08 2021
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: ARM Compatible->ARM Cortex
@@ -60,7 +60,7 @@ typedef struct {
   //  Referenced by: '<S7>/Matrix Gain'
 
   real_T MatrixGain_Gain[9];
-} ConstP;
+} ConstPPlant;
 
 // External inputs (root inport signals with default storage)
 typedef struct {
@@ -76,7 +76,7 @@ typedef struct {
 } ExtYPlant;
 
 // Constant parameters (default storage)
-extern const ConstP rtConstP;
+extern const ConstPPlant rtConstPPlant;
 
 // Class declaration for model Plantv50
 class Plantv50ModelClass {
@@ -92,7 +92,7 @@ class Plantv50ModelClass {
   void initialize(float DiscreteTimeIntegrator_DSTATE, float DiscreteTimeIntegrator1_DSTAT_l, float DiscreteTimeIntegrator2_DSTATE);
 
   // model step function
-  void step();
+  void step(float step_size);
 
   // Constructor
   Plantv50ModelClass();

@@ -4,8 +4,11 @@
 
 static Plantv50ModelClass plantObj;
 static StarshotACSModelClass starshotObj;
-int imu_delay = 3;
+
 int iteration = 0;
+
+//ms
+int imu_delay = 3;
 float plantsim_step_size = 1;
 
 void setup(){  
@@ -23,7 +26,7 @@ void loop(){
   plantObj.rtU.current[2] = starshotObj.rtY.detumble[2];
 
   if(iteration%500 == 0){
-      Serial.print(iteration*imu_delay);
+    Serial.print(iteration*imu_delay);
     Serial.print(",");
     Serial.print(starshotObj.rtU.w[0]);
     Serial.print(",");

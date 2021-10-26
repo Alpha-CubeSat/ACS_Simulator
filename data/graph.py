@@ -6,7 +6,7 @@ av_p = []
 av_q = []
 av_r = []
   
-with open('3delay.csv','r') as csvfile:
+with open('3msimu1plantsim.csv','r') as csvfile:
     plots = csv.reader(csvfile, delimiter = ',')
       
     for row in plots:

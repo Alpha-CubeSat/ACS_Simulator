@@ -2,6 +2,7 @@
 #include <StarshotACS.h>
 #include "Arduino.h"
 #include <typeinfo>
+#include <math.h>
 
 static Plantv50ModelClass plantObj;
 static StarshotACSModelClass starshotObj;
@@ -14,16 +15,35 @@ float plantsim_step_size = 1;
 
 bool detumbling = false;
 
+float alpha_angle = 45;
+
+float degrees_to_radians(float degrees)
+{
+  return degrees * (M_PI / 180);
+}
+
+float get_quat0(float degrees)
+{
+  float radians = degrees_to_radians(degrees);
+  return sin(radians / 2);
+}
+
+float get_quat3(float degrees)
+{
+  float radians = degrees_to_radians(degrees);
+  return cos(radians / 2);
+}
+
 void setup()
 {
   // sqrt(x^2 + y^2 + z^2) < 5 degrees
   if (detumbling)
   {
-    plantObj.initialize(0.6, -0.5, 0.7);
+    plantObj.initialize(0.6, -0.5, 0.7, get_quat0(alpha_angle), 0.0, 0.0, get_quat3(alpha_angle));
   }
   else
   {
-    plantObj.initialize(0.0, 0.0, 1.0);
+    plantObj.initialize(0.0, 0.0, 1.0, get_quat0(alpha_angle), 0.0, 0.0, get_quat3(alpha_angle));
   }
 
   starshotObj.initialize();

@@ -75,7 +75,8 @@ void StarshotACSModelClass::step()
   //   Inport: '<Root>/Bfield_body'
 
   rtb_Product7 = (rtU.Bfield_body[0] * rtU.Bfield_body[0] + rtU.Bfield_body[1] *
-                  rtU.Bfield_body[1]) + rtU.Bfield_body[2] * rtU.Bfield_body[2];
+                                                                rtU.Bfield_body[1]) +
+                 rtU.Bfield_body[2] * rtU.Bfield_body[2];
   rtb_Saturation3 = 1.0 / (rtb_Product7 + 1.0E-10);
   rtb_Gain[0] = rtU.Bfield_body[0] * rtb_Saturation3;
 
@@ -131,9 +132,10 @@ void StarshotACSModelClass::step()
   //   Sum: '<S4>/Sum1'
 
   rtb_Gain[0] = (rtb_Gain8_idx_1 * rtb_Gain[2] - rtb_Gain8_idx_2 * rtb_Gain[1]) *
-    46.300583387350684;
+                46.300583387350684;
   rtb_Gain[1] = (rtb_Gain8_idx_2 * rtb_Saturation3 - rtb_Gain8_idx_0 * rtb_Gain
-                 [2]) * 46.300583387350684;
+                                                                           [2]) *
+                46.300583387350684;
 
   // SignalConversion: '<S6>/ConcatBufferAtVector ConcatenateIn1' incorporates:
   //   Constant: '<S6>/Constant3'
@@ -175,7 +177,8 @@ void StarshotACSModelClass::step()
   //   Sum: '<S4>/Sum2'
 
   rtb_Gain8_idx_0 = (rtb_Gain8_idx_0 * rtb_TrigonometricFunction5 -
-                     rtb_Gain8_idx_1 * tmp) * 46.300583387350684;
+                     rtb_Gain8_idx_1 * tmp) *
+                    46.300583387350684;
 
   // Sqrt: '<S8>/Sqrt4' incorporates:
   //   Sqrt: '<S14>/Sqrt4'
@@ -184,15 +187,18 @@ void StarshotACSModelClass::step()
 
   // DotProduct: '<S9>/Dot Product6'
   rtb_Gain8_idx_1 = 0.0;
-  for (i = 0; i < 3; i++) {
+  for (i = 0; i < 3; i++)
+  {
     // Product: '<S3>/Product6' incorporates:
     //   Inport: '<Root>/Bfield_body'
     //   Product: '<S3>/Product4'
     //   Sqrt: '<S8>/Sqrt4'
 
     rtb_TrigonometricFunction5 = ((rtConstB.VectorConcatenate[i + 3] *
-      rtU.Bfield_body[1] + rtConstB.VectorConcatenate[i] * rtU.Bfield_body[0]) +
-      rtConstB.VectorConcatenate[i + 6] * rtU.Bfield_body[2]) / rtb_Product7;
+                                       rtU.Bfield_body[1] +
+                                   rtConstB.VectorConcatenate[i] * rtU.Bfield_body[0]) +
+                                  rtConstB.VectorConcatenate[i + 6] * rtU.Bfield_body[2]) /
+                                 rtb_Product7;
 
     // DotProduct: '<S9>/Dot Product6'
     rtb_Gain8_idx_1 += rtb_TrigonometricFunction5 * rtb_TrigonometricFunction5;
@@ -212,14 +218,20 @@ void StarshotACSModelClass::step()
   rtb_Gain8_idx_1 = std::sqrt(rtb_Gain8_idx_1);
 
   // Trigonometry: '<S3>/Trigonometric Function5'
-  if (rtb_Gain8_idx_1 > 1.0) {
+  if (rtb_Gain8_idx_1 > 1.0)
+  {
     rtb_Gain8_idx_1 = 1.0;
-  } else {
-    if (rtb_Gain8_idx_1 < -1.0) {
+  }
+  else
+  {
+    if (rtb_Gain8_idx_1 < -1.0)
+    {
       rtb_Gain8_idx_1 = -1.0;
     }
   }
 
+  // should go to 0
+  pointing_error = std::asin(rtb_Gain8_idx_1);
   rtb_TrigonometricFunction5 = std::asin(rtb_Gain8_idx_1);
 
   // End of Trigonometry: '<S3>/Trigonometric Function5'
@@ -240,11 +252,14 @@ void StarshotACSModelClass::step()
   //   Sqrt: '<S13>/Sqrt4'
   //   Sum: '<S11>/Add'
 
-  if (1.0 / std::sqrt((rtU.w[0] * rtU.w[0] + rtU.w[1] * rtU.w[1]) + rtU.w[2] *
-                      rtU.w[2]) * ((rtb_Gain[0] + rtb_Gain[1]) + rtb_Gain[2]) /
-      rtb_Product7 > 0.0) {
+  if (1.0 / std::sqrt((rtU.w[0] * rtU.w[0] + rtU.w[1] * rtU.w[1]) + rtU.w[2] * rtU.w[2]) * ((rtb_Gain[0] + rtb_Gain[1]) + rtb_Gain[2]) /
+          rtb_Product7 >
+      0.0)
+  {
     i = 1;
-  } else {
+  }
+  else
+  {
     i = -1;
   }
 
@@ -255,9 +270,12 @@ void StarshotACSModelClass::step()
   //   Constant: '<S12>/Constant9'
   //   Inport: '<Root>/angularvelocity'
 
-  if (rtU.w[2] >= 0.0) {
+  if (rtU.w[2] >= 0.0)
+  {
     tmp_0 = 1;
-  } else {
+  }
+  else
+  {
     tmp_0 = -1;
   }
 
@@ -282,18 +300,20 @@ void StarshotACSModelClass::step()
 
   rtb_Product7 = ((rtb_Gain8_idx_1 - rtDW.UD_DSTATE_k) * 1.5890498768155689E-6 +
                   5.02469927340896E-10 * rtb_TrigonometricFunction5) *
-    static_cast<real_T>((tmp_0 * i)) / rtb_Product7;
+                 static_cast<real_T>((tmp_0 * i)) / rtb_Product7;
 
   // Sum: '<S2>/Sum10' incorporates:
   //   Constant: '<S2>/Identity matrix'
 
-  for (i = 0; i < 9; i++) {
+  for (i = 0; i < 9; i++)
+  {
     rtb_VectorConcatenate_0[i] = rtb_VectorConcatenate[i] +
-      rtConstP.Identitymatrix_Value[i];
+                                 rtConstP.Identitymatrix_Value[i];
   }
 
   // End of Sum: '<S2>/Sum10'
-  for (i = 0; i < 3; i++) {
+  for (i = 0; i < 3; i++)
+  {
     // Update for DiscreteIntegrator: '<S2>/Discrete-Time Integrator' incorporates:
     //   Gain: '<S2>/Gain 8'
     //   Gain: '<S2>/Gain 9'
@@ -312,10 +332,14 @@ void StarshotACSModelClass::step()
     //   Store in Global RAM
 
     rtDW.DiscreteTimeIntegrator_DSTATE[i] += ((0.0 - (rtb_TSamp[i] -
-      rtDW.UD_DSTATE[i])) - ((476.1904761904762 * -rtb_Product1_idx_0 * 0.004 *
-      rtb_VectorConcatenate_0[i] + 476.1904761904762 * -rtb_Product1_idx_1 *
-      0.004 * rtb_VectorConcatenate_0[i + 3]) + 476.1904761904762 *
-      -rtb_Product1 * 0.004 * rtb_VectorConcatenate_0[i + 6])) * 0.003;
+                                                      rtDW.UD_DSTATE[i])) -
+                                              ((476.1904761904762 * -rtb_Product1_idx_0 * 0.004 *
+                                                    rtb_VectorConcatenate_0[i] +
+                                                476.1904761904762 * -rtb_Product1_idx_1 *
+                                                    0.004 * rtb_VectorConcatenate_0[i + 3]) +
+                                               476.1904761904762 *
+                                                   -rtb_Product1 * 0.004 * rtb_VectorConcatenate_0[i + 6])) *
+                                             0.003;
 
     // Update for UnitDelay: '<S5>/UD' incorporates:
     //   Product: '<S2>/Product1'
@@ -341,37 +365,52 @@ void StarshotACSModelClass::step()
   rtDW.UD_DSTATE_k = rtb_Gain8_idx_1;
 
   // Saturate: '<S2>/Saturation3'
-  if (rtb_Gain8_idx_2 > 0.19909250856560792) {
+  if (rtb_Gain8_idx_2 > 0.19909250856560792)
+  {
     // Outport: '<Root>/detumble'
     rtY.detumble[0] = 0.19909250856560792;
-  } else if (rtb_Gain8_idx_2 < -0.19909250856560792) {
+  }
+  else if (rtb_Gain8_idx_2 < -0.19909250856560792)
+  {
     // Outport: '<Root>/detumble'
     rtY.detumble[0] = -0.19909250856560792;
-  } else {
+  }
+  else
+  {
     // Outport: '<Root>/detumble'
     rtY.detumble[0] = rtb_Gain8_idx_2;
   }
 
   // Saturate: '<S2>/Saturation4'
-  if (rtb_Saturation3 > 0.19909250856560792) {
+  if (rtb_Saturation3 > 0.19909250856560792)
+  {
     // Outport: '<Root>/detumble'
     rtY.detumble[1] = 0.19909250856560792;
-  } else if (rtb_Saturation3 < -0.19909250856560792) {
+  }
+  else if (rtb_Saturation3 < -0.19909250856560792)
+  {
     // Outport: '<Root>/detumble'
     rtY.detumble[1] = -0.19909250856560792;
-  } else {
+  }
+  else
+  {
     // Outport: '<Root>/detumble'
     rtY.detumble[1] = rtb_Saturation3;
   }
 
   // Saturate: '<S2>/Saturation5'
-  if (rtb_Gain8_idx_0 > 0.19909250856560792) {
+  if (rtb_Gain8_idx_0 > 0.19909250856560792)
+  {
     // Outport: '<Root>/detumble'
     rtY.detumble[2] = 0.19909250856560792;
-  } else if (rtb_Gain8_idx_0 < -0.19909250856560792) {
+  }
+  else if (rtb_Gain8_idx_0 < -0.19909250856560792)
+  {
     // Outport: '<Root>/detumble'
     rtY.detumble[2] = -0.19909250856560792;
-  } else {
+  }
+  else
+  {
     // Outport: '<Root>/detumble'
     rtY.detumble[2] = rtb_Gain8_idx_0;
   }
@@ -387,13 +426,18 @@ void StarshotACSModelClass::step()
   //   Gain: '<S3>/Gain'
 
   rtb_Gain8_idx_2 = 46.300583387350684 * rtb_Product7;
-  if (rtb_Gain8_idx_2 > 0.19909250856560792) {
+  if (rtb_Gain8_idx_2 > 0.19909250856560792)
+  {
     // Outport: '<Root>/point'
     rtY.point[2] = 0.19909250856560792;
-  } else if (rtb_Gain8_idx_2 < -0.19909250856560792) {
+  }
+  else if (rtb_Gain8_idx_2 < -0.19909250856560792)
+  {
     // Outport: '<Root>/point'
     rtY.point[2] = -0.19909250856560792;
-  } else {
+  }
+  else
+  {
     // Outport: '<Root>/point'
     rtY.point[2] = rtb_Gain8_idx_2;
   }
@@ -406,7 +450,7 @@ void StarshotACSModelClass::step()
 void StarshotACSModelClass::initialize()
 {
   // SystemInitialize for Atomic SubSystem: '<Root>/StarshotACS'
-  // InitializeConditions for DiscreteIntegrator: '<S2>/Discrete-Time Integrator' 
+  // InitializeConditions for DiscreteIntegrator: '<S2>/Discrete-Time Integrator'
   rtDW.DiscreteTimeIntegrator_DSTATE[0] = 0.0;
   rtDW.DiscreteTimeIntegrator_DSTATE[1] = 0.0;
   rtDW.DiscreteTimeIntegrator_DSTATE[2] = 1.0;
@@ -427,7 +471,7 @@ StarshotACSModelClass::~StarshotACSModelClass()
 }
 
 // Real-Time Model get method
-RT_MODEL * StarshotACSModelClass::getRTM()
+RT_MODEL *StarshotACSModelClass::getRTM()
 {
   return (&rtM);
 }

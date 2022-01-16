@@ -1,47 +1,75 @@
 #include <Plantv50.h>
 #include <StarshotACS.h>
 #include "Arduino.h"
+#include <typeinfo>
 
 static Plantv50ModelClass plantObj;
 static StarshotACSModelClass starshotObj;
 
 int iteration = 0;
 
-//ms
+// ms
 int imu_delay = 500;
 float plantsim_step_size = 1;
 
+bool detumbling = false;
+
 void setup()
 {
-  //sqrt(x^2 + y^2 + z^2) < 5 degrees
-  plantObj.initialize(0.6, -0.5, 0.7);
+  // sqrt(x^2 + y^2 + z^2) < 5 degrees
+  if (detumbling)
+  {
+    plantObj.initialize(0.6, -0.5, 0.7);
+  }
+  else
+  {
+    plantObj.initialize(0.0, 0.0, 1.0);
+  }
+
   starshotObj.initialize();
   delay(10000);
 }
 
 void loop()
 {
-  starshotObj.step();
 
-  plantObj.rtU.current[0] = starshotObj.rtY.detumble[0];
-  plantObj.rtU.current[1] = starshotObj.rtY.detumble[1];
-  plantObj.rtU.current[2] = starshotObj.rtY.detumble[2];
+  if (detumbling)
+  {
+    plantObj.rtU.current[0] = starshotObj.rtY.detumble[0];
+    plantObj.rtU.current[1] = starshotObj.rtY.detumble[1];
+    plantObj.rtU.current[2] = starshotObj.rtY.detumble[2];
+  }
+  else
+  {
+    plantObj.rtU.current[0] = starshotObj.rtY.point[0];
+    plantObj.rtU.current[1] = starshotObj.rtY.point[1];
+    plantObj.rtU.current[2] = starshotObj.rtY.point[2];
+  }
 
   if (iteration % 1 == 0)
   {
+
     Serial.print(iteration * imu_delay);
     Serial.print(",");
-    Serial.print(starshotObj.rtU.w[0]);
-    Serial.print(",");
-    Serial.print(starshotObj.rtU.w[1]);
-    Serial.print(",");
-    Serial.print(starshotObj.rtU.w[2]);
-    Serial.print(",");
-    Serial.print(plantObj.rtU.current[0]);
-    Serial.print(",");
-    Serial.print(plantObj.rtU.current[1]);
-    Serial.print(",");
-    Serial.println(plantObj.rtU.current[2]);
+
+    if (detumbling)
+    {
+      Serial.print(starshotObj.rtU.w[0]);
+      Serial.print(",");
+      Serial.print(starshotObj.rtU.w[1]);
+      Serial.print(",");
+      Serial.print(starshotObj.rtU.w[2]);
+      Serial.print(",");
+      Serial.print(plantObj.rtU.current[0]);
+      Serial.print(",");
+      Serial.print(plantObj.rtU.current[1]);
+      Serial.print(",");
+      Serial.println(plantObj.rtU.current[2]);
+    }
+    else
+    {
+      Serial.println(starshotObj.pointing_error);
+    }
   }
 
   for (int i = 0; i < imu_delay / plantsim_step_size; i++)
@@ -57,4 +85,6 @@ void loop()
   starshotObj.rtU.Bfield_body[2] = plantObj.rtY.magneticfield[2];
 
   iteration++;
+
+  starshotObj.step();
 }

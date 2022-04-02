@@ -1,4 +1,4 @@
-/*
+//
 // Academic License - for use in teaching, academic research, and meeting
 // course requirements at degree granting institutions only.  Not for
 // government, commercial, or other organizational use.
@@ -7,21 +7,20 @@
 //
 // Code generated for Simulink model 'StarshotACS'.
 //
-// Model version                  : 1.77
-// Simulink Coder version         : 9.1 (R2019a) 23-Nov-2018
-// C/C++ source code generated on : Sat Oct 23 12:00:04 2021
+// Model version                  : 10.15
+// Simulink Coder version         : 9.6 (R2021b) 14-May-2021
+// C/C++ source code generated on : Fri Mar 25 14:36:39 2022
 //
 // Target selection: ert.tlc
-// Embedded hardware selection: ARM Compatible->ARM Cortex
+// Embedded hardware selection: ARM Compatible->ARM Cortex-M
 // Code generation objectives:
 //    1. Execution efficiency
 //    2. RAM efficiency
 // Validation result: Not run
 //
 #include <stddef.h>
-#include <stdio.h>                // This ert_main.c example uses printf/fflush
+#include <stdio.h>              // This example main program uses printf/fflush
 #include "StarshotACS.h"               // Model's header file
-#include "rtwtypes.h"
 
 static StarshotACSModelClass rtObj;    // Instance of model class
 
@@ -84,7 +83,7 @@ int_T main(int_T argc, const char *argv[])
   rtObj.initialize();
 
   // Attach rt_OneStep to a timer or interrupt service routine with
-  //  period 0.003 seconds (the model's base sample time) here.  The
+  //  period 0.001 seconds (the model's base sample time) here.  The
   //  call syntax for rt_OneStep is
   //
   //   rt_OneStep();
@@ -94,10 +93,10 @@ int_T main(int_T argc, const char *argv[])
          "To change this behavior select the 'MAT-file logging' option.\n");
   fflush((NULL));
   while (rtmGetErrorStatus(rtObj.getRTM()) == (NULL)) {
-    //  Perform other application tasks here
+    //  Perform application tasks here
   }
 
-  // Disable rt_OneStep() here
+  // Disable rt_OneStep here
   return 0;
 }
 
@@ -106,4 +105,3 @@ int_T main(int_T argc, const char *argv[])
 //
 // [EOF]
 //
-*/

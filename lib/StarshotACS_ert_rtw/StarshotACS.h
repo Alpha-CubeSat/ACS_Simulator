@@ -101,7 +101,7 @@ class StarshotACSModelClass
   double m_max;
 
   // model initialize function
-  void initialize(double kane_damper_c, double kaneId, double ampfactor);
+  void initialize(double kane_damper_c, double kaneId, double ampfactor,double wdx,double wdy,double wdz);
 
   // model step function
   void step();

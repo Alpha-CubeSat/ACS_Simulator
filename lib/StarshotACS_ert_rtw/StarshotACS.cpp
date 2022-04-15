@@ -445,13 +445,14 @@ void StarshotACSModelClass::step()
  //3.375 = starshot.magnetorq.m_max_x/(starshot.magnetorque.A*starshot.magnetorq.n)
  //where starshot.magnetorq.m_max_x = starshot.magnetorq.ampFactor*starshot.magnetorq.max_current*starshot.magnetorq.A*starshot.magnetorq.n;
 // Model initialize function
-void StarshotACSModelClass::initialize(double kane_damper_c, double kaneId, double ampfactor)
+void StarshotACSModelClass::initialize(double kane_damper_c, double kaneId, double ampfactor,double wdx,double wdy,double wdz)
 {
   // SystemInitialize for Atomic SubSystem: '<Root>/StarshotACS'
   // InitializeConditions for DiscreteIntegrator: '<S2>/Discrete-Time Integrator' 
-  rtDW.DiscreteTimeIntegrator_DSTATE[0] = 0.0;
-  rtDW.DiscreteTimeIntegrator_DSTATE[1] = 0.0;
-  rtDW.DiscreteTimeIntegrator_DSTATE[2] = 1.0;
+  //wdxyz are the desired angular velocities, w is omega, d is desired, xyz are the directions
+  rtDW.DiscreteTimeIntegrator_DSTATE[0] = wdx;
+  rtDW.DiscreteTimeIntegrator_DSTATE[1] = wdy;
+  rtDW.DiscreteTimeIntegrator_DSTATE[2] = wdz;
   
   //initialize kand damper constants c and Id
   damperc = kane_damper_c;

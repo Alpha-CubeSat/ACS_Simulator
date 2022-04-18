@@ -20,6 +20,8 @@
 // Validation result: Not run
 //
 #include "Plantv50.h"
+//include cmath for inclination editability due to tangent function used to get IC's from inclination
+#include <cmath>
 #define NumBitsPerChar 8U
 
 extern real_T rt_atan2d_snf(real_T u0, real_T u1);
@@ -39,7 +41,6 @@ extern "C"
 #define RT_LOG10EF 0.43429449F
 #define RT_E 2.7182818284590452354
 #define RT_EF 2.7182817F
-
 //
 //  UNUSED_PARAMETER(x)
 //    Used to specify that a function parameter (argument) is required but not
@@ -782,7 +783,7 @@ void Plantv50ModelClass::step(float step_size)
 }
 
 // Model initialize function
-void Plantv50ModelClass::initialize(float DiscreteTimeIntegrator_DSTATE, float DiscreteTimeIntegrator1_DSTAT_l, float DiscreteTimeIntegrator2_DSTATE, float quat0, float quat1, float quat2, float quat3)
+void Plantv50ModelClass::initialize(float DiscreteTimeIntegrator_DSTATE, float DiscreteTimeIntegrator1_DSTAT_l, float DiscreteTimeIntegrator2_DSTATE, float quat0, float quat1, float quat2, float quat3, float altitude, float Inclination)
 {
   // Registration code
 
@@ -807,10 +808,17 @@ void Plantv50ModelClass::initialize(float DiscreteTimeIntegrator_DSTATE, float D
 
   // SystemInitialize for Atomic SubSystem: '<S1>/Tranlational Dynamics'
   // InitializeConditions for DiscreteIntegrator: '<S6>/Discrete-Time Integrator1'
-  rtDW.DiscreteTimeIntegrator1_DSTA_ls = 4748.3154149357551;
+
+ // R = 6371+altitude;
+ // vc = (sqrt(398600/(6371+altitude))*1000);
+  // below is starshot.IC.ydot
+  //enum one = 1.0;
+
+  rtDW.DiscreteTimeIntegrator1_DSTA_ls = (sqrt(398600/(6371+altitude))*1000)/sqrt(1+pow(tan(Inclination),2));//4748.3154149357551;
 
   // InitializeConditions for DiscreteIntegrator: '<S6>/Discrete-Time Integrator3'
-  rtDW.DiscreteTimeIntegrator3_DSTATE = 5990.8830750989018;
+  //below is starshot.IC>zdot
+  rtDW.DiscreteTimeIntegrator3_DSTATE = tan(Inclination)*(sqrt(398600/(6371+altitude))*1000)/sqrt(1+pow(tan(Inclination),2));//5990.8830750989018;
 
   // InitializeConditions for DiscreteIntegrator: '<S6>/Discrete-Time Integrator4'
   rtDW.DiscreteTimeIntegrator4_DSTATE = 450000.0;

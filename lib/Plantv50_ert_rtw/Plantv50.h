@@ -94,7 +94,7 @@ public:
   ExtYPlant rtY;
 
   // model initialize function
-  void initialize(float DiscreteTimeIntegrator_DSTATE, float DiscreteTimeIntegrator1_DSTAT_l, float DiscreteTimeIntegrator2_DSTATE, float quat0, float quat1, float quat2, float quat3);
+  void initialize(float DiscreteTimeIntegrator_DSTATE, float DiscreteTimeIntegrator1_DSTAT_l, float DiscreteTimeIntegrator2_DSTATE, float quat0, float quat1, float quat2, float quat3, float altitude, float Inclination);
 
   // model step function
   void step(float step_size);

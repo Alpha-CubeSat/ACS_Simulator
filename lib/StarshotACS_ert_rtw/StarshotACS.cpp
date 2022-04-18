@@ -459,6 +459,7 @@ void StarshotACSModelClass::initialize(double kane_damper_c, double kaneId, doub
   Id = kaneId;
   //initialize inclusion of ampfactor 
   m_max = ampfactor * max_current * csarea * no_loops;
+  //
   expression_m = m_max/(csarea*no_loops);
   // End of SystemInitialize for SubSystem: '<Root>/StarshotACS'
 }

@@ -98,7 +98,7 @@ class StarshotACSModelClass
   double damperc;
   double Id;
   //memory for magnetorquer ampfactor calcs
-  double expression_m;
+  double current;
   double m_max;
 
   // model initialize function

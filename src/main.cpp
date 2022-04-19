@@ -12,7 +12,8 @@ int iteration = 0;
 //test
 
 // ms
-int imu_delay = 500;
+int imu_delay = 250;
+//Step size from simulik is in milliseconds
 float plantsim_step_size = 1;
 
 bool detumbling = false;
@@ -33,7 +34,7 @@ double num_loops = 500;
 
 double max_current = 0.25;
 //
-//Altitude of orbit
+//Altitude of orbit in km
 float altitude = 400;
 //
 //desired angular velocities below
@@ -74,7 +75,7 @@ void setup()
     plantObj.initialize(0.0, 0.0, 1.0, get_quat0(alpha_angle), 0.0, 0.0, get_quat3(alpha_angle),altitude, inclination);
   }
 
-  starshotObj.initialize(kane_damper_c, kane_Id, ampfactor, csarea,num_loops,max_current,wdx,wdy,wdz);
+  starshotObj.initialize(kane_damper_c, kane_Id, ampfactor, csarea, num_loops, max_current, wdx, wdy, wdz);
   delay(10000);
 }
 

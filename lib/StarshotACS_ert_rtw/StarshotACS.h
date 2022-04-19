@@ -84,6 +84,7 @@ class StarshotACSModelClass
 {
   // public data and function members
  public:
+  real_T pointing_error;
   // Real-Time Model get method
   RT_MODEL * getRTM();
 

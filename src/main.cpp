@@ -19,10 +19,32 @@ bool detumbling = false;
 
 float alpha_angle = 45;
 
+double kane_damper_c = 0.00001;
+
+double kane_Id = 0.196;
+
+double ampfactor = 13.5;
+
+double csarea = 4E-5;
+
+double num_loops = 500;
+
+double max_current = 0.25;
+
+float altitude = 400;
+
+double wdx = 0;
+
+double wdy = 0;
+
+double wdz = 1;
+
 float degrees_to_radians(float degrees)
 {
   return degrees * (M_PI / 180);
 }
+
+float inclination = degrees_to_radians(51.6F);
 
 float get_quat0(float degrees)
 {
@@ -41,14 +63,14 @@ void setup()
   // sqrt(x^2 + y^2 + z^2) < 5 degrees
   if (detumbling)
   {
-    plantObj.initialize(0.6, -0.5, 0.7, get_quat0(alpha_angle), 0.0, 0.0, get_quat3(alpha_angle));
+    plantObj.initialize(0.6, -0.5, 0.7, get_quat0(alpha_angle), 0.0, 0.0, get_quat3(alpha_angle), altitude,inclination);
   }
   else
   {
-    plantObj.initialize(0.0, 0.0, 1.0, get_quat0(alpha_angle), 0.0, 0.0, get_quat3(alpha_angle));
+    plantObj.initialize(0.0, 0.0, 1.0, get_quat0(alpha_angle), 0.0, 0.0, get_quat3(alpha_angle),altitude, inclination);
   }
 
-  starshotObj.initialize();
+  starshotObj.initialize(kane_damper_c, kane_Id, ampfactor, csarea,num_loops,max_current,wdx,wdy,wdz);
   delay(10000);
 }
 

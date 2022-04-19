@@ -250,6 +250,8 @@ void StarshotACSModelClass::step()
     rtb_Gain_0 = -1.0;
   }
 
+  //should go to 0
+  pointing_error = std::asin(rtb_Gain8_idx_1);
   rtb_TrigonometricFunction5 = std::asin(rtb_Gain_0);
 
   // End of Trigonometry: '<S3>/Trigonometric Function5'

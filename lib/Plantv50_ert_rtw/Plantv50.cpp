@@ -384,9 +384,9 @@ void Plantv50ModelClass::step(float step_size)
   // Gain: '<S1>/Gain' incorporates:
   //   Inport: '<Root>/current'
 
-  rtb_Product_j[0] = csarea * num_loops * ampFactor * rtU.current[0];
-  rtb_Product_j[1] = csarea * num_loops * ampFactor * rtU.current[1];
-  rtb_Product_j[2] = csarea * num_loops * ampFactor * rtU.current[2];
+  rtb_Product_j[0] = Area * loops * MagtorqAmpFac * rtU.current[0];
+  rtb_Product_j[1] = Area * loops * MagtorqAmpFac * rtU.current[1];
+  rtb_Product_j[2] = Area * loops * MagtorqAmpFac * rtU.current[2];
 
   // DotProduct: '<S10>/Dot Product' incorporates:
   //   DiscreteIntegrator: '<S5>/Discrete-Time Integrator1'
@@ -822,9 +822,9 @@ void Plantv50ModelClass::initialize(float DiscreteTimeIntegrator_DSTATE, float D
 
   // InitializeConditions for DiscreteIntegrator: '<S6>/Discrete-Time Integrator4'
   rtDW.DiscreteTimeIntegrator4_DSTATE = 450000.0;
-  csarea = csarea;
-  num_loops = num_loops;
-  ampFactor = ampFactor;
+  Area = csarea;
+  loops = num_loops;
+  MagtorqAmpFac = ampFactor;
 
   // End of SystemInitialize for SubSystem: '<S1>/Tranlational Dynamics'
   // End of SystemInitialize for SubSystem: '<Root>/Plantv5'

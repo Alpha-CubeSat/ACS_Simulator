@@ -68,11 +68,11 @@ void setup()
   // sqrt(x^2 + y^2 + z^2) < 5 degrees
   if (detumbling)
   {
-    plantObj.initialize(0.06, -0.05, 0.07, get_quat0(alpha_angle), 0.0, 0.0, get_quat3(alpha_angle), altitude,inclination);
+    plantObj.initialize(0.06, -0.05, 0.07, get_quat0(alpha_angle), 0.0, 0.0, get_quat3(alpha_angle), altitude,inclination,csarea,num_loops,ampfactor);
   }
   else
   {
-    plantObj.initialize(0.0, 0.0, 1.0, get_quat0(alpha_angle), 0.0, 0.0, get_quat3(alpha_angle),altitude, inclination);
+    plantObj.initialize(0.0, 0.0, 1.0, get_quat0(alpha_angle), 0.0, 0.0, get_quat3(alpha_angle),altitude, inclination,csarea,num_loops,ampfactor);
   }
 
   starshotObj.initialize(kane_damper_c, kane_Id, ampfactor, csarea, num_loops, max_current, wdx, wdy, wdz);

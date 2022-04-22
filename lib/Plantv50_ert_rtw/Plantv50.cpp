@@ -384,9 +384,9 @@ void Plantv50ModelClass::step(float step_size)
   // Gain: '<S1>/Gain' incorporates:
   //   Inport: '<Root>/current'
 
-  rtb_Product_j[0] = 0.021598 * rtU.current[0];
-  rtb_Product_j[1] = 0.021598 * rtU.current[1];
-  rtb_Product_j[2] = 0.021598 * rtU.current[2];
+  rtb_Product_j[0] = csarea * num_loops * ampFactor * rtU.current[0];
+  rtb_Product_j[1] = csarea * num_loops * ampFactor * rtU.current[1];
+  rtb_Product_j[2] = csarea * num_loops * ampFactor * rtU.current[2];
 
   // DotProduct: '<S10>/Dot Product' incorporates:
   //   DiscreteIntegrator: '<S5>/Discrete-Time Integrator1'
@@ -783,7 +783,7 @@ void Plantv50ModelClass::step(float step_size)
 }
 
 // Model initialize function
-void Plantv50ModelClass::initialize(float DiscreteTimeIntegrator_DSTATE, float DiscreteTimeIntegrator1_DSTAT_l, float DiscreteTimeIntegrator2_DSTATE, float quat0, float quat1, float quat2, float quat3, float altitude, float Inclination)
+void Plantv50ModelClass::initialize(float DiscreteTimeIntegrator_DSTATE, float DiscreteTimeIntegrator1_DSTAT_l, float DiscreteTimeIntegrator2_DSTATE, float quat0, float quat1, float quat2, float quat3, float altitude, float Inclination, float csarea, float num_loops, float ampFactor)
 {
   // Registration code
 

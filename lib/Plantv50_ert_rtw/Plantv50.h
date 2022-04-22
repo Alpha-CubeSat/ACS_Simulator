@@ -87,9 +87,7 @@ class Plantv50ModelClass
 {
   // public data and function members
 public:
-float csarea;
-float num_loops;
-float ampFactor;
+
   // External inputs
   ExtUPlant rtU;
 
@@ -98,7 +96,9 @@ float ampFactor;
 
   // model initialize function
   void initialize(float DiscreteTimeIntegrator_DSTATE, float DiscreteTimeIntegrator1_DSTAT_l, float DiscreteTimeIntegrator2_DSTATE, float quat0, float quat1, float quat2, float quat3, float altitude, float Inclination,float csarea,float num_loops,float ampFactor);
-
+  float csarea;
+  float num_loops;
+  float ampFactor;
   // model step function
   void step(float step_size);
 

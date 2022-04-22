@@ -822,6 +822,9 @@ void Plantv50ModelClass::initialize(float DiscreteTimeIntegrator_DSTATE, float D
 
   // InitializeConditions for DiscreteIntegrator: '<S6>/Discrete-Time Integrator4'
   rtDW.DiscreteTimeIntegrator4_DSTATE = 450000.0;
+  csarea = csarea;
+  num_loops = num_loops;
+  ampFactor = ampFactor;
 
   // End of SystemInitialize for SubSystem: '<S1>/Tranlational Dynamics'
   // End of SystemInitialize for SubSystem: '<Root>/Plantv5'

@@ -77,10 +77,10 @@ void StarshotACSModelClass::step()
 
   // S-Function (sdsp2norm2): '<S2>/Normalization' incorporates:
   //   DotProduct: '<S8>/Dot Product6'
-  //   Inport: '<Root>/Bfield_body'
+  //   Inport: '<Root>/magneticfield'
 
-  rtb_Product7 = (rtU.Bfield_body[0] * rtU.Bfield_body[0] + rtU.Bfield_body[1] *
-                  rtU.Bfield_body[1]) + rtU.Bfield_body[2] * rtU.Bfield_body[2];
+  rtb_Product7 = (rtU.magneticfield[0] * rtU.magneticfield[0] + rtU.magneticfield[1] *
+                  rtU.magneticfield[1]) + rtU.magneticfield[2] * rtU.magneticfield[2];
   rtb_Saturation3 = 1.0 / (rtb_Product7 + 1.0E-10);
 
   // SignalConversion generated from: '<S6>/Vector Concatenate' incorporates:
@@ -111,9 +111,9 @@ void StarshotACSModelClass::step()
   rtb_VectorConcatenate[8] = 0.0;
 
   // S-Function (sdsp2norm2): '<S2>/Normalization' incorporates:
-  //   Inport: '<Root>/Bfield_body'
+  //   Inport: '<Root>/magneticfield'
 
-  rtb_Gain[0] = rtU.Bfield_body[0] * rtb_Saturation3;
+  rtb_Gain[0] = rtU.magneticfield[0] * rtb_Saturation3;
 
   // SampleTimeMath: '<S5>/TSamp' incorporates:
   //   Inport: '<Root>/angularvelocity'
@@ -124,9 +124,9 @@ void StarshotACSModelClass::step()
   rtb_TSamp[0] = rtU.w[0] * 1000.0;
 
   // S-Function (sdsp2norm2): '<S2>/Normalization' incorporates:
-  //   Inport: '<Root>/Bfield_body'
+  //   Inport: '<Root>/magneticfield'
 
-  rtb_Gain[1] = rtU.Bfield_body[1] * rtb_Saturation3;
+  rtb_Gain[1] = rtU.magneticfield[1] * rtb_Saturation3;
 
   // SampleTimeMath: '<S5>/TSamp' incorporates:
   //   Inport: '<Root>/angularvelocity'
@@ -137,9 +137,9 @@ void StarshotACSModelClass::step()
   rtb_TSamp[1] = rtU.w[1] * 1000.0;
 
   // S-Function (sdsp2norm2): '<S2>/Normalization' incorporates:
-  //   Inport: '<Root>/Bfield_body'
+  //   Inport: '<Root>/magneticfield'
 
-  rtb_Gain[2] = rtU.Bfield_body[2] * rtb_Saturation3;
+  rtb_Gain[2] = rtU.magneticfield[2] * rtb_Saturation3;
 
   // SampleTimeMath: '<S5>/TSamp' incorporates:
   //   Inport: '<Root>/angularvelocity'
@@ -208,12 +208,12 @@ void StarshotACSModelClass::step()
   for (i = 0; i < 3; i++) {
     // Product: '<S3>/Product6' incorporates:
     //   Concatenate: '<S10>/Vector Concatenate'
-    //   Inport: '<Root>/Bfield_body'
+    //   Inport: '<Root>/magneticfield'
     //   Product: '<S3>/Product4'
 
-    rtb_Gain_1 = ((rtConstB.VectorConcatenate[i + 3] * rtU.Bfield_body[1] +
-                   rtConstB.VectorConcatenate[i] * rtU.Bfield_body[0]) +
-                  rtConstB.VectorConcatenate[i + 6] * rtU.Bfield_body[2]) /
+    rtb_Gain_1 = ((rtConstB.VectorConcatenate[i + 3] * rtU.magneticfield[1] +
+                   rtConstB.VectorConcatenate[i] * rtU.magneticfield[0]) +
+                  rtConstB.VectorConcatenate[i + 6] * rtU.magneticfield[2]) /
       rtb_Product7;
 
     // DotProduct: '<S9>/Dot Product6'
@@ -225,17 +225,17 @@ void StarshotACSModelClass::step()
     rtb_Gain8_idx_1 += rtU.w[i] * rtU.w[i];
 
     // DotProduct: '<S14>/Dot Product6' incorporates:
-    //   Inport: '<Root>/Bfield_body'
+    //   Inport: '<Root>/magneticfield'
 
-    rtb_Gain_3 += rtU.Bfield_body[i] * rtU.Bfield_body[i];
+    rtb_Gain_3 += rtU.magneticfield[i] * rtU.magneticfield[i];
 
     // Product: '<S3>/Product6' incorporates:
-    //   Inport: '<Root>/Bfield_body'
+    //   Inport: '<Root>/magneticfield'
     //   Inport: '<Root>/angularvelocity'
     //   Product: '<S11>/Product3'
     //   Product: '<S3>/Product4'
 
-    rtb_Gain[i] = rtU.w[i] * rtU.Bfield_body[i];
+    rtb_Gain[i] = rtU.w[i] * rtU.magneticfield[i];
   }
 
   // Sqrt: '<S9>/Sqrt4' incorporates:

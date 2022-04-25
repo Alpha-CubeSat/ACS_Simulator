@@ -73,7 +73,8 @@ typedef struct
 // External outputs (root outports fed by signals with default storage)
 typedef struct
 {
-  real_T angularvelocity[3]; // '<Root>/angular velocity'
+  //real_T angularvelocity[3]; // '<Root>/angular velocity'
+  real_T w[3];
   real_T magneticfield[3];   // '<Root>/magnetic field'
   real_T xyzposition[3];     // '<Root>/xyzposition'
   real_T quaternion[4];      // '<Root>/quaternion'

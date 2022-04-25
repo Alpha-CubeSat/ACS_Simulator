@@ -654,9 +654,9 @@ void Plantv50ModelClass::step(float step_size)
   //   DiscreteIntegrator: '<S1>/Discrete-Time Integrator1'
   //   DiscreteIntegrator: '<S1>/Discrete-Time Integrator2'
 
-  rtY.angularvelocity[0] = rtDW.DiscreteTimeIntegrator_DSTATE;
-  rtY.angularvelocity[1] = rtDW.DiscreteTimeIntegrator1_DSTAT_l;
-  rtY.angularvelocity[2] = rtDW.DiscreteTimeIntegrator2_DSTATE;
+  rtY.w[0] = rtDW.DiscreteTimeIntegrator_DSTATE;
+  rtY.w[1] = rtDW.DiscreteTimeIntegrator1_DSTAT_l;
+  rtY.w[2] = rtDW.DiscreteTimeIntegrator2_DSTATE;
 
   // Outputs for Atomic SubSystem: '<S1>/Dynamics'
   for (i = 0; i < 3; i++)

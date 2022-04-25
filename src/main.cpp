@@ -84,9 +84,9 @@ void loop()
 
   if (detumbling)
   {
-    plantObj.rtU.current[0] = starshotObj.rtY.detumble[0];
-    plantObj.rtU.current[1] = starshotObj.rtY.detumble[1];
-    plantObj.rtU.current[2] = starshotObj.rtY.detumble[2];
+    //plantObj.rtU.current[0] = starshotObj.rtY.current[0];
+    //plantObj.rtU.current[1] = starshotObj.rtY.current[1];
+    //plantObj.rtU.current[2] = starshotObj.rtY.current[2];
   }
   else
   {
@@ -109,14 +109,14 @@ void loop()
       Serial.print(",");
       Serial.print(starshotObj.rtU.w[2]);
       Serial.print(",");
-      //Serial.print(plantObj.rtU.current[0]);
-      Serial.print(starshotObj.rtY.detumble[0]);
+      Serial.print(starshotObj.rtY.current[0]);
+      //Serial.print(starshotObj.rtY.detumble[0]);
       Serial.print(",");
-      Serial.print(starshotObj.rtY.detumble[1]);
-      //Serial.print(plantObj.rtU.current[1]);
+      //Serial.print(starshotObj.rtY.detumble[1]);
+      Serial.print(starshotObj.rtY.current[1]);
       Serial.print(",");
-      Serial.println(starshotObj.rtY.detumble[2]);
-      //Serial.println(plantObj.rtU.current[2]);
+      //Serial.println(starshotObj.rtY.detumble[2]);
+      Serial.println(starshotObj.rtY.current[2]);
     }
     else
     {

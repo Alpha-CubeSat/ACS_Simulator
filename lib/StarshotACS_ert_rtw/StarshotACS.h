@@ -65,7 +65,8 @@ struct ExtU {
 
 // External outputs (root outports fed by signals with default storage)
 struct ExtY {
-  real_T detumble[3];                  // '<Root>/detumble'
+  real_T detumble[3];
+  real_T current[3];                  // '<Root>/detumble'
   real_T point[3];                     // '<Root>/point'
 };
 
@@ -98,7 +99,7 @@ class StarshotACSModelClass
   double damperc;
   double Id;
   //memory for magnetorquer ampfactor calcs
-  double current;
+  double maximum_current;
   double m_max;
 
   // model initialize function

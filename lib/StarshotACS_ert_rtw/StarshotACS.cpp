@@ -387,39 +387,48 @@ void StarshotACSModelClass::step()
   //3.375 = starshot.magnetorq.m_max_x/(starshot.magnetorque.A*starshot.magnetorq.n)
   //-3.375 = -^^^
   // Saturate: '<S2>/Saturation3'
-  if (rtb_Saturation3 > current) {
+  if (rtb_Saturation3 > maximum_current) {
     // Outport: '<Root>/detumble'
-    rtY.detumble[0] = current;
-  } else if (rtb_Saturation3 < -current) {
+    rtY.detumble[0] = maximum_current;
+    rtY.current[0] = rtY.detumble[0];
+  } else if (rtb_Saturation3 < -maximum_current) {
     // Outport: '<Root>/detumble'
-    rtY.detumble[0] = -current;
+    rtY.detumble[0] = -maximum_current;
+    rtY.current[0] = rtY.detumble[0];
   } else {
     // Outport: '<Root>/detumble'
     rtY.detumble[0] = rtb_Saturation3;
+    rtY.current[0] = rtY.detumble[0];
   }
 
   // Saturate: '<S2>/Saturation4'
-  if (rtb_Gain8_idx_2 > current) {
+  if (rtb_Gain8_idx_2 > maximum_current) {
     // Outport: '<Root>/detumble'
-    rtY.detumble[1] = current;
-  } else if (rtb_Gain8_idx_2 < -current) {
+    rtY.detumble[1] = maximum_current;
+    rtY.current[1] = rtY.detumble[1];
+  } else if (rtb_Gain8_idx_2 < -maximum_current) {
     // Outport: '<Root>/detumble'
-    rtY.detumble[1] = -current;
+    rtY.detumble[1] = -maximum_current;
+    rtY.current[1] = rtY.detumble[1];
   } else {
     // Outport: '<Root>/detumble'
     rtY.detumble[1] = rtb_Gain8_idx_2;
+    rtY.current[1] = rtY.detumble[1];
   }
 
   // Saturate: '<S2>/Saturation5'
-  if (rtb_Gain8_idx_0 > current) {
+  if (rtb_Gain8_idx_0 > maximum_current) {
     // Outport: '<Root>/detumble'
-    rtY.detumble[2] = current;
-  } else if (rtb_Gain8_idx_0 < -current) {
+    rtY.detumble[2] = maximum_current;
+    rtY.current[2] = rtY.detumble[2];
+  } else if (rtb_Gain8_idx_0 < -maximum_current) {
     // Outport: '<Root>/detumble'
-    rtY.detumble[2] = -current;
+    rtY.detumble[2] = -maximum_current;
+    rtY.current[2] = rtY.detumble[2];
   } else {
     // Outport: '<Root>/detumble'
     rtY.detumble[2] = rtb_Gain8_idx_0;
+    rtY.current[2] = rtY.detumble[2];
   }
 
   // Outport: '<Root>/point' incorporates:
@@ -430,12 +439,12 @@ void StarshotACSModelClass::step()
   rtY.point[1] = 0.0;
 
   // Saturate: '<S3>/Saturation5'
-  if (rtb_Gain[2] >  current) {
+  if (rtb_Gain[2] >  maximum_current) {
     // Outport: '<Root>/point'
-    rtY.point[2] =  current;
-  } else if (rtb_Gain[2] < -current) {
+    rtY.point[2] =  maximum_current;
+  } else if (rtb_Gain[2] < -maximum_current) {
     // Outport: '<Root>/point'
-    rtY.point[2] = -current;
+    rtY.point[2] = -maximum_current;
   } else {
     // Outport: '<Root>/point'
     rtY.point[2] = rtb_Gain[2];
@@ -462,7 +471,7 @@ void StarshotACSModelClass::initialize(double kane_damper_c, double kaneId, doub
   //initialize inclusion of ampfactor 
   m_max = ampfactor * max_current * csarea * no_loops;
   //
-  current = m_max/(csarea*no_loops*ampfactor);
+  maximum_current = m_max/(csarea*no_loops*ampfactor);
   // End of SystemInitialize for SubSystem: '<Root>/StarshotACS'
 }
 

@@ -109,11 +109,14 @@ void loop()
       Serial.print(",");
       Serial.print(starshotObj.rtU.w[2]);
       Serial.print(",");
-      Serial.print(plantObj.rtU.current[0]);
+      //Serial.print(plantObj.rtU.current[0]);
+      Serial.print(starshotObj.rtY.detumble[0]);
       Serial.print(",");
-      Serial.print(plantObj.rtU.current[1]);
+      Serial.print(starshotObj.rtY.detumble[1]);
+      //Serial.print(plantObj.rtU.current[1]);
       Serial.print(",");
-      Serial.println(plantObj.rtU.current[2]);
+      Serial.println(starshotObj.rtY.detumble[2]);
+      //Serial.println(plantObj.rtU.current[2]);
     }
     else
     {

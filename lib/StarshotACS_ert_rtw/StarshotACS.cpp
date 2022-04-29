@@ -323,7 +323,7 @@ void StarshotACSModelClass::step()
 
   for (i = 0; i < 9; i++) {
     rtb_VectorConcatenate_0[i] = rtb_VectorConcatenate[i] +
-      rtConstP.Identitymatrix_Value[i];
+      rtConstPacs.Identitymatrix_Value[i];
   }
 
   // End of Sum: '<S2>/Sum10'

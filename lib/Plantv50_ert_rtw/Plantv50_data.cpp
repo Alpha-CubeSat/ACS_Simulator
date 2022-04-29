@@ -7,12 +7,12 @@
 //
 // Code generated for Simulink model 'Plantv50'.
 //
-// Model version                  : 1.79
-// Simulink Coder version         : 9.1 (R2019a) 23-Nov-2018
-// C/C++ source code generated on : Sat Oct 23 11:25:08 2021
+// Model version                  : 10.27
+// Simulink Coder version         : 9.6 (R2021b) 14-May-2021
+// C/C++ source code generated on : Fri Apr 29 03:44:30 2022
 //
 // Target selection: ert.tlc
-// Embedded hardware selection: ARM Compatible->ARM Cortex
+// Embedded hardware selection: ARM Compatible->ARM Cortex-M
 // Code generation objectives:
 //    1. Execution efficiency
 //    2. RAM efficiency
@@ -36,8 +36,10 @@ const ConstPPlant rtConstPPlant = {
     15.198640692914713, 509.7551984404119, -0.23833959751184652,
     -0.57518202338311786, -0.23833959751184652, 488.52705332800241 },
 
-  // Expression: eye(3,3)
-  //  Referenced by: '<S7>/Matrix Gain'
+  // Pooled Parameter (Expression: eye(3,3))
+  //  Referenced by:
+  //    '<S7>/Matrix Gain'
+  //    '<S8>/Matrix Gain'
 
   { 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0 }
 };

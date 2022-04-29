@@ -79,7 +79,7 @@ struct tag_RTM {
 extern const ConstB rtConstB;          // constant block i/o
 
 // Constant parameters (default storage)
-extern const ConstP rtConstP;
+extern const ConstP rtConstPacs;
 
 // Class declaration for model StarshotACS
 class StarshotACSModelClass

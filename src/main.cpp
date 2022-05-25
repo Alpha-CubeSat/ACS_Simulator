@@ -129,12 +129,12 @@ void loop()
     plantObj.step(plantsim_step_size / 1000);
   }
 
-  starshotObj.rtU.w[0] = plantObj.rtY.angularvelocity[0];
-  starshotObj.rtU.w[1] = plantObj.rtY.angularvelocity[1];
-  starshotObj.rtU.w[2] = plantObj.rtY.angularvelocity[2];
-  starshotObj.rtU.Bfield_body[0] = plantObj.rtY.magneticfield[0];
-  starshotObj.rtU.Bfield_body[1] = plantObj.rtY.magneticfield[1];
-  starshotObj.rtU.Bfield_body[2] = plantObj.rtY.magneticfield[2];
+  starshotObj.rtU.w[0] = plantObj.rtY.w[0];
+  starshotObj.rtU.w[1] = plantObj.rtY.w[1];
+  starshotObj.rtU.w[2] = plantObj.rtY.w[2];
+  starshotObj.rtU.magneticfield[0] = plantObj.rtY.magneticfield[0];
+  starshotObj.rtU.magneticfield[1] = plantObj.rtY.magneticfield[1];
+  starshotObj.rtU.magneticfield[2] = plantObj.rtY.magneticfield[2];
 
   iteration++;
 

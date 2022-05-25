@@ -7,12 +7,12 @@
 //
 // Code generated for Simulink model 'StarshotACS'.
 //
-// Model version                  : 1.77
-// Simulink Coder version         : 9.1 (R2019a) 23-Nov-2018
-// C/C++ source code generated on : Sat Oct 23 12:00:04 2021
+// Model version                  : 10.26
+// Simulink Coder version         : 9.6 (R2021b) 14-May-2021
+// C/C++ source code generated on : Sun Apr 24 23:28:07 2022
 //
 // Target selection: ert.tlc
-// Embedded hardware selection: ARM Compatible->ARM Cortex
+// Embedded hardware selection: ARM Compatible->ARM Cortex-M
 // Code generation objectives:
 //    1. Execution efficiency
 //    2. RAM efficiency
@@ -49,3 +49,4 @@ const ConstP rtConstP = {
 //
 // [EOF]
 //
+

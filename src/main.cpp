@@ -84,9 +84,9 @@ void loop()
 
   if (detumbling)
   {
-    //plantObj.rtU.current[0] = starshotObj.rtY.current[0];
-    //plantObj.rtU.current[1] = starshotObj.rtY.current[1];
-    //plantObj.rtU.current[2] = starshotObj.rtY.current[2];
+    plantObj.rtU.current[0] = starshotObj.rtY.detumble[0];
+    plantObj.rtU.current[1] = starshotObj.rtY.detumble[1];
+    plantObj.rtU.current[2] = starshotObj.rtY.detumble[2];
   }
   else
   {
@@ -103,20 +103,20 @@ void loop()
 
     if (detumbling)
     {
-      Serial.print(starshotObj.rtU.w[0]);
+      Serial.print(plantObj.rtY.angularvelocity[0]);
       Serial.print(",");
-      Serial.print(starshotObj.rtU.w[1]);
+      Serial.print(plantObj.rtY.angularvelocity[1]);
       Serial.print(",");
-      Serial.print(starshotObj.rtU.w[2]);
+      Serial.print(plantObj.rtY.angularvelocity[2]);
       Serial.print(",");
-      Serial.print(starshotObj.rtY.current[0]);
+      Serial.print(starshotObj.rtY.detumble[0]);
       //Serial.print(starshotObj.rtY.detumble[0]);
       Serial.print(",");
       //Serial.print(starshotObj.rtY.detumble[1]);
-      Serial.print(starshotObj.rtY.current[1]);
+      Serial.print(starshotObj.rtY.detumble[1]);
       Serial.print(",");
       //Serial.println(starshotObj.rtY.detumble[2]);
-      Serial.println(starshotObj.rtY.current[2]);
+      Serial.println(starshotObj.rtY.detumble[2]);
     }
     else
     {
@@ -129,9 +129,9 @@ void loop()
     plantObj.step(plantsim_step_size / 1000);
   }
 
-  starshotObj.rtU.w[0] = plantObj.rtY.w[0];
-  starshotObj.rtU.w[1] = plantObj.rtY.w[1];
-  starshotObj.rtU.w[2] = plantObj.rtY.w[2];
+  starshotObj.rtU.w[0] = plantObj.rtY.angularvelocity[0];
+  starshotObj.rtU.w[1] = plantObj.rtY.angularvelocity[1];
+  starshotObj.rtU.w[2] = plantObj.rtY.angularvelocity[2];
   starshotObj.rtU.magneticfield[0] = plantObj.rtY.magneticfield[0];
   starshotObj.rtU.magneticfield[1] = plantObj.rtY.magneticfield[1];
   starshotObj.rtU.magneticfield[2] = plantObj.rtY.magneticfield[2];

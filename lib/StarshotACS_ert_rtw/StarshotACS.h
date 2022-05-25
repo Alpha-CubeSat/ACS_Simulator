@@ -60,13 +60,13 @@ struct ConstP {
 // External inputs (root inport signals with default storage)
 struct ExtU {
   real_T w[3];                         // '<Root>/angularvelocity'
-  real_T Bfield_body[3];               // '<Root>/Bfield_body'
+  //real_T Bfield_body[3];               // '<Root>/Bfield_body'
+  real_T magneticfield[3];
 };
 
 // External outputs (root outports fed by signals with default storage)
 struct ExtY {
-  real_T detumble[3];
-  real_T current[3];                  // '<Root>/detumble'
+  real_T detumble[3];              // '<Root>/detumble'
   real_T point[3];                     // '<Root>/point'
 };
 

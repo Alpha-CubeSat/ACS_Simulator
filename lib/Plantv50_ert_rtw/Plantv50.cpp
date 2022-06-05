@@ -723,7 +723,7 @@ void Plantv50ModelClass::step(float step_size)
 }
 
 // Model initialize function
-void Plantv50ModelClass::initialize(float DiscreteTimeIntegrator_DSTATE, float DiscreteTimeIntegrator1_DSTAT_l, float DiscreteTimeIntegrator2_DSTATE, float quat0, float quat1, float quat2, float quat3)
+void Plantv50ModelClass::initialize(float DiscreteTimeIntegrator_DSTATE, float DiscreteTimeIntegrator1_DSTAT_l, float DiscreteTimeIntegrator2_DSTATE, float quat0, float quat1, float quat2, float quat3,float altitude, float inclination)
 {
   // Registration code
 
@@ -748,10 +748,10 @@ void Plantv50ModelClass::initialize(float DiscreteTimeIntegrator_DSTATE, float D
 
   // SystemInitialize for Atomic SubSystem: '<S1>/Tranlational Dynamics'
   // InitializeConditions for DiscreteIntegrator: '<S6>/Discrete-Time Integrator1' 
-  rtDW.DiscreteTimeIntegrator1_DSTA_ls = 4765.8149782460468;
+  rtDW.DiscreteTimeIntegrator1_DSTA_ls = (sqrt(398600/(6371+altitude))*1000)/sqrt(1+pow(tan(inclination),2));//4765.8149782460468;
 
   // InitializeConditions for DiscreteIntegrator: '<S6>/Discrete-Time Integrator3' 
-  rtDW.DiscreteTimeIntegrator3_DSTATE = 6012.9620291059346;
+  rtDW.DiscreteTimeIntegrator3_DSTATE = tan(inclination)*(sqrt(398600/(6371+altitude))*1000)/sqrt(1+pow(tan(inclination),2));//6012.9620291059346;
 
   // InitializeConditions for DiscreteIntegrator: '<S6>/Discrete-Time Integrator4' 
   rtDW.DiscreteTimeIntegrator4_DSTATE = 6.771E+6;

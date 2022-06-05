@@ -69,12 +69,12 @@ void setup()
   if (detumbling)
   {
     //plantObj.initialize(0.06, -0.05, 0.07, get_quat0(alpha_angle), 0.0, 0.0, get_quat3(alpha_angle), altitude,inclination,csarea,num_loops,ampfactor);
-    plantObj.initialize(0.06,-0.05,0.07,get_quat0(alpha_angle),0.0,0.0,get_quat3(alpha_angle));
+    plantObj.initialize(0.06,-0.05,0.07,get_quat0(alpha_angle),0.0,0.0,get_quat3(alpha_angle),altitude,inclination);
   }
   else
   {
     //plantObj.initialize(0.0, 0.0, 1.0, get_quat0(alpha_angle), 0.0, 0.0, get_quat3(alpha_angle),altitude, inclination,csarea,num_loops,ampfactor);
-    plantObj.initialize(0.0, 0.0, 1.0, get_quat0(alpha_angle), 0.0, 0.0, get_quat3(alpha_angle));
+    plantObj.initialize(0.0, 0.0, 1.0, get_quat0(alpha_angle), 0.0, 0.0, get_quat3(alpha_angle),altitude,inclination);
   }
 
   //starshotObj.initialize(kane_damper_c, kane_Id, ampfactor, csarea, num_loops, wdx, wdy, wdz);

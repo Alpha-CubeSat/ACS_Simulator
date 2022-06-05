@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'Plantv50'.
 //
-// Model version                  : 10.27
+// Model version                  : 10.28
 // Simulink Coder version         : 9.6 (R2021b) 14-May-2021
-// C/C++ source code generated on : Fri Apr 29 03:44:30 2022
+// C/C++ source code generated on : Sun Jun  5 03:42:49 2022
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: ARM Compatible->ARM Cortex-M
@@ -361,10 +361,9 @@ void Plantv50ModelClass::step(float step_size)
   // Gain: '<S1>/Gain' incorporates:
   //   Inport: '<Root>/current'
 
-   rtb_Product_j[0] = Area * loops * MagtorqAmpFac * rtU.current[0];
-  rtb_Product_j[1] = Area * loops * MagtorqAmpFac * rtU.current[1];
-  rtb_Product_j[2] = Area * loops * MagtorqAmpFac * rtU.current[2];
-
+  rtb_Product_j[0] = 0.27 * rtU.current[0];
+  rtb_Product_j[1] = 0.27 * rtU.current[1];
+  rtb_Product_j[2] = 0.27 * rtU.current[2];
 
   // DotProduct: '<S11>/Dot Product' incorporates:
   //   DiscreteIntegrator: '<S5>/Discrete-Time Integrator1'
@@ -724,7 +723,7 @@ void Plantv50ModelClass::step(float step_size)
 }
 
 // Model initialize function
-void Plantv50ModelClass::initialize(float DiscreteTimeIntegrator_DSTATE, float DiscreteTimeIntegrator1_DSTAT_l, float DiscreteTimeIntegrator2_DSTATE, float quat0, float quat1, float quat2, float quat3, float altitude, float Inclination,float csarea,float num_loops,float ampFactor)
+void Plantv50ModelClass::initialize(float DiscreteTimeIntegrator_DSTATE, float DiscreteTimeIntegrator1_DSTAT_l, float DiscreteTimeIntegrator2_DSTATE, float quat0, float quat1, float quat2, float quat3)
 {
   // Registration code
 
@@ -738,28 +737,25 @@ void Plantv50ModelClass::initialize(float DiscreteTimeIntegrator_DSTATE, float D
   rtDW.DiscreteTimeIntegrator1_DSTATE[2] = quat2;
   rtDW.DiscreteTimeIntegrator1_DSTATE[3] = quat3;
 
-  // InitializeConditions for DiscreteIntegrator: '<S1>/Discrete-Time Integrator'
+  // InitializeConditions for DiscreteIntegrator: '<S1>/Discrete-Time Integrator' 
   rtDW.DiscreteTimeIntegrator_DSTATE = DiscreteTimeIntegrator_DSTATE;
 
-  // InitializeConditions for DiscreteIntegrator: '<S1>/Discrete-Time Integrator1'
+  // InitializeConditions for DiscreteIntegrator: '<S1>/Discrete-Time Integrator1' 
   rtDW.DiscreteTimeIntegrator1_DSTAT_l = DiscreteTimeIntegrator1_DSTAT_l;
 
-  // InitializeConditions for DiscreteIntegrator: '<S1>/Discrete-Time Integrator2'
+  // InitializeConditions for DiscreteIntegrator: '<S1>/Discrete-Time Integrator2' 
   rtDW.DiscreteTimeIntegrator2_DSTATE = DiscreteTimeIntegrator2_DSTATE;
 
   // SystemInitialize for Atomic SubSystem: '<S1>/Tranlational Dynamics'
   // InitializeConditions for DiscreteIntegrator: '<S6>/Discrete-Time Integrator1' 
-   rtDW.DiscreteTimeIntegrator1_DSTA_ls = (sqrt(398600/(6371+altitude))*1000)/sqrt(1+pow(tan(Inclination),2));//4748.3154149357551;
+  rtDW.DiscreteTimeIntegrator1_DSTA_ls = 4765.8149782460468;
 
-  // InitializeConditions for DiscreteIntegrator: '<S6>/Discrete-Time Integrator3'
-  //below is starshot.IC>zdot
-  rtDW.DiscreteTimeIntegrator3_DSTATE = tan(Inclination)*(sqrt(398600/(6371+altitude))*1000)/sqrt(1+pow(tan(Inclination),2));//5990.8830750989018;
+  // InitializeConditions for DiscreteIntegrator: '<S6>/Discrete-Time Integrator3' 
+  rtDW.DiscreteTimeIntegrator3_DSTATE = 6012.9620291059346;
 
-  // InitializeConditions for DiscreteIntegrator: '<S6>/Discrete-Time Integrator4'
-  rtDW.DiscreteTimeIntegrator4_DSTATE = 450000.0;
-  Area = csarea;
-  loops = num_loops;
-  MagtorqAmpFac = ampFactor;
+  // InitializeConditions for DiscreteIntegrator: '<S6>/Discrete-Time Integrator4' 
+  rtDW.DiscreteTimeIntegrator4_DSTATE = 6.771E+6;
+
   // End of SystemInitialize for SubSystem: '<S1>/Tranlational Dynamics'
   // End of SystemInitialize for SubSystem: '<Root>/Plantv5'
 }
@@ -791,4 +787,3 @@ RT_MODELPlant * Plantv50ModelClass::getRTM()
 //
 // [EOF]
 //
-

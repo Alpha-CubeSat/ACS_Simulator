@@ -32,7 +32,7 @@ double csarea = 4E-5;
 
 double num_loops = 500;
 
-double max_current = 0.25;
+//double max_current = 0.25;
 //
 //Altitude of orbit in km
 float altitude = 400;
@@ -68,14 +68,17 @@ void setup()
   // sqrt(x^2 + y^2 + z^2) < 5 degrees
   if (detumbling)
   {
-    plantObj.initialize(0.06, -0.05, 0.07, get_quat0(alpha_angle), 0.0, 0.0, get_quat3(alpha_angle), altitude,inclination,csarea,num_loops,ampfactor);
+    //plantObj.initialize(0.06, -0.05, 0.07, get_quat0(alpha_angle), 0.0, 0.0, get_quat3(alpha_angle), altitude,inclination,csarea,num_loops,ampfactor);
+    plantObj.initialize(0.06,-0.05,0.07,get_quat0(alpha_angle),0.0,0.0,get_quat3(alpha_angle));
   }
   else
   {
-    plantObj.initialize(0.0, 0.0, 1.0, get_quat0(alpha_angle), 0.0, 0.0, get_quat3(alpha_angle),altitude, inclination,csarea,num_loops,ampfactor);
+    //plantObj.initialize(0.0, 0.0, 1.0, get_quat0(alpha_angle), 0.0, 0.0, get_quat3(alpha_angle),altitude, inclination,csarea,num_loops,ampfactor);
+    plantObj.initialize(0.0, 0.0, 1.0, get_quat0(alpha_angle), 0.0, 0.0, get_quat3(alpha_angle));
   }
 
-  starshotObj.initialize(kane_damper_c, kane_Id, ampfactor, csarea, num_loops, max_current, wdx, wdy, wdz);
+  //starshotObj.initialize(kane_damper_c, kane_Id, ampfactor, csarea, num_loops, wdx, wdy, wdz);
+  starshotObj.initialize();
   delay(10000);
 }
 

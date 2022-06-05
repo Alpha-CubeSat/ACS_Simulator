@@ -1,4 +1,3 @@
-
 //
 // Academic License - for use in teaching, academic research, and meeting
 // course requirements at degree granting institutions only.  Not for
@@ -8,9 +7,9 @@
 //
 // Code generated for Simulink model 'Plantv50'.
 //
-// Model version                  : 10.27
+// Model version                  : 10.28
 // Simulink Coder version         : 9.6 (R2021b) 14-May-2021
-// C/C++ source code generated on : Fri Apr 29 03:44:30 2022
+// C/C++ source code generated on : Sun Jun  5 03:42:49 2022
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: ARM Compatible->ARM Cortex-M

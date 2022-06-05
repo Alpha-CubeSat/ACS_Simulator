@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'StarshotACS'.
 //
-// Model version                  : 10.15
+// Model version                  : 10.28
 // Simulink Coder version         : 9.6 (R2021b) 14-May-2021
-// C/C++ source code generated on : Fri Mar 25 14:36:39 2022
+// C/C++ source code generated on : Sun Jun  5 03:57:16 2022
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: ARM Compatible->ARM Cortex-M
@@ -50,7 +50,7 @@ struct ConstB {
 };
 
 // Constant parameters (default storage)
-struct ConstP {
+struct ConstPacs {
   // Expression: [1 0 0;0 1 0;0 0 1]
   //  Referenced by: '<S2>/Identity matrix'
 
@@ -60,13 +60,12 @@ struct ConstP {
 // External inputs (root inport signals with default storage)
 struct ExtU {
   real_T w[3];                         // '<Root>/angularvelocity'
-  //real_T Bfield_body[3];               // '<Root>/Bfield_body'
-  real_T magneticfield[3];
+  real_T magneticfield[3];               // '<Root>/Bfield_body'
 };
 
 // External outputs (root outports fed by signals with default storage)
 struct ExtY {
-  real_T detumble[3];              // '<Root>/detumble'
+  real_T detumble[3];                  // '<Root>/detumble'
   real_T point[3];                     // '<Root>/point'
 };
 
@@ -78,14 +77,14 @@ struct tag_RTM {
 extern const ConstB rtConstB;          // constant block i/o
 
 // Constant parameters (default storage)
-extern const ConstP rtConstPacs;
+extern const ConstPacs rtConstPacs;
 
 // Class declaration for model StarshotACS
 class StarshotACSModelClass
 {
   // public data and function members
  public:
-  real_T pointing_error;
+ real_T pointing_error;
   // Real-Time Model get method
   RT_MODEL * getRTM();
 
@@ -95,15 +94,8 @@ class StarshotACSModelClass
   // External outputs
   ExtY rtY;
 
-  // allocation of memory for kane damper control parameters c and Id
-  double damperc;
-  double Id;
-  //memory for magnetorquer ampfactor calcs
-  double maximum_current;
-  double m_max;
-
   // model initialize function
-  void initialize(double kane_damper_c, double kaneId, double ampfactor,double csarea,double no_loops,double max_current,double wdx,double wdy,double wdz);
+  void initialize();
 
   // model step function
   void step();
@@ -127,6 +119,7 @@ class StarshotACSModelClass
 //  These blocks were eliminated from the model due to optimizations:
 //
 //  Block '<S5>/Data Type Duplicate' : Unused code path elimination
+//  Block '<S2>/Scope' : Unused code path elimination
 //  Block '<S2>/To Workspace' : Unused code path elimination
 //  Block '<S7>/Data Type Duplicate' : Unused code path elimination
 //  Block '<S2>/Gain 1' : Eliminated nontunable gain of 1

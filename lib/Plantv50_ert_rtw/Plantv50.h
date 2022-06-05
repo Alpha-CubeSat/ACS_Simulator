@@ -1,4 +1,3 @@
-
 //
 // Academic License - for use in teaching, academic research, and meeting
 // course requirements at degree granting institutions only.  Not for
@@ -8,9 +7,9 @@
 //
 // Code generated for Simulink model 'Plantv50'.
 //
-// Model version                  : 10.27
+// Model version                  : 10.28
 // Simulink Coder version         : 9.6 (R2021b) 14-May-2021
-// C/C++ source code generated on : Fri Apr 29 03:44:30 2022
+// C/C++ source code generated on : Sun Jun  5 03:42:49 2022
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: ARM Compatible->ARM Cortex-M
@@ -74,12 +73,12 @@ struct ConstPPlant {
 };
 
 // External inputs (root inport signals with default storage)
-struct ExtUPlant {
+struct ExtUplant {
   real_T current[3];                   // '<Root>/current'
 };
 
 // External outputs (root outports fed by signals with default storage)
-struct ExtYPlant {
+struct ExtYplant {
   real_T angularvelocity[3];           // '<Root>/angular velocity'
   real_T magneticfield[3];             // '<Root>/magnetic field'
   real_T xyzposition[3];               // '<Root>/xyzposition'
@@ -147,18 +146,15 @@ extern "C" {
   RT_MODELPlant * getRTM();
 
   // External inputs
-  ExtUPlant rtU;
+  ExtUplant rtU;
 
   // External outputs
-  ExtYPlant rtY;
+  ExtYplant rtY;
 
   // model initialize function
-   void initialize(float DiscreteTimeIntegrator_DSTATE, float DiscreteTimeIntegrator1_DSTAT_l, float DiscreteTimeIntegrator2_DSTATE, float quat0, float quat1, float quat2, float quat3, float altitude, float Inclination,float csarea,float num_loops,float ampFactor);
-  float Area;
-  float loops;
-  float MagtorqAmpFac;
+  void initialize(float DiscreteTimeIntegrator_DSTATE, float DiscreteTimeIntegrator1_DSTAT_l, float DiscreteTimeIntegrator2_DSTATE, float quat0, float quat1, float quat2, float quat3);
+
   // model step function
-   // model step function
   void step(float step_size);
 
   // Constructor

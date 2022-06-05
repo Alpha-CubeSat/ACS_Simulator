@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'StarshotACS'.
 //
-// Model version                  : 10.15
+// Model version                  : 10.28
 // Simulink Coder version         : 9.6 (R2021b) 14-May-2021
-// C/C++ source code generated on : Fri Mar 25 14:36:39 2022
+// C/C++ source code generated on : Sun Jun  5 03:57:16 2022
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: ARM Compatible->ARM Cortex-M
@@ -43,14 +43,13 @@ void StarshotACSModelClass::step()
   real_T rtb_TrigonometricFunction5;
   int32_T i;
   int32_T tmp;
-  // DEFINE c VALUE for KANE DAMPER VISCOSITY (STARSHOT CONTROLLER)
-  //double kane_damper_c = 1.01563E-5;
+
   // Outputs for Atomic SubSystem: '<Root>/StarshotACS'
   // Gain: '<S2>/Kane damping' incorporates:
   //   DiscreteIntegrator: '<S2>/Discrete-Time Integrator'
   //   Gain: '<S2>/Gain 2'
 
-  rtb_Gain8_idx_0 = damperc * -rtDW.DiscreteTimeIntegrator_DSTATE[0];
+  rtb_Gain8_idx_0 = 1.0E-5 * -rtDW.DiscreteTimeIntegrator_DSTATE[0];
 
   // Gain: '<S2>/Gain 2' incorporates:
   //   DiscreteIntegrator: '<S2>/Discrete-Time Integrator'
@@ -61,7 +60,7 @@ void StarshotACSModelClass::step()
   //   DiscreteIntegrator: '<S2>/Discrete-Time Integrator'
   //   Gain: '<S2>/Gain 2'
 
-  rtb_Gain8_idx_1 = damperc * -rtDW.DiscreteTimeIntegrator_DSTATE[1];
+  rtb_Gain8_idx_1 = 1.0E-5 * -rtDW.DiscreteTimeIntegrator_DSTATE[1];
 
   // Gain: '<S2>/Gain 2' incorporates:
   //   DiscreteIntegrator: '<S2>/Discrete-Time Integrator'
@@ -73,7 +72,7 @@ void StarshotACSModelClass::step()
   //   DiscreteIntegrator: '<S2>/Discrete-Time Integrator'
   //   Gain: '<S2>/Gain 2'
 
-  rtb_Gain8_idx_2 = damperc * -rtDW.DiscreteTimeIntegrator_DSTATE[2];
+  rtb_Gain8_idx_2 = 1.0E-5 * -rtDW.DiscreteTimeIntegrator_DSTATE[2];
 
   // S-Function (sdsp2norm2): '<S2>/Normalization' incorporates:
   //   DotProduct: '<S8>/Dot Product6'
@@ -111,7 +110,7 @@ void StarshotACSModelClass::step()
   rtb_VectorConcatenate[8] = 0.0;
 
   // S-Function (sdsp2norm2): '<S2>/Normalization' incorporates:
-  //   Inport: '<Root>/magneticfield'
+  //   Inport: '<Root>/Bfield_body'
 
   rtb_Gain[0] = rtU.magneticfield[0] * rtb_Saturation3;
 
@@ -124,7 +123,7 @@ void StarshotACSModelClass::step()
   rtb_TSamp[0] = rtU.w[0] * 1000.0;
 
   // S-Function (sdsp2norm2): '<S2>/Normalization' incorporates:
-  //   Inport: '<Root>/magneticfield'
+  //   Inport: '<Root>/Bfield_body'
 
   rtb_Gain[1] = rtU.magneticfield[1] * rtb_Saturation3;
 
@@ -137,7 +136,7 @@ void StarshotACSModelClass::step()
   rtb_TSamp[1] = rtU.w[1] * 1000.0;
 
   // S-Function (sdsp2norm2): '<S2>/Normalization' incorporates:
-  //   Inport: '<Root>/magneticfield'
+  //   Inport: '<Root>/Bfield_body'
 
   rtb_Gain[2] = rtU.magneticfield[2] * rtb_Saturation3;
 
@@ -208,7 +207,7 @@ void StarshotACSModelClass::step()
   for (i = 0; i < 3; i++) {
     // Product: '<S3>/Product6' incorporates:
     //   Concatenate: '<S10>/Vector Concatenate'
-    //   Inport: '<Root>/magneticfield'
+    //   Inport: '<Root>/Bfield_body'
     //   Product: '<S3>/Product4'
 
     rtb_Gain_1 = ((rtConstB.VectorConcatenate[i + 3] * rtU.magneticfield[1] +
@@ -225,12 +224,12 @@ void StarshotACSModelClass::step()
     rtb_Gain8_idx_1 += rtU.w[i] * rtU.w[i];
 
     // DotProduct: '<S14>/Dot Product6' incorporates:
-    //   Inport: '<Root>/magneticfield'
+    //   Inport: '<Root>/Bfield_body'
 
     rtb_Gain_3 += rtU.magneticfield[i] * rtU.magneticfield[i];
 
     // Product: '<S3>/Product6' incorporates:
-    //   Inport: '<Root>/magneticfield'
+    //   Inport: '<Root>/Bfield_body'
     //   Inport: '<Root>/angularvelocity'
     //   Product: '<S11>/Product3'
     //   Product: '<S3>/Product4'
@@ -250,9 +249,8 @@ void StarshotACSModelClass::step()
     rtb_Gain_0 = -1.0;
   }
 
-  //should go to 0
-  pointing_error = std::asin(rtb_Gain8_idx_1);
   rtb_TrigonometricFunction5 = std::asin(rtb_Gain_0);
+  pointing_error = rtb_TrigonometricFunction5;
 
   // End of Trigonometry: '<S3>/Trigonometric Function5'
 
@@ -353,20 +351,12 @@ void StarshotACSModelClass::step()
     //  Block description for '<S5>/UD':
     //
     //   Store in Global RAM
-    // 
-    // THIS IS THE Id VALUE for controller
-    //double Id;
-    //Id = 0.1960;
-    double inv_ID;
-    inv_ID = 1.00/Id;
-    // back to autocode
-     
+
     rtDW.DiscreteTimeIntegrator_DSTATE[i] += ((0.0 - (rtb_Gain_0 -
-      rtDW.UD_DSTATE[i])) - ((inv_ID * -rtb_Product1_idx_0 *
-      damperc * rtb_VectorConcatenate_0[i] + inv_ID *
-      -rtb_Product1_idx_1 * damperc * rtb_VectorConcatenate_0[i + 3]) +
-      inv_ID * -rtb_Product1 * damperc *
-      rtb_VectorConcatenate_0[i + 6])) * 0.001;
+      rtDW.UD_DSTATE[i])) - ((5.1020408163265305 * -rtb_Product1_idx_0 * 1.0E-5 *
+      rtb_VectorConcatenate_0[i] + 5.1020408163265305 * -rtb_Product1_idx_1 *
+      1.0E-5 * rtb_VectorConcatenate_0[i + 3]) + 5.1020408163265305 *
+      -rtb_Product1 * 1.0E-5 * rtb_VectorConcatenate_0[i + 6])) * 0.001;
 
     // Update for UnitDelay: '<S5>/UD'
     //
@@ -384,39 +374,38 @@ void StarshotACSModelClass::step()
   //   Store in Global RAM
 
   rtDW.UD_DSTATE_k = rtb_TSamp_o;
-  //3.375 = starshot.magnetorq.m_max_x/(starshot.magnetorque.A*starshot.magnetorq.n)
-  //-3.375 = -^^^
+
   // Saturate: '<S2>/Saturation3'
-  if (rtb_Saturation3 > maximum_current) {
+  if (rtb_Saturation3 > 0.25) {
     // Outport: '<Root>/detumble'
-    rtY.detumble[0] = maximum_current;
-  } else if (rtb_Saturation3 < -maximum_current) {
+    rtY.detumble[0] = 0.25;
+  } else if (rtb_Saturation3 < -0.25) {
     // Outport: '<Root>/detumble'
-    rtY.detumble[0] = -maximum_current;
+    rtY.detumble[0] = -0.25;
   } else {
     // Outport: '<Root>/detumble'
     rtY.detumble[0] = rtb_Saturation3;
   }
 
   // Saturate: '<S2>/Saturation4'
-  if (rtb_Gain8_idx_2 > maximum_current) {
+  if (rtb_Gain8_idx_2 > 0.25) {
     // Outport: '<Root>/detumble'
-    rtY.detumble[1] = maximum_current;
-  } else if (rtb_Gain8_idx_2 < -maximum_current) {
+    rtY.detumble[1] = 0.25;
+  } else if (rtb_Gain8_idx_2 < -0.25) {
     // Outport: '<Root>/detumble'
-    rtY.detumble[1] = -maximum_current;
+    rtY.detumble[1] = -0.25;
   } else {
     // Outport: '<Root>/detumble'
     rtY.detumble[1] = rtb_Gain8_idx_2;
   }
 
   // Saturate: '<S2>/Saturation5'
-  if (rtb_Gain8_idx_0 > maximum_current) {
+  if (rtb_Gain8_idx_0 > 0.25) {
     // Outport: '<Root>/detumble'
-    rtY.detumble[2] = maximum_current;
-  } else if (rtb_Gain8_idx_0 < -maximum_current) {
+    rtY.detumble[2] = 0.25;
+  } else if (rtb_Gain8_idx_0 < -0.25) {
     // Outport: '<Root>/detumble'
-    rtY.detumble[2] = -maximum_current;
+    rtY.detumble[2] = -0.25;
   } else {
     // Outport: '<Root>/detumble'
     rtY.detumble[2] = rtb_Gain8_idx_0;
@@ -430,39 +419,30 @@ void StarshotACSModelClass::step()
   rtY.point[1] = 0.0;
 
   // Saturate: '<S3>/Saturation5'
-  if (rtb_Gain[2] >  maximum_current) {
+  if (rtb_Gain[2] > 3.375) {
     // Outport: '<Root>/point'
-    rtY.point[2] =  maximum_current;
-  } else if (rtb_Gain[2] < -maximum_current) {
+    rtY.point[2] = 3.375;
+  } else if (rtb_Gain[2] < -3.375) {
     // Outport: '<Root>/point'
-    rtY.point[2] = -maximum_current;
+    rtY.point[2] = -3.375;
   } else {
     // Outport: '<Root>/point'
     rtY.point[2] = rtb_Gain[2];
   }
-  
+
   // End of Saturate: '<S3>/Saturation5'
   // End of Outputs for SubSystem: '<Root>/StarshotACS'
 }
- //3.375 = starshot.magnetorq.m_max_x/(starshot.magnetorque.A*starshot.magnetorq.n)
- //where starshot.magnetorq.m_max_x = starshot.magnetorq.ampFactor*starshot.magnetorq.max_current*starshot.magnetorq.A*starshot.magnetorq.n;
+
 // Model initialize function
-void StarshotACSModelClass::initialize(double kane_damper_c, double kaneId, double ampfactor,double csarea, double no_loops, double max_current,double wdx,double wdy,double wdz)
+void StarshotACSModelClass::initialize()
 {
   // SystemInitialize for Atomic SubSystem: '<Root>/StarshotACS'
   // InitializeConditions for DiscreteIntegrator: '<S2>/Discrete-Time Integrator' 
-  //wdxyz are the desired angular velocities, w is omega, d is desired, xyz are the directions
-  rtDW.DiscreteTimeIntegrator_DSTATE[0] = wdx;
-  rtDW.DiscreteTimeIntegrator_DSTATE[1] = wdy;
-  rtDW.DiscreteTimeIntegrator_DSTATE[2] = wdz;
-  
-  //initialize kand damper constants c and Id
-  damperc = kane_damper_c;
-  Id = kaneId;
-  //initialize inclusion of ampfactor 
-  m_max = ampfactor * max_current * csarea * no_loops;
-  //
-  maximum_current = max_current;
+  rtDW.DiscreteTimeIntegrator_DSTATE[0] = 0.0;
+  rtDW.DiscreteTimeIntegrator_DSTATE[1] = 0.0;
+  rtDW.DiscreteTimeIntegrator_DSTATE[2] = 1.0;
+
   // End of SystemInitialize for SubSystem: '<Root>/StarshotACS'
 }
 
@@ -493,3 +473,4 @@ RT_MODEL * StarshotACSModelClass::getRTM()
 //
 // [EOF]
 //
+

@@ -361,9 +361,9 @@ void Plantv50ModelClass::step(float step_size)
   // Gain: '<S1>/Gain' incorporates:
   //   Inport: '<Root>/current'
 
-  rtb_Product_j[0] = 0.27 * rtU.current[0];
-  rtb_Product_j[1] = 0.27 * rtU.current[1];
-  rtb_Product_j[2] = 0.27 * rtU.current[2];
+  rtb_Product_j[0] = Area * Loops * MagTorqAmpFac * rtU.current[0];
+  rtb_Product_j[1] = Area * Loops * MagTorqAmpFac * rtU.current[1];
+  rtb_Product_j[2] = Area * Loops * MagTorqAmpFac * rtU.current[2];
 
   // DotProduct: '<S11>/Dot Product' incorporates:
   //   DiscreteIntegrator: '<S5>/Discrete-Time Integrator1'
@@ -723,7 +723,7 @@ void Plantv50ModelClass::step(float step_size)
 }
 
 // Model initialize function
-void Plantv50ModelClass::initialize(float DiscreteTimeIntegrator_DSTATE, float DiscreteTimeIntegrator1_DSTAT_l, float DiscreteTimeIntegrator2_DSTATE, float quat0, float quat1, float quat2, float quat3,float altitude, float inclination)
+void Plantv50ModelClass::initialize(float DiscreteTimeIntegrator_DSTATE, float DiscreteTimeIntegrator1_DSTAT_l, float DiscreteTimeIntegrator2_DSTATE, float quat0, float quat1, float quat2, float quat3,float altitude, float inclination, float csarea, float no_loops, float ampFactor)
 {
   // Registration code
 
@@ -758,6 +758,9 @@ void Plantv50ModelClass::initialize(float DiscreteTimeIntegrator_DSTATE, float D
 
   // End of SystemInitialize for SubSystem: '<S1>/Tranlational Dynamics'
   // End of SystemInitialize for SubSystem: '<Root>/Plantv5'
+  Area = csarea;
+  Loops = no_loops;
+  MagTorqAmpFac = ampFactor;
 }
 
 // Constructor

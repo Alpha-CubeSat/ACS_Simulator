@@ -142,6 +142,9 @@ extern "C" {
 {
   // public data and function members
  public:
+  real_T Area;
+  real_T Loops;
+  real_T MagTorqAmpFac;
   // Real-Time Model get method
   RT_MODELPlant * getRTM();
 
@@ -152,7 +155,7 @@ extern "C" {
   ExtYplant rtY;
 
   // model initialize function
-  void initialize(float DiscreteTimeIntegrator_DSTATE, float DiscreteTimeIntegrator1_DSTAT_l, float DiscreteTimeIntegrator2_DSTATE, float quat0, float quat1, float quat2, float quat3, float altitude, float inclination);
+  void initialize(float DiscreteTimeIntegrator_DSTATE, float DiscreteTimeIntegrator1_DSTAT_l, float DiscreteTimeIntegrator2_DSTATE, float quat0, float quat1, float quat2, float quat3, float altitude, float inclination, float csarea, float no_loops, float ampFactor);
 
   // model step function
   void step(float step_size);

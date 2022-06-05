@@ -32,7 +32,7 @@ double csarea = 4E-5;
 
 double num_loops = 500;
 
-//double max_current = 0.25;
+double max_current = 0.25;
 //
 //Altitude of orbit in km
 float altitude = 400;
@@ -78,7 +78,7 @@ void setup()
   }
 
   //starshotObj.initialize(kane_damper_c, kane_Id, ampfactor, csarea, num_loops, wdx, wdy, wdz);
-  starshotObj.initialize();
+  starshotObj.initialize(kane_damper_c, kane_Id,ampfactor,max_current,csarea,num_loops,wdx,wdy,wdz);
   delay(10000);
 }
 

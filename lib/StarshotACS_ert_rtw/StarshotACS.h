@@ -84,6 +84,12 @@ class StarshotACSModelClass
 {
   // public data and function members
  public:
+ real_T maximum_current;
+ real_T magtorqhwvalue;
+ real_T m_max;
+ real_T damperc;
+ real_T Id;
+ real_T invId;
  real_T pointing_error;
   // Real-Time Model get method
   RT_MODEL * getRTM();
@@ -95,7 +101,7 @@ class StarshotACSModelClass
   ExtY rtY;
 
   // model initialize function
-  void initialize();
+  void initialize(float kane_damper_c,float kane_Id,float ampFactor, float max_current, float csareamt, float no_loops, float wdx, float wdy, float wdz);
 
   // model step function
   void step();

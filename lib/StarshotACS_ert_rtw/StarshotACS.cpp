@@ -353,10 +353,10 @@ void StarshotACSModelClass::step()
     //   Store in Global RAM
 
     rtDW.DiscreteTimeIntegrator_DSTATE[i] += ((0.0 - (rtb_Gain_0 -
-      rtDW.UD_DSTATE[i])) - ((5.1020408163265305 * -rtb_Product1_idx_0 * 1.0E-5 *
-      rtb_VectorConcatenate_0[i] + 5.1020408163265305 * -rtb_Product1_idx_1 *
-      1.0E-5 * rtb_VectorConcatenate_0[i + 3]) + 5.1020408163265305 *
-      -rtb_Product1 * 1.0E-5 * rtb_VectorConcatenate_0[i + 6])) * 0.001;
+      rtDW.UD_DSTATE[i])) - ((invId * -rtb_Product1_idx_0 * damperc *
+      rtb_VectorConcatenate_0[i] + invId * -rtb_Product1_idx_1 *
+      damperc * rtb_VectorConcatenate_0[i + 3]) + invId *
+      -rtb_Product1 * damperc * rtb_VectorConcatenate_0[i + 6])) * 0.001;
 
     // Update for UnitDelay: '<S5>/UD'
     //
@@ -376,36 +376,36 @@ void StarshotACSModelClass::step()
   rtDW.UD_DSTATE_k = rtb_TSamp_o;
 
   // Saturate: '<S2>/Saturation3'
-  if (rtb_Saturation3 > 0.25) {
+  if (rtb_Saturation3 > maximum_current) {
     // Outport: '<Root>/detumble'
-    rtY.detumble[0] = 0.25;
-  } else if (rtb_Saturation3 < -0.25) {
+    rtY.detumble[0] = maximum_current;
+  } else if (rtb_Saturation3 < -maximum_current) {
     // Outport: '<Root>/detumble'
-    rtY.detumble[0] = -0.25;
+    rtY.detumble[0] = -maximum_current;
   } else {
     // Outport: '<Root>/detumble'
     rtY.detumble[0] = rtb_Saturation3;
   }
 
   // Saturate: '<S2>/Saturation4'
-  if (rtb_Gain8_idx_2 > 0.25) {
+  if (rtb_Gain8_idx_2 > maximum_current) {
     // Outport: '<Root>/detumble'
-    rtY.detumble[1] = 0.25;
-  } else if (rtb_Gain8_idx_2 < -0.25) {
+    rtY.detumble[1] = maximum_current;
+  } else if (rtb_Gain8_idx_2 < -maximum_current) {
     // Outport: '<Root>/detumble'
-    rtY.detumble[1] = -0.25;
+    rtY.detumble[1] = -maximum_current;
   } else {
     // Outport: '<Root>/detumble'
     rtY.detumble[1] = rtb_Gain8_idx_2;
   }
 
   // Saturate: '<S2>/Saturation5'
-  if (rtb_Gain8_idx_0 > 0.25) {
+  if (rtb_Gain8_idx_0 > maximum_current) {
     // Outport: '<Root>/detumble'
-    rtY.detumble[2] = 0.25;
-  } else if (rtb_Gain8_idx_0 < -0.25) {
+    rtY.detumble[2] = maximum_current;
+  } else if (rtb_Gain8_idx_0 < -maximum_current) {
     // Outport: '<Root>/detumble'
-    rtY.detumble[2] = -0.25;
+    rtY.detumble[2] = -maximum_current;
   } else {
     // Outport: '<Root>/detumble'
     rtY.detumble[2] = rtb_Gain8_idx_0;
@@ -414,17 +414,18 @@ void StarshotACSModelClass::step()
   // Outport: '<Root>/point' incorporates:
   //   Saturate: '<S3>/Saturation3'
   //   Saturate: '<S3>/Saturation4'
+  //3.375 = starshot.magnetorq.m_max_x/(starshot.magnetorque.A*starshot.magnetorq.n)
 
   rtY.point[0] = 0.0;
   rtY.point[1] = 0.0;
 
   // Saturate: '<S3>/Saturation5'
-  if (rtb_Gain[2] > 3.375) {
+  if (rtb_Gain[2] > magtorqhwvalue) {
     // Outport: '<Root>/point'
-    rtY.point[2] = 3.375;
-  } else if (rtb_Gain[2] < -3.375) {
+    rtY.point[2] = magtorqhwvalue;
+  } else if (rtb_Gain[2] < -magtorqhwvalue) {
     // Outport: '<Root>/point'
-    rtY.point[2] = -3.375;
+    rtY.point[2] = -magtorqhwvalue;
   } else {
     // Outport: '<Root>/point'
     rtY.point[2] = rtb_Gain[2];
@@ -435,17 +436,22 @@ void StarshotACSModelClass::step()
 }
 
 // Model initialize function
-void StarshotACSModelClass::initialize()
+void StarshotACSModelClass::initialize(float kane_damper_c,float kane_Id,float ampFactor, float max_current,float csareamt, float no_loops, float wdx, float wdy, float wdz)
 {
   // SystemInitialize for Atomic SubSystem: '<Root>/StarshotACS'
   // InitializeConditions for DiscreteIntegrator: '<S2>/Discrete-Time Integrator' 
-  rtDW.DiscreteTimeIntegrator_DSTATE[0] = 0.0;
-  rtDW.DiscreteTimeIntegrator_DSTATE[1] = 0.0;
-  rtDW.DiscreteTimeIntegrator_DSTATE[2] = 1.0;
-
+  rtDW.DiscreteTimeIntegrator_DSTATE[0] = wdx;
+  rtDW.DiscreteTimeIntegrator_DSTATE[1] = wdy;
+  rtDW.DiscreteTimeIntegrator_DSTATE[2] = wdz;
+  damperc = kane_damper_c;
+  Id = kane_Id;
+  invId = 1/kane_Id;
   // End of SystemInitialize for SubSystem: '<Root>/StarshotACS'
+  m_max = ampFactor * max_current * csareamt * no_loops;
+  magtorqhwvalue = m_max/(csareamt*no_loops);
+  maximum_current = max_current;
 }
-
+//3.375 = starshot.magnetorq.m_max_x/(starshot.magnetorque.A*starshot.magnetorq.n)
 // Constructor
 StarshotACSModelClass::StarshotACSModelClass() :
   rtU(),

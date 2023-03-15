@@ -19,15 +19,19 @@ void DataLogSetup(){
     DataFile.close();
 }
 
-void DataLog(float Data[], int size)
+void DataLog(double Data[], int size)
 {
     DataFile = SD.open("Data.txt", FILE_WRITE);
     if (DataFile) {
         for(int i = 0 ; i< size;i++) {
             DataFile.print(Data[i]);
             DataFile.print(", ");
+
+            Serial.print(Data[i]);
+            Serial.print(", ");
         }
         DataFile.println();
+        Serial.println();
 
         DataFile.close();
         //Serial.println("done.");

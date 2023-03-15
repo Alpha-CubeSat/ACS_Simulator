@@ -7,4 +7,4 @@
 void DataLogSetup();
 
 //Opens the Data.txt file, writes data, close the file when exits
-void DataLog(float Data[], int size);
+void DataLog(double Data[], int size);

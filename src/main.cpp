@@ -169,13 +169,19 @@ void loop()
     {
       //Serial.print(starshotObj.rtY.point[2] * 1000.0);
 
-      double ACSData[4] = {starshotObj.rtY.point[2] * 1000.0, starshotObj.pointing_error, starshotObj2.rtY.point[2] * 1000.0, starshotObj2.pointing_error};
-      DataLog(ACSData, 4);
+      if (iteration%100==0){
+        double ACSData[4] = {starshotObj.rtY.point[2] * 1000.0, starshotObj.pointing_error, starshotObj2.rtY.point[2] * 1000.0, starshotObj2.pointing_error};
+        DataLog(ACSData, 4);
+      }
+
     }
     else
     {
-      double ACSData[4] = {starshotObj.rtY.point[2] * 1000.0, starshotObj.pointing_error, 0, starshotObj2.pointing_error};
-      DataLog(ACSData, 4);
+      if(iteration%100==0){
+        double ACSData[4] = {starshotObj.rtY.point[2] * 1000.0, starshotObj.pointing_error, 0, starshotObj2.pointing_error};
+        DataLog(ACSData, 4);
+      }
+      
       // Serial.print(starshotObj.rtY.point[2] * 1000.0);
       // Serial.print(0.0);
     }

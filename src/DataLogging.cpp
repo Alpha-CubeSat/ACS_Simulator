@@ -12,10 +12,13 @@ void DataLogSetup(){
     }
 
     Serial.println("SD Card initialization done.");
-    SD.remove("Data.txt");
+    //SD.remove("Data.txt");
     DataFile = SD.open("Data.txt", FILE_WRITE);
-    // DataFile.println("w_x, w_y, w_z, mag_x, mag_y, mag_z, de_I_x, de_I_y, de_I_z, pt_I_x, pt_I_y, pt_I_z");
-    //DataFile.println("mag_x_raw, mag_y_raw, mag_z_raw, smooth_x, smooth_y, smooth_z,w_x_raw, w_y_raw, w_z_raw ,w_x, w_y, w_z, pt_I_z");
+    
+    if(DataFile){
+        DataFile.println("---RESTART---");
+    }
+    
     DataFile.close();
 }
 
@@ -37,7 +40,7 @@ void DataLog(double Data[], int size)
         //Serial.println("done.");
     } else {
         // if the file didn't open, print an error:
-        Serial.println("error opening Data.txt");
+        Serial.println("error opening");
     }
     DataFile.close();
 }

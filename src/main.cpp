@@ -14,6 +14,9 @@
 static Plantv50ModelClass plantObj;
 static StarshotACSModelClass starshotObj;
 
+static Plantv50ModelClass plantObj1;
+static StarshotACSModelClass starshotObj1;
+
 static Plantv50ModelClass plantObj2;
 static StarshotACSModelClass starshotObj2;
 Adafruit_LSM9DS1 imu = Adafruit_LSM9DS1(21, 20);
@@ -46,7 +49,8 @@ double wdz = 1;
 // power budget//
 
 // in percent
-#define DUTY_CYCLE 0.25
+#define DUTY_CYCLE1 0.15
+#define DUTY_CYCLE2 0.25
 // in mil seconds
 int CYCLE_PERIOD = 9 * 60 * 1000;
 
@@ -73,6 +77,8 @@ float get_quat3(float degrees)
 
 void setup()
 {
+
+  
   // sqrt(x^2 + y^2 + z^2) < 5 degrees
   if (detumbling)
   {
@@ -83,11 +89,13 @@ void setup()
   {
     // plantObj.initialize(0.0, 0.0, 1.0, get_quat0(alpha_angle), 0.0, 0.0, get_quat3(alpha_angle),altitude, inclination,csarea,num_loops,ampfactor);
     plantObj.initialize(0.03598, -0.013903, 1.0565, get_quat0(alpha_angle), 0.0, 0.0, get_quat3(alpha_angle), altitude, inclination, csarea, num_loops, ampfactor);
+    plantObj1.initialize(0.03598, -0.013903, 1.0565, get_quat0(alpha_angle), 0.0, 0.0, get_quat3(alpha_angle), altitude, inclination, csarea, num_loops, ampfactor);
     plantObj2.initialize(0.03598, -0.013903, 1.0565, get_quat0(alpha_angle), 0.0, 0.0, get_quat3(alpha_angle), altitude, inclination, csarea, num_loops, ampfactor);
   }
 
   // starshotObj.initialize(kane_damper_c, kane_Id, ampfactor, csarea, num_loops, wdx, wdy, wdz);
   starshotObj.initialize(0.2, kane_damper_c, kane_Id, ampfactor, max_current, csarea, num_loops, wdx, wdy, wdz);
+  starshotObj1.initialize(0.2, kane_damper_c, kane_Id, ampfactor, max_current, csarea, num_loops, wdx, wdy, wdz);
   starshotObj2.initialize(0.2, kane_damper_c, kane_Id, ampfactor, max_current, csarea, num_loops, wdx, wdy, wdz);
 
   // if (!imu.begin())
@@ -118,33 +126,39 @@ void loop()
   }
   else
   {
-    if (((iteration * imu_delay) % CYCLE_PERIOD) < DUTY_CYCLE * CYCLE_PERIOD)
-    {
-      plantObj.rtU.current[0] = starshotObj.rtY.point[0];
-      plantObj.rtU.current[1] = starshotObj.rtY.point[1];
-      plantObj.rtU.current[2] = starshotObj.rtY.point[2];
+    plantObj.rtU.current[0] = starshotObj.rtY.point[0];
+    plantObj.rtU.current[1] = starshotObj.rtY.point[1];
+    plantObj.rtU.current[2] = starshotObj.rtY.point[2];
 
+    if (((iteration * imu_delay) % CYCLE_PERIOD) < DUTY_CYCLE1 * CYCLE_PERIOD)
+    {
+      plantObj1.rtU.current[0] = starshotObj1.rtY.point[0];
+      plantObj1.rtU.current[1] = starshotObj1.rtY.point[1];
+      plantObj1.rtU.current[2] = starshotObj1.rtY.point[2];
+    }
+    else
+    {
+      plantObj1.rtU.current[0] = 0.0;
+      plantObj1.rtU.current[1] = 0.0;
+      plantObj1.rtU.current[2] = 0.0;
+    }
+
+    if (((iteration * imu_delay) % CYCLE_PERIOD) < DUTY_CYCLE2 * CYCLE_PERIOD)
+    {
       plantObj2.rtU.current[0] = starshotObj2.rtY.point[0];
       plantObj2.rtU.current[1] = starshotObj2.rtY.point[1];
       plantObj2.rtU.current[2] = starshotObj2.rtY.point[2];
     }
     else
     {
-      // Serial.print("zeroplt, ");
-      plantObj.rtU.current[0] = starshotObj.rtY.point[0];
-      plantObj.rtU.current[1] = starshotObj.rtY.point[1];
-      plantObj.rtU.current[2] = starshotObj.rtY.point[2];
-
       plantObj2.rtU.current[0] = 0.0;
       plantObj2.rtU.current[1] = 0.0;
       plantObj2.rtU.current[2] = 0.0;
-
-
     }
   }
 
-  //Serial.print(iteration * imu_delay);
-  //Serial.print(",");
+  // Serial.print(iteration * imu_delay);
+  // Serial.print(",");
 
   if (detumbling)
   {
@@ -165,25 +179,32 @@ void loop()
   }
   else
   {
-    if (((iteration * imu_delay) % CYCLE_PERIOD) < DUTY_CYCLE * CYCLE_PERIOD)
+    if (((iteration * imu_delay) % CYCLE_PERIOD) < DUTY_CYCLE1 * CYCLE_PERIOD)
     {
-      //Serial.print(starshotObj.rtY.point[2] * 1000.0);
+      // Serial.print(starshotObj.rtY.point[2] * 1000.0);
 
-      if (iteration%100==0){
-        double ACSData[4] = {starshotObj.rtY.point[2] * 1000.0, starshotObj.pointing_error, starshotObj2.rtY.point[2] * 1000.0, starshotObj2.pointing_error};
-        DataLog(ACSData, 4);
+      if (iteration % 100 == 0)
+      {
+        double ACSData[6] = {starshotObj.rtY.point[2] * 1000.0, starshotObj.pointing_error, starshotObj1.rtY.point[2] * 1000.0, starshotObj1.pointing_error, starshotObj2.rtY.point[2] * 1000.0, starshotObj2.pointing_error};
+        DataLog(ACSData, 6);
       }
+    }
+    else if (((iteration * imu_delay) % CYCLE_PERIOD) < DUTY_CYCLE2 * CYCLE_PERIOD)
+    {
 
+      if (iteration % 100 == 0)
+      {
+        double ACSData[6] = {starshotObj.rtY.point[2] * 1000.0, starshotObj.pointing_error, 0.0, starshotObj1.pointing_error, starshotObj2.rtY.point[2] * 1000.0, starshotObj2.pointing_error};
+        DataLog(ACSData, 6);
+      }
     }
     else
     {
-      if(iteration%100==0){
-        double ACSData[4] = {starshotObj.rtY.point[2] * 1000.0, starshotObj.pointing_error, 0, starshotObj2.pointing_error};
-        DataLog(ACSData, 4);
+      if (iteration % 100 == 0)
+      {
+        double ACSData[6] = {starshotObj.rtY.point[2] * 1000.0, starshotObj.pointing_error, 0.0, starshotObj1.pointing_error, 0.0, starshotObj2.pointing_error};
+        DataLog(ACSData, 6);
       }
-      
-      // Serial.print(starshotObj.rtY.point[2] * 1000.0);
-      // Serial.print(0.0);
     }
 
     // Serial.print(",");
@@ -193,6 +214,7 @@ void loop()
   for (int i = 0; i < imu_delay / plantsim_step_size; i++)
   {
     plantObj.step(plantsim_step_size / 1000);
+    plantObj1.step(plantsim_step_size / 1000);
     plantObj2.step(plantsim_step_size / 1000);
   }
 
@@ -205,6 +227,14 @@ void loop()
   starshotObj.rtU.magneticfield[2] = plantObj.rtY.magneticfield[2];
   starshotObj.step();
 
+  starshotObj1.rtU.w[0] = plantObj1.rtY.angularvelocity[0];
+  starshotObj1.rtU.w[1] = plantObj1.rtY.angularvelocity[1];
+  starshotObj1.rtU.w[2] = plantObj1.rtY.angularvelocity[2];
+  starshotObj1.rtU.magneticfield[0] = plantObj1.rtY.magneticfield[0];
+  starshotObj1.rtU.magneticfield[1] = plantObj1.rtY.magneticfield[1];
+  starshotObj1.rtU.magneticfield[2] = plantObj1.rtY.magneticfield[2];
+  starshotObj1.step();
+
   starshotObj2.rtU.w[0] = plantObj2.rtY.angularvelocity[0];
   starshotObj2.rtU.w[1] = plantObj2.rtY.angularvelocity[1];
   starshotObj2.rtU.w[2] = plantObj2.rtY.angularvelocity[2];
@@ -212,6 +242,4 @@ void loop()
   starshotObj2.rtU.magneticfield[1] = plantObj2.rtY.magneticfield[1];
   starshotObj2.rtU.magneticfield[2] = plantObj2.rtY.magneticfield[2];
   starshotObj2.step();
-
-
 }

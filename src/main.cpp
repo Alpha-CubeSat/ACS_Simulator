@@ -41,10 +41,10 @@ double wdz = 1;
 // power budget//
 
 // in percent
-#define DUTY_CYCLE1 0.15
-#define DUTY_CYCLE2 0.25
+#define DUTY_CYCLE1 0.50
+#define DUTY_CYCLE2 0.75
 // in mil seconds
-int CYCLE_PERIOD = 4.5 * 60 * 1000;
+int CYCLE_PERIOD = 9 * 60 * 1000;
 
 ///////////////
 
@@ -70,7 +70,7 @@ float get_quat3(float degrees)
 int main()
 {
   std::ofstream outfile;
-  outfile.open("output/100-25-15-duty-T-4.5mins-2weeks");
+  outfile.open("output/100-50-75-duty-T-9mins-2weeks.txt");
   if (!outfile.is_open())
   { // check if file opened successfully
     return -1;

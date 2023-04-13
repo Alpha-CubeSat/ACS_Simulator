@@ -13,7 +13,7 @@ static StarshotACSModelClass starshotObj1;
 static Plantv50ModelClass plantObj2;
 static StarshotACSModelClass starshotObj2;
 
-#define RUN_TIME_HR 336 //24*14 - 2 weeks
+#define RUN_TIME_HR 336 // 24*14 - 2 weeks
 int iteration = 0;
 // ms
 int imu_delay = 200;
@@ -67,10 +67,136 @@ float get_quat3(float degrees)
   return cos(radians / 2);
 }
 
+// get rad from quat[3]
+float rev_quat3(float quat3)
+{
+  return 2.0 * acos(quat3);
+}
+// get e
+float rev_quat(float quat, float rad)
+{
+  return quat / (sin(rad / 2));
+}
+
+struct Quaternion
+{
+  double x;
+  double y;
+  double z;
+  double w;
+};
+
+struct Vector3D
+{
+  double x;
+  double y;
+  double z;
+};
+
+// Vector3D quaternionToVector(const Quaternion &q)
+// {
+//   Vector3D v;
+//   v.x = q.x / (sin(acos(q.w)));
+//   v.y = q.y / (sin(acos(q.w)));
+//   v.z = q.z / (sin(acos(q.w)));
+//   return v;
+// }
+
+
+// this implementation assumes normalized quaternion
+// converts to Euler angles in 3-2-1 sequence
+// https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
+Vector3D ToEulerAngles(Quaternion q)
+{
+  Vector3D angles;
+
+  // roll (x-axis rotation)
+  double sinr_cosp = 2 * (q.w * q.x + q.y * q.z);
+  double cosr_cosp = 1 - 2 * (q.x * q.x + q.y * q.y);
+  angles.x = std::atan2(sinr_cosp, cosr_cosp);
+
+  // pitch (y-axis rotation)
+  double sinp = std::sqrt(1 + 2 * (q.w * q.y - q.x * q.z));
+  double cosp = std::sqrt(1 - 2 * (q.w * q.y - q.x * q.z));
+  angles.y = 2 * std::atan2(sinp, cosp) - M_PI / 2;
+
+  // yaw (z-axis rotation)
+  double siny_cosp = 2 * (q.w * q.z + q.x * q.y);
+  double cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z);
+  angles.z = std::atan2(siny_cosp, cosy_cosp);
+
+  return angles;
+}
+
+Vector3D ToDirectionVector(const Vector3D &angles)
+{
+  Vector3D direction;
+  double cr = cos(angles.x);
+  double sr = sin(angles.x);
+  
+  double cp = cos(angles.y);
+  double sp = sin(angles.y);
+
+  double cy = cos(angles.z);
+  double sy = sin(angles.z);
+
+  direction.x = cp * cy;
+  direction.y = cp * sy;
+  direction.z = sp;
+
+  return direction;
+}
+Vector3D normalizeVector(const Vector3D &v)
+{
+  double length = std::sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+  Vector3D normalized;
+  normalized.x = v.x / length;
+  normalized.y = v.y / length;
+  normalized.z = v.z / length;
+  return normalized;
+}
+
+Quaternion normalizeQ(const Quaternion &q)
+{
+  double length = std::sqrt(q.x * q.x + q.y * q.y + q.z * q.z+q.w*q.w);
+  Quaternion normalized;
+  normalized.x = q.x / length;
+  normalized.y = q.y / length;
+  normalized.z = q.z / length;
+  normalized.w = q.w / length;
+  return normalized;
+}
+
+double dotProduct(const Vector3D &v1, const Vector3D &v2)
+{
+  return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+}
+
+double pointingError(const Quaternion &pointing_quaternion, const Vector3D &magnetic_field)
+{
+  Vector3D pointing_vector = normalizeVector(ToDirectionVector(ToEulerAngles(normalizeQ(pointing_quaternion))));
+  Vector3D desired_vector = normalizeVector(magnetic_field);
+
+  double dot = dotProduct(pointing_vector, desired_vector);
+
+  // Clamp the dot product value between -1.0 and 1.0
+  if (dot > 1.0)
+  {
+    dot = 1.0;
+  }
+  else if (dot < -1.0)
+  {
+    dot = -1.0;
+  }
+  double angle = std::acos(dot);
+
+  return angle;
+}
+
 int main()
 {
   std::ofstream outfile;
-  outfile.open("output/100-50-75-duty-T-9mins-2weeks.txt");
+  outfile.open("test.txt");
   if (!outfile.is_open())
   { // check if file opened successfully
     return -1;
@@ -107,7 +233,7 @@ int main()
     std::cout << "] " << std::fixed << std::setprecision(1) << (progress * 100.0) << " %\r";
     std::cout.flush();
     ////////////////////////////UPDATE PLANT////////////////////////////////////
-    plantObj.rtU.current[0] = starshotObj1.rtY.point[0];
+    plantObj.rtU.current[0] = starshotObj.rtY.point[0];
     plantObj.rtU.current[1] = starshotObj.rtY.point[1];
     plantObj.rtU.current[2] = starshotObj.rtY.point[2];
 
@@ -144,30 +270,46 @@ int main()
       plantObj2.step(plantsim_step_size / 1000);
     }
     ///////////////////////////////////////////////////////////////////////////////
-    if (((iteration * imu_delay) % CYCLE_PERIOD) < DUTY_CYCLE1 * CYCLE_PERIOD)
-    {
-      if (iteration % 100 == 0)
-      {
-        outfile << starshotObj.rtY.point[2] * 1000.0 << ", " << starshotObj.pointing_error << ", " << starshotObj1.rtY.point[2] * 1000.0 << " ," << starshotObj1.pointing_error << ", " << starshotObj2.rtY.point[2] * 1000.0 << " ," << starshotObj2.pointing_error << '\n';
-        outfile.flush();
-      }
-    }
-    else if (((iteration * imu_delay) % CYCLE_PERIOD) < DUTY_CYCLE2 * CYCLE_PERIOD)
-    {
-      if (iteration % 100 == 0)
-      {
-        outfile << starshotObj.rtY.point[2] * 1000.0 << ", " << starshotObj.pointing_error << ", " << 0.0 << " ," << starshotObj1.pointing_error << ", " << starshotObj2.rtY.point[2] * 1000.0 << " ," << starshotObj2.pointing_error << '\n';
-        outfile.flush();
-      }
-    }
-    else
-    {
-      if (iteration % 100 == 0)
-      {
-        outfile << starshotObj.rtY.point[2] * 1000.0 << ", " << starshotObj.pointing_error << ", " << 0.0 << " ," << starshotObj1.pointing_error << ", " << 0.0 << " ," << starshotObj2.pointing_error << '\n';
-        outfile.flush();
-      }
-    }
+
+    Quaternion pointing_quaternion = {plantObj.rtY.quaternion[0], plantObj.rtY.quaternion[1], plantObj.rtY.quaternion[2], plantObj.rtY.quaternion[3]};
+
+    Vector3D magnetic_field = {plantObj.rtY.magneticfield[0],
+                               plantObj.rtY.magneticfield[1],
+                               plantObj.rtY.magneticfield[2]};
+
+    double error = pointingError(pointing_quaternion, magnetic_field);
+
+    // std::cout << rev_quat(plantObj.rtY.quaternion[0], rev_quat3(plantObj.rtY.quaternion[3])) << plantObj.rtY.magneticfield[0] << "\n";
+
+    std::cout << error << "\n";
+
+    outfile << error << '\n';
+    outfile.flush();
+    // if (((iteration * imu_delay) % CYCLE_PERIOD) < DUTY_CYCLE1 * CYCLE_PERIOD)
+    // {
+    //   if (iteration % 100 == 0)
+    //   {
+
+    //     outfile << starshotObj.rtY.point[2] * 1000.0 << ", " << error << ", " << starshotObj1.rtY.point[2] * 1000.0 << " ," << starshotObj1.pointing_error << ", " << starshotObj2.rtY.point[2] * 1000.0 << " ," << starshotObj2.pointing_error << '\n';
+    //     outfile.flush();
+    //   }
+    // }
+    // else if (((iteration * imu_delay) % CYCLE_PERIOD) < DUTY_CYCLE2 * CYCLE_PERIOD)
+    // {
+    //   if (iteration % 100 == 0)
+    //   {
+    //     outfile << starshotObj.rtY.point[2] * 1000.0 << ", " << starshotObj.pointing_error << ", " << 0.0 << " ," << starshotObj1.pointing_error << ", " << starshotObj2.rtY.point[2] * 1000.0 << " ," << starshotObj2.pointing_error << '\n';
+    //     outfile.flush();
+    //   }
+    // }
+    // else
+    // {
+    //   if (iteration % 100 == 0)
+    //   {
+    //     outfile << starshotObj.rtY.point[2] * 1000.0 << ", " << starshotObj.pointing_error << ", " << 0.0 << " ," << starshotObj1.pointing_error << ", " << 0.0 << " ," << starshotObj2.pointing_error << '\n';
+    //     outfile.flush();
+    //   }
+    // }
     ///////////////////////////////////////////////////////////////////////////////
     iteration++;
     starshotObj.rtU.w[0] = plantObj.rtY.angularvelocity[0];

@@ -1,6 +1,6 @@
 # ACS_Simulator C++
 
-##Settings
+## Settings
 Adjust `RUN_TIME_HR` to change the simulation length
 ## How to run
 In the project dir

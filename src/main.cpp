@@ -16,7 +16,7 @@ static StarshotACSModelClass starshotObj1;
 static Plantv50ModelClass plantObj2;
 static StarshotACSModelClass starshotObj2;
 
-#define RUN_TIME_HR 336 // 24*14 - 2 weeks
+#define RUN_TIME_HR 100 // 24*14 - 2 weeks
 int iteration = 0;
 // ms
 int imu_delay = 200;
@@ -27,14 +27,20 @@ float plantsim_step_size = 1;
 bool detumbling = false;
 float alpha_angle = 45;
 // kane damper constants
-double kane_damper_c = 0.00001;
-double kane_Id = 0.196;
+// double kane_damper_c = 0.00001;
+double kane_damper_c = 0.004;
+// double kane_Id = 0.196;
+double kane_Id = 0.0021;
 // magnetorqueer hardware constants
-double ampfactor = 13.5;
+double ampfactor = 1;
+//double csarea = 0.07979645340118074;
 double csarea = 4E-5;
 double num_loops = 500;
-double max_current = 0.25;
-// Altitude of orbit in km
+// starshot.magnetorq.m_max_x/(starshot.magnetorq.A*starshot.magnetorq.n);
+//double max_current = 0.02 / (csarea * num_loops);
+
+double max_current = 10.0/1000.0;
+//  Altitude of orbit in km
 float altitude = 400;
 // desired angular velocities below
 double wdx = 0;
@@ -42,7 +48,7 @@ double wdy = 0;
 double wdz = 1;
 
 // power budget//
-
+double simple_current = 10.0;
 // in percent
 #define DUTY_CYCLE1 0.50
 #define DUTY_CYCLE2 0.75
@@ -56,7 +62,7 @@ float degrees_to_radians(float degrees)
   return degrees * (M_PI / 180);
 }
 // Orbital inclination set to ISS orbit
-float inclination = degrees_to_radians(51.6F);
+float inclination = degrees_to_radians(10.0F);
 //
 float get_quat0(float degrees)
 {
@@ -117,7 +123,7 @@ double pointingError(const Vector3D &magnetic_field)
 int main()
 {
   std::ofstream outfile;
-  outfile.open("simple-100-50-75-9min-2weeks.txt");
+  outfile.open("output/new-maxi10mA-10mA-simple-100-50-75-9min-336hr.txt");
   if (!outfile.is_open())
   { // check if file opened successfully
     return -1;
@@ -158,7 +164,7 @@ int main()
     ////////////////////////////UPDATE PLANT////////////////////////////////////
     plantObj.rtU.current[0] = 0.0;
     plantObj.rtU.current[1] = 0.0;
-    plantObj.rtU.current[2] = 250.0 / 1000.0;
+    plantObj.rtU.current[2] = simple_current / 1000.0;
     // simple mode <---
 
     plantObj0.rtU.current[0] = starshotObj0.rtY.point[0];
@@ -170,7 +176,6 @@ int main()
       plantObj1.rtU.current[0] = starshotObj1.rtY.point[0];
       plantObj1.rtU.current[1] = starshotObj1.rtY.point[1];
       plantObj1.rtU.current[2] = starshotObj1.rtY.point[2];
-
     }
     else
     {
@@ -224,7 +229,7 @@ int main()
       if (iteration % 100 == 0)
       {
 
-        outfile << 250.0 << ", " << error << " ," << starshotObj0.rtY.point[2] << ", " << error0 << ", " << starshotObj1.rtY.point[2] * 1000.0 << " ," << error1 << ", " << starshotObj2.rtY.point[2] * 1000.0 << " ," << error2 << '\n';
+        outfile << simple_current << ", " << error << " ," << starshotObj0.rtY.point[2] * 1000.0 << ", " << error0 << ", " << starshotObj1.rtY.point[2] * 1000.0 << " ," << error1 << ", " << starshotObj2.rtY.point[2] * 1000.0 << " ," << error2 << '\n';
         outfile.flush();
       }
     }
@@ -232,7 +237,7 @@ int main()
     {
       if (iteration % 100 == 0)
       {
-        outfile << 250.0 << ", " << error << " ," << starshotObj0.rtY.point[2] << ", " << error0 << ", " << 0.0 << " ," << error1 << ", " << starshotObj2.rtY.point[2] * 1000.0 << " ," << error2 << '\n';
+        outfile << simple_current << ", " << error << " ," << starshotObj0.rtY.point[2] * 1000.0 << ", " << error0 << ", " << 0.0 << " ," << error1 << ", " << starshotObj2.rtY.point[2] * 1000.0 << " ," << error2 << '\n';
 
         outfile.flush();
       }
@@ -241,21 +246,12 @@ int main()
     {
       if (iteration % 100 == 0)
       {
-        outfile << 250.0 << ", " << error << " ," << starshotObj0.rtY.point[2] << ", " << error0 << ", " << 0.0 << " ," << error1 << ", " << 0.0 << " ," << error2 << '\n';
+        outfile << simple_current << ", " << error << " ," << starshotObj0.rtY.point[2] * 1000.0 << ", " << error0 << ", " << 0.0 << " ," << error1 << ", " << 0.0 << " ," << error2 << '\n';
         outfile.flush();
       }
     }
     ///////////////////////////////////////////////////////////////////////////////
     iteration++;
-
-    // simple mode no need
-    // starshotObj.rtU.w[0] = plantObj.rtY.angularvelocity[0];
-    // starshotObj.rtU.w[1] = plantObj.rtY.angularvelocity[1];
-    // starshotObj.rtU.w[2] = plantObj.rtY.angularvelocity[2];
-    // starshotObj.rtU.magneticfield[0] = plantObj.rtY.magneticfield[0];
-    // starshotObj.rtU.magneticfield[1] = plantObj.rtY.magneticfield[1];
-    // starshotObj.rtU.magneticfield[2] = plantObj.rtY.magneticfield[2];
-    // starshotObj.step();
 
     // simple mode no need
     starshotObj0.rtU.w[0] = plantObj0.rtY.angularvelocity[0];

@@ -57,15 +57,15 @@ real_T q0[4] = { 0.49999999999999994, 0.5, -0.18301270189221924,
                                           //  Init Quat (Default Euler Angle = pi/6*[1 2 3])
 
 
-real_T wx = 0.0;                       // Variable: wx
+real_T wx = 0;                       // Variable: wx
                                           //  Referenced by: '<S1>/Discrete-Time Integrator'
                                           //  init angular vel -x
 
-real_T wy = 0.0;                       // Variable: wy
+real_T wy = 0;                       // Variable: wy
                                           //  Referenced by: '<S1>/Discrete-Time Integrator1'
                                           //  init angular vel -y
 
-real_T wz = 1.0;                       // Variable: wz
+real_T wz =1;                       // Variable: wz
                                           //  Referenced by: '<S1>/Discrete-Time Integrator2'
                                           //  init angular vel -z
 
@@ -372,7 +372,7 @@ void Plant::qtoQ(const real_T rtu_q[4], real_T rty_Q[9])
   //   Product: '<S8>/Product'
 
   for (int32_T i = 0; i < 9; i++) {
-    rty_Q[i] = (2.0 * rtu_q_0[i] - tmp[i] * rtu_q_1 * 2.0) + rtConstP.pooled6[i]
+    rty_Q[i] = (2.0 * rtu_q_0[i] - tmp[i] * rtu_q_1 * 2.0) + rtConstPplant.pooled6[i]
       * rtb_Sum1;
   }
 
@@ -994,7 +994,7 @@ Plant::~Plant()
 }
 
 // Real-Time Model get method
-RT_MODEL * Plant::getRTM()
+RT_MODELplant * Plant::getRTM()
 {
   return (&rtM);
 }

@@ -20,8 +20,7 @@ double I_input[9] = {0.00195761450869, -5.836632382E-5, 2.27638093E-6,
 
 double inclination_input = 0.90058989402907408; // 51.6 deg in rad
 double m_input = 1.3;
-double q0_input[4] = {0.5, 0.5, -0.18301270189221924,
-                      0.6830127018922193};
+double q0_input[4] = {0.5, 0.5, -0.18301270189221924, 0.6830127018922193};
 
 double wx_input = 0.0;
 double wy_input = 0.0;
@@ -46,8 +45,11 @@ int main()
     return -1;
   }
 
-  plantObj.initialize(altitude_input, I_input, inclination_input, m_input, q0_input, wx_input, wy_input, wz_input);
-  starshotObj.initialize(A_input, Id_input, Kd_input, Kp_input, c_input, i_max_input, k_input, n_input);
+  // plantObj.initialize(altitude_input, I_input, inclination_input, m_input, q0_input, wx_input, wy_input, wz_input);
+  // starshotObj.initialize(A_input, Id_input, Kd_input, Kp_input, c_input, i_max_input, k_input, n_input);
+
+  plantObj.initialize();
+  starshotObj.initialize();
 
   std::cout << "TOTAL SIMULATION TIME: " << RUN_TIME_HR << " hours"
             << "\n ";
@@ -76,10 +78,15 @@ int main()
     // step 0.2s
     for (int i = 0; i < (int)(imu_delay / 0.001); i++)
     {
-      plantObj.rtU.current[0] = 0.0;
-      plantObj.rtU.current[1] = 0.0;
-      plantObj.rtU.current[2] = starshotObj.rtY.point[2];
-      plantObj.step(0.001);
+    // plantObj.rtU.current[0] = starshotObj.rtY.detumble[0];
+    // plantObj.rtU.current[1] = starshotObj.rtY.detumble[1];
+    // plantObj.rtU.current[2] = starshotObj.rtY.detumble[2];
+
+    plantObj.rtU.current[0] = starshotObj.rtY.point[0];
+    plantObj.rtU.current[1] = starshotObj.rtY.point[1];
+    plantObj.rtU.current[2] = starshotObj.rtY.point[2];
+
+    plantObj.step();
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -93,10 +100,56 @@ int main()
 
     starshotObj.step();
     // write to file
-    if ((int)(iteration * imu_delay) % 400 == 0)
+    if ((int)(iteration * 0.001) % 1 == 0)
     {
-      std::cout << "time(s): " << (iteration * imu_delay) << " , pointing error(deg): " << plantObj.rtY.pt_error << " , z-axis current(mA): " << starshotObj.rtY.point[2] * 1000.0 << ", w_x: " << plantObj.rtY.angularvelocity[0] << ", w_y: " << plantObj.rtY.angularvelocity[1] << ", w_z: " << plantObj.rtY.angularvelocity[2] << "\n";
-      outfile << (iteration * imu_delay) << " ," << plantObj.rtY.pt_error << " ," << starshotObj.rtY.point[2] * 1000.0 << '\n';
+      // std::cout << plantObj.rtY.magneticfield[0] << ", " << plantObj.rtY.magneticfield[1] << ", " << plantObj.rtY.magneticfield[2]<<"\n";
+      // std::cout << plantObj.rtY.angularvelocity[0] << ", " << plantObj.rtY.angularvelocity[1] << ", " << plantObj.rtY.angularvelocity[2] << "\n";
+      // outfile  << plantObj.rtY.angularvelocity[0] << ", " << plantObj.rtY.angularvelocity[1] << ", " << plantObj.rtY.angularvelocity[2] << "\n";
+      std::cout << "time(s): " << (iteration * imu_delay);
+      std::cout << ", pointing error(deg) : " << starshotObj.rtY.pt_error;
+      std::cout << ", current(mA): [";
+      for (int i = 0; i < 3; i++)
+      {
+        std::cout << starshotObj.rtY.point[i]*1000.0;
+        if (i < 2)
+        {
+          std::cout << ", ";
+        }
+        else
+        {
+          std::cout << "]";
+        }
+      }
+      std::cout << ", mag: [";
+      for (int i = 0; i < 3; i++)
+      {
+        std::cout << plantObj.rtY.magneticfield[i] ;
+        if (i < 2)
+        {
+          std::cout << ", ";
+        }
+        else
+        {
+          std::cout << "]";
+        }
+      }
+      std::cout << ", w: [";
+      for (int i = 0; i < 3; i++)
+      {
+        std::cout << plantObj.rtY.angularvelocity[i];
+        if (i < 2)
+        {
+          std::cout << ", ";
+        }
+        else
+        {
+          std::cout << "]";
+        }
+      }
+
+      std::cout << "\n ";
+
+      outfile << (iteration * imu_delay) << " ," << starshotObj.rtY.pt_error << " ," << starshotObj.rtY.point[2] * 1000.0 << '\n';
     }
 
     iteration++;

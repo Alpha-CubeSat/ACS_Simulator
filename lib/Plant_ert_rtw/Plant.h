@@ -9,7 +9,7 @@
 //
 // Model version                  : 13.5
 // Simulink Coder version         : 9.9 (R2023a) 19-Nov-2022
-// C/C++ source code generated on : Mon Jul 24 16:55:43 2023
+// C/C++ source code generated on : Wed Jul 26 17:41:01 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: ARM Compatible->ARM Cortex-M
@@ -33,64 +33,54 @@
 #endif
 
 // Forward declaration for rtModel
-typedef struct tag_RTMplant RT_MODELplant;
+typedef struct tag_RTM RT_MODEL;
 
 // Block signals and states (default storage) for system '<Root>'
-struct DWplant {
-  real_T DiscreteTimeIntegrator1_DSTAT_m[4];// '<S5>/Discrete-Time Integrator1'
-  real_T Product_DWORK4[9];            // '<S10>/Product'
+struct DW {
+  real_T DiscreteTimeIntegrator1_DSTAT_m[4];// '<S6>/Discrete-Time Integrator1'
+  real_T Product_DWORK4[9];            // '<S11>/Product'
   real_T DiscreteTimeIntegrator_DSTATE;// '<S1>/Discrete-Time Integrator'
   real_T DiscreteTimeIntegrator1_DSTATE;// '<S1>/Discrete-Time Integrator1'
   real_T DiscreteTimeIntegrator2_DSTATE;// '<S1>/Discrete-Time Integrator2'
-  real_T DiscreteTimeIntegrator1_DSTAT_l;// '<S6>/Discrete-Time Integrator1'
-  real_T DiscreteTimeIntegrator2_DSTAT_e;// '<S6>/Discrete-Time Integrator2'
-  real_T DiscreteTimeIntegrator3_DSTATE;// '<S6>/Discrete-Time Integrator3'
-  real_T DiscreteTimeIntegrator4_DSTATE;// '<S6>/Discrete-Time Integrator4'
-  real_T DiscreteTimeIntegrator5_DSTATE;// '<S6>/Discrete-Time Integrator5'
-  real_T DiscreteTimeIntegrator6_DSTATE;// '<S6>/Discrete-Time Integrator6'
+  real_T DiscreteTimeIntegrator1_DSTAT_l;// '<S7>/Discrete-Time Integrator1'
+  real_T DiscreteTimeIntegrator2_DSTAT_e;// '<S7>/Discrete-Time Integrator2'
+  real_T DiscreteTimeIntegrator3_DSTATE;// '<S7>/Discrete-Time Integrator3'
+  real_T DiscreteTimeIntegrator4_DSTATE;// '<S7>/Discrete-Time Integrator4'
+  real_T DiscreteTimeIntegrator5_DSTATE;// '<S7>/Discrete-Time Integrator5'
+  real_T DiscreteTimeIntegrator6_DSTATE;// '<S7>/Discrete-Time Integrator6'
 };
 
 // Constant parameters (default storage)
-struct ConstPplant {
+struct ConstP {
   // Pooled Parameter (Expression: eye(3,3))
   //  Referenced by:
-  //    '<S7>/Matrix Gain'
   //    '<S8>/Matrix Gain'
+  //    '<S9>/Matrix Gain'
 
   real_T pooled6[9];
 };
 
 // External inputs (root inport signals with default storage)
-struct ExtUplant {
+struct ExtU {
   real_T current[3];                   // '<Root>/current'
 };
 
 // External outputs (root outports fed by signals with default storage)
-struct ExtYplant {
+struct ExtY {
   real_T angularvelocity[3];           // '<Root>/angular velocity'
   real_T magneticfield[3];             // '<Root>/magnetic field'
   real_T xyzposition[3];               // '<Root>/xyzposition'
   real_T quaternion[4];                // '<Root>/quaternion'
+  real_T pt_error;                     // '<Root>/pt_error'
 };
 
 // Real-time Model Data Structure
-struct tag_RTMplant {
+struct tag_RTM {
   const char_T * volatile errorStatus;
-
-  //
-  //  Timing:
-  //  The following substructure contains information regarding
-  //  the timing information for the model.
-
-  struct {
-    struct {
-      uint16_T TID[2];
-    } TaskCounters;
-  } Timing;
 };
 
 // Constant parameters (default storage)
-extern const ConstPplant rtConstPplant;
+extern const ConstP rtConstP;
 
 //
 //  Exported Global Parameters
@@ -102,9 +92,9 @@ extern const ConstPplant rtConstPplant;
 
 extern real_T Altitude;                // Variable: Alt
                                           //  Referenced by:
-                                          //    '<S6>/Discrete-Time Integrator1'
-                                          //    '<S6>/Discrete-Time Integrator3'
-                                          //    '<S6>/Discrete-Time Integrator4'
+                                          //    '<S7>/Discrete-Time Integrator1'
+                                          //    '<S7>/Discrete-Time Integrator3'
+                                          //    '<S7>/Discrete-Time Integrator4'
                                           //  Cubesat Altitude (km)
 
 extern real_T I[9];                    // Variable: I
@@ -114,16 +104,16 @@ extern real_T I[9];                    // Variable: I
 
 extern real_T inclination;             // Variable: inclination
                                           //  Referenced by:
-                                          //    '<S6>/Discrete-Time Integrator1'
-                                          //    '<S6>/Discrete-Time Integrator3'
+                                          //    '<S7>/Discrete-Time Integrator1'
+                                          //    '<S7>/Discrete-Time Integrator3'
                                           //  ISS inclination
 
 extern real_T m;                       // Variable: m
-                                          //  Referenced by: '<S6>/mass gain'
+                                          //  Referenced by: '<S7>/mass gain'
                                           //  Cubesat Mass
 
 extern real_T q0[4];                   // Variable: q0
-                                          //  Referenced by: '<S5>/Discrete-Time Integrator1'
+                                          //  Referenced by: '<S6>/Discrete-Time Integrator1'
                                           //  Init Quat (Default Euler Angle = pi/6*[1 2 3])
 
 extern real_T wx;                      // Variable: wx
@@ -195,16 +185,17 @@ class Plant
   // public data and function members
  public:
   // Real-Time Model get method
-  RT_MODELplant * getRTM();
+  RT_MODEL * getRTM();
 
   // External inputs
-  ExtUplant rtU;
+  ExtU rtU;
 
   // External outputs
-  ExtYplant rtY;
+  ExtY rtY;
 
   // model initialize function
-  void initialize(double Altitude_input, double I_input[9], double inclination_input, double m_input, double q0_input[4], double wx_input, double wy_input, double wz_input);
+  void initialize();
+
   // model step function
   void step();
 
@@ -217,20 +208,20 @@ class Plant
   // private data and function members
  private:
   // Block states
-  DWplant rtDW;
+  DW rtDW;
 
   // private member function(s) for subsystem '<S1>/qtoQ'
   static void qtoQ(const real_T rtu_q[4], real_T rty_Q[9]);
 
   // Real-Time Model
-  RT_MODELplant rtM;
+  RT_MODEL rtM;
 };
 
 //-
 //  These blocks were eliminated from the model due to optimizations:
 //
 //  Block '<S1>/Scope' : Unused code path elimination
-//  Block '<S11>/Reshape' : Reshape block reduction
+//  Block '<S12>/Reshape' : Reshape block reduction
 
 
 //-
@@ -255,18 +246,19 @@ class Plant
 //  '<S2>'   : 'starshotsim_dev/Plant/Cross Product'
 //  '<S3>'   : 'starshotsim_dev/Plant/Dynamics'
 //  '<S4>'   : 'starshotsim_dev/Plant/Magnetic Field Model'
-//  '<S5>'   : 'starshotsim_dev/Plant/Quaternion Integration'
-//  '<S6>'   : 'starshotsim_dev/Plant/Tranlational Dynamics'
-//  '<S7>'   : 'starshotsim_dev/Plant/qtoQ'
-//  '<S8>'   : 'starshotsim_dev/Plant/qtoQ1'
-//  '<S9>'   : 'starshotsim_dev/Plant/Dynamics/Cross Product'
-//  '<S10>'  : 'starshotsim_dev/Plant/Dynamics/Invert  3x3 Matrix'
-//  '<S11>'  : 'starshotsim_dev/Plant/Dynamics/Invert  3x3 Matrix/Determinant of 3x3 Matrix'
-//  '<S12>'  : 'starshotsim_dev/Plant/Magnetic Field Model/Dipole->ECI'
-//  '<S13>'  : 'starshotsim_dev/Plant/Quaternion Integration/q_normalize'
-//  '<S14>'  : 'starshotsim_dev/Plant/Quaternion Integration/qderiv'
-//  '<S15>'  : 'starshotsim_dev/Plant/qtoQ/Subsystem'
-//  '<S16>'  : 'starshotsim_dev/Plant/qtoQ1/Subsystem'
+//  '<S5>'   : 'starshotsim_dev/Plant/Point Error'
+//  '<S6>'   : 'starshotsim_dev/Plant/Quaternion Integration'
+//  '<S7>'   : 'starshotsim_dev/Plant/Tranlational Dynamics'
+//  '<S8>'   : 'starshotsim_dev/Plant/qtoQ'
+//  '<S9>'   : 'starshotsim_dev/Plant/qtoQ1'
+//  '<S10>'  : 'starshotsim_dev/Plant/Dynamics/Cross Product'
+//  '<S11>'  : 'starshotsim_dev/Plant/Dynamics/Invert  3x3 Matrix'
+//  '<S12>'  : 'starshotsim_dev/Plant/Dynamics/Invert  3x3 Matrix/Determinant of 3x3 Matrix'
+//  '<S13>'  : 'starshotsim_dev/Plant/Magnetic Field Model/Dipole->ECI'
+//  '<S14>'  : 'starshotsim_dev/Plant/Quaternion Integration/q_normalize'
+//  '<S15>'  : 'starshotsim_dev/Plant/Quaternion Integration/qderiv'
+//  '<S16>'  : 'starshotsim_dev/Plant/qtoQ/Subsystem'
+//  '<S17>'  : 'starshotsim_dev/Plant/qtoQ1/Subsystem'
 
 #endif                                 // RTW_HEADER_Plant_h_
 

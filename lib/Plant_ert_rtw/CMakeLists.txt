@@ -46,7 +46,7 @@ set_target_properties(Plant PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${BINARY_START_DIR}/./$<0:>"
     ARCHIVE_OUTPUT_DIRECTORY "${BINARY_START_DIR}/./$<0:>")
 target_compile_definitions(Plant PRIVATE -DMODEL=Plant
-    -DNUMST=2
+    -DNUMST=1
     -DNCSTATES=0
     -DHAVESTDIO
     -DMODEL_HAS_DYNAMICALLY_LOADED_SFCNS=0
@@ -65,7 +65,11 @@ target_include_directories(Plant PRIVATE ${START_DIR}
     ${MATLAB_ROOT}/simulink/include
     ${MATLAB_ROOT}/rtw/c/src
     ${MATLAB_ROOT}/rtw/c/src/ext_mode/common
-    ${MATLAB_ROOT}/rtw/c/ert)
+    ${MATLAB_ROOT}/rtw/c/ert
+    ${MATLAB_ROOT}/toolbox/dsp/include
+    ${MATLAB_ROOT}/toolbox/dsp/extern/src/export/include/src
+    ${MATLAB_ROOT}/toolbox/dsp/extern/src/export/include
+    ${MATLAB_ROOT}/toolbox/shared/dsp/vision/matlab/include)
 target_link_libraries(Plant PRIVATE $<$<BOOL:${FOUND_LIBM}>:m>)
 if(WIN32)
    target_link_libraries(Plant PRIVATE kernel32

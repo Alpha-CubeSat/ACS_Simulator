@@ -23,70 +23,70 @@
 #include "rtwtypes.h"
 
 // Exported block parameters
-real_T A = 4.0E-5;                     // Variable: A
-                                          //  Referenced by:
-                                          //    '<S2>/Gain'
-                                          //    '<S2>/Saturation1'
-                                          //    '<S2>/Saturation2'
-                                          //    '<S2>/Saturation6'
-                                          //    '<S3>/Gain'
-                                          //    '<S3>/Saturation1'
-                                          //    '<S3>/Saturation2'
-                                          //    '<S3>/Saturation6'
-                                          //  Cross Section Area For magnetorquer
+real_T A = 4.0E-5; // Variable: A
+                   //  Referenced by:
+                   //    '<S2>/Gain'
+                   //    '<S2>/Saturation1'
+                   //    '<S2>/Saturation2'
+                   //    '<S2>/Saturation6'
+                   //    '<S3>/Gain'
+                   //    '<S3>/Saturation1'
+                   //    '<S3>/Saturation2'
+                   //    '<S3>/Saturation6'
+                   //  Cross Section Area For magnetorquer
 
-real_T Id = 0.0021;                    // Variable: Id
-                                          //  Referenced by: '<S2>/Id inverse'
-                                          //  Id for the Detumble
+real_T Id = 0.0021; // Variable: Id
+                    //  Referenced by: '<S2>/Id inverse'
+                    //  Id for the Detumble
 
-real_T Kd = 0.0007935279615795299;     // Variable: Kd
-                                          //  Referenced by: '<S3>/Kd Gain'
-                                          //  Kd for the pointing
+real_T Kd = 0.0007935279615795299; // Variable: Kd
+                                   //  Referenced by: '<S3>/Kd Gain'
+                                   //  Kd for the pointing
 
-real_T Kp = 5.2506307629097953E-10;    // Variable: Kp
-                                          //  Referenced by: '<S3>/Kp Gain'
-                                          //  Kp for the pointing
+real_T Kp = 5.2506307629097953E-10; // Variable: Kp
+                                    //  Referenced by: '<S3>/Kp Gain'
+                                    //  Kp for the pointing
 
-real_T c = 0.004;                      // Variable: c
-                                          //  Referenced by:
-                                          //    '<S2>/Gain 8'
-                                          //    '<S2>/Kane damping'
-                                          //  c for the Detumble
+real_T c = 0.004; // Variable: c
+                  //  Referenced by:
+                  //    '<S2>/Gain 8'
+                  //    '<S2>/Kane damping'
+                  //  c for the Detumble
 
-real_T i_max = 0.25;                   // Variable: i_max
-                                          //  Referenced by:
-                                          //    '<S2>/Saturation1'
-                                          //    '<S2>/Saturation2'
-                                          //    '<S2>/Saturation6'
-                                          //    '<S3>/Saturation1'
-                                          //    '<S3>/Saturation2'
-                                          //    '<S3>/Saturation6'
-                                          //  Max Current for each magnetorquer
+real_T i_max = 0.25; // Variable: i_max
+                     //  Referenced by:
+                     //    '<S2>/Saturation1'
+                     //    '<S2>/Saturation2'
+                     //    '<S2>/Saturation6'
+                     //    '<S3>/Saturation1'
+                     //    '<S3>/Saturation2'
+                     //    '<S3>/Saturation6'
+                     //  Max Current for each magnetorquer
 
-real_T k = 13.5;                       // Variable: k
-                                          //  Referenced by:
-                                          //    '<S2>/Gain'
-                                          //    '<S2>/Saturation1'
-                                          //    '<S2>/Saturation2'
-                                          //    '<S2>/Saturation6'
-                                          //    '<S3>/Gain'
-                                          //    '<S3>/Saturation1'
-                                          //    '<S3>/Saturation2'
-                                          //    '<S3>/Saturation6'
-                                          //  Gain for magnetorquer
+real_T k = 13.5; // Variable: k
+                 //  Referenced by:
+                 //    '<S2>/Gain'
+                 //    '<S2>/Saturation1'
+                 //    '<S2>/Saturation2'
+                 //    '<S2>/Saturation6'
+                 //    '<S3>/Gain'
+                 //    '<S3>/Saturation1'
+                 //    '<S3>/Saturation2'
+                 //    '<S3>/Saturation6'
+                 //  Gain for magnetorquer
 
-real_T n = 500.0;                      // Variable: n
-                                          //  Referenced by:
-                                          //    '<S2>/Gain'
-                                          //    '<S2>/Saturation1'
-                                          //    '<S2>/Saturation2'
-                                          //    '<S2>/Saturation6'
-                                          //    '<S3>/Gain'
-                                          //    '<S3>/Saturation1'
-                                          //    '<S3>/Saturation2'
-                                          //    '<S3>/Saturation6'
-                                          //  Wire Turn For magnetorquer
-
+real_T n = 500.0; // Variable: n
+                  //  Referenced by:
+                  //    '<S2>/Gain'
+                  //    '<S2>/Saturation1'
+                  //    '<S2>/Saturation2'
+                  //    '<S2>/Saturation6'
+                  //    '<S3>/Gain'
+                  //    '<S3>/Saturation1'
+                  //    '<S3>/Saturation2'
+                  //    '<S3>/Saturation6'
+                  //  Wire Turn For magnetorquer
+real_T step_size = 0.25;
 
 // Model step function
 void StarshotACS::step()
@@ -151,9 +151,8 @@ void StarshotACS::step()
   //   DotProduct: '<S9>/Dot Product6'
   //   Inport: '<Root>/Bfield_body'
 
-  rtb_Saturation6 = (rtU.Bfield_body[0] * rtU.Bfield_body[0] + rtU.Bfield_body[1]
-                     * rtU.Bfield_body[1]) + rtU.Bfield_body[2] *
-    rtU.Bfield_body[2];
+  rtb_Saturation6 = (rtU.Bfield_body[0] * rtU.Bfield_body[0] + rtU.Bfield_body[1] * rtU.Bfield_body[1]) + rtU.Bfield_body[2] *
+                                                                                                              rtU.Bfield_body[2];
   acc = 1.0 / (rtb_Saturation6 + 1.0E-10);
   rtb_Normalization[0] = rtU.Bfield_body[0] * acc;
   rtb_Normalization[1] = rtU.Bfield_body[1] * acc;
@@ -164,21 +163,21 @@ void StarshotACS::step()
   //   Product: '<S5>/Product1'
 
   rtb_Sqrt4 = rtb_Product1[1] * rtb_Normalization[2] - rtb_Normalization[1] *
-    rtb_Product1[2];
+                                                           rtb_Product1[2];
 
   // Sum: '<S5>/Sum1' incorporates:
   //   Product: '<S5>/Product2'
   //   Product: '<S5>/Product3'
 
   rtb_Saturation2 = rtb_Normalization[0] * rtb_Product1[2] - rtb_Product1[0] *
-    rtb_Normalization[2];
+                                                                 rtb_Normalization[2];
 
   // Sum: '<S5>/Sum2' incorporates:
   //   Product: '<S5>/Product4'
   //   Product: '<S5>/Product5'
 
   rtb_TrigonometricFunction5_k = rtb_Product1[0] * rtb_Normalization[1] -
-    rtb_Normalization[0] * rtb_Product1[1];
+                                 rtb_Normalization[0] * rtb_Product1[1];
 
   // Gain: '<S2>/Gain'
   tmp = 1.0 / (k * A * n);
@@ -219,9 +218,9 @@ void StarshotACS::step()
   //  About '<S6>/TSamp':
   //   y = u * K where K = 1 / ( w * Ts )
 
-  rtb_Product1[0] = rtU.w[0] * 1000.0;
-  rtb_Product1[1] = rtU.w[1] * 1000.0;
-  rtb_Product1[2] = rtU.w[2] * 1000.0;
+  rtb_Product1[0] = rtU.w[0] * (1.0 / step_size);
+  rtb_Product1[1] = rtU.w[1] * (1.0 / step_size);
+  rtb_Product1[2] = rtU.w[2] * (1.0 / step_size);
 
   // Sqrt: '<S9>/Sqrt4'
   rtb_Saturation6 = std::sqrt(rtb_Saturation6);
@@ -238,19 +237,22 @@ void StarshotACS::step()
   // S-Function (sdsp2norm2): '<S4>/Normalization'
   idx1 = 0;
   acc = 0.0;
-  for (i = 0; i < 3; i++) {
+  for (i = 0; i < 3; i++)
+  {
     // Product: '<S3>/Product6' incorporates:
     //   Concatenate: '<S11>/Vector Concatenate'
     //   Inport: '<Root>/Bfield_body'
     //   Product: '<S3>/Product4'
 
     rtb_TrigonometricFunction5 = ((rtConstB.VectorConcatenate[i + 3] *
-      rtU.Bfield_body[1] + rtConstB.VectorConcatenate[i] * rtU.Bfield_body[0]) +
-      rtConstB.VectorConcatenate[i + 6] * rtU.Bfield_body[2]) / rtb_Saturation6;
+                                       rtU.Bfield_body[1] +
+                                   rtConstB.VectorConcatenate[i] * rtU.Bfield_body[0]) +
+                                  rtConstB.VectorConcatenate[i + 6] * rtU.Bfield_body[2]) /
+                                 rtb_Saturation6;
 
     // DotProduct: '<S10>/Dot Product6'
     rtb_Normalization_0 += rtb_TrigonometricFunction5 *
-      rtb_TrigonometricFunction5;
+                           rtb_TrigonometricFunction5;
 
     // Product: '<S12>/Product3' incorporates:
     //   Inport: '<Root>/Bfield_body'
@@ -280,7 +282,8 @@ void StarshotACS::step()
   rtb_Normalization_0 = std::sqrt(rtb_Normalization_0);
 
   // Trigonometry: '<S3>/Trigonometric Function5'
-  if (rtb_Normalization_0 > 1.0) {
+  if (rtb_Normalization_0 > 1.0)
+  {
     rtb_Normalization_0 = 1.0;
   }
 
@@ -293,16 +296,19 @@ void StarshotACS::step()
   //  About '<S8>/TSamp':
   //   y = u * K where K = 1 / ( w * Ts )
 
-  rtb_TSamp_o = rtb_TrigonometricFunction5 * 1000.0;
+  rtb_TSamp_o = rtb_TrigonometricFunction5 * (1.0 / step_size);
 
   // Switch: '<S13>/Switch1' incorporates:
   //   Constant: '<S13>/Constant10'
   //   Constant: '<S13>/Constant9'
   //   Inport: '<Root>/angularvelocity'
 
-  if (rtU.w[2] >= 0.0) {
+  if (rtU.w[2] >= 0.0)
+  {
     idx1 = 1;
-  } else {
+  }
+  else
+  {
     idx1 = -1;
   }
 
@@ -317,9 +323,13 @@ void StarshotACS::step()
   //   Sum: '<S12>/Add'
 
   if (((rtb_Normalization[0] + rtb_Normalization[1]) + rtb_Normalization[2]) *
-      (1.0 / std::sqrt(u2_tmp)) / std::sqrt(tmp_1) > 0.0) {
+          (1.0 / std::sqrt(u2_tmp)) / std::sqrt(tmp_1) >
+      0.0)
+  {
     i = 1;
-  } else {
+  }
+  else
+  {
     i = -1;
   }
 
@@ -342,8 +352,9 @@ void StarshotACS::step()
   //   Store in Global RAM
 
   rtb_Normalization_0 = ((rtb_TSamp_o - rtDW.UD_DSTATE_k) * Kd + Kp *
-    rtb_TrigonometricFunction5) * static_cast<real_T>(idx1 * i) /
-    rtb_Saturation6;
+                                                                     rtb_TrigonometricFunction5) *
+                        static_cast<real_T>(idx1 * i) /
+                        rtb_Saturation6;
 
   // Saturate: '<S3>/Saturation6' incorporates:
   //   Saturate: '<S2>/Saturation1'
@@ -369,9 +380,10 @@ void StarshotACS::step()
   //   Concatenate: '<S7>/Vector Concatenate'
   //   Constant: '<S2>/Identity matrix'
 
-  for (idx1 = 0; idx1 < 9; idx1++) {
+  for (idx1 = 0; idx1 < 9; idx1++)
+  {
     rtb_VectorConcatenate_0[idx1] = rtb_VectorConcatenate[idx1] +
-      rtConstP.Identitymatrix_Value[idx1];
+                                    rtConstP.Identitymatrix_Value[idx1];
   }
 
   // End of Sum: '<S2>/Sum10'
@@ -385,9 +397,12 @@ void StarshotACS::step()
   rtDW.UD_DSTATE_k = rtb_TSamp_o;
 
   // Saturate: '<S2>/Saturation1'
-  if (rtb_Sqrt4 > u2_tmp) {
+  if (rtb_Sqrt4 > u2_tmp)
+  {
     rtb_Sqrt4 = u2_tmp;
-  } else if (rtb_Sqrt4 < rtb_Saturation6) {
+  }
+  else if (rtb_Sqrt4 < rtb_Saturation6)
+  {
     rtb_Sqrt4 = rtb_Saturation6;
   }
 
@@ -398,9 +413,12 @@ void StarshotACS::step()
   rtY.detumble[0] = tmp * rtb_Sqrt4;
 
   // Saturate: '<S2>/Saturation2'
-  if (rtb_Saturation2 > u2_tmp) {
+  if (rtb_Saturation2 > u2_tmp)
+  {
     rtb_Saturation2 = u2_tmp;
-  } else if (rtb_Saturation2 < rtb_Saturation6) {
+  }
+  else if (rtb_Saturation2 < rtb_Saturation6)
+  {
     rtb_Saturation2 = rtb_Saturation6;
   }
 
@@ -411,9 +429,12 @@ void StarshotACS::step()
   rtY.detumble[1] = tmp * rtb_Saturation2;
 
   // Saturate: '<S2>/Saturation6'
-  if (rtb_TrigonometricFunction5_k > u2_tmp) {
+  if (rtb_TrigonometricFunction5_k > u2_tmp)
+  {
     rtb_TrigonometricFunction5_k = u2_tmp;
-  } else if (rtb_TrigonometricFunction5_k < rtb_Saturation6) {
+  }
+  else if (rtb_TrigonometricFunction5_k < rtb_Saturation6)
+  {
     rtb_TrigonometricFunction5_k = rtb_Saturation6;
   }
 
@@ -424,13 +445,18 @@ void StarshotACS::step()
   rtY.detumble[2] = tmp * rtb_TrigonometricFunction5_k;
 
   // Saturate: '<S3>/Saturation1'
-  if (u2_tmp < 0.0) {
+  if (u2_tmp < 0.0)
+  {
     // Saturate: '<S3>/Saturation2'
     rtb_Sqrt4 = u2_tmp;
-  } else if (rtb_Saturation6 > 0.0) {
+  }
+  else if (rtb_Saturation6 > 0.0)
+  {
     // Saturate: '<S3>/Saturation2'
     rtb_Sqrt4 = rtb_Saturation6;
-  } else {
+  }
+  else
+  {
     // Saturate: '<S3>/Saturation2'
     rtb_Sqrt4 = 0.0;
   }
@@ -447,9 +473,12 @@ void StarshotACS::step()
   rtY.point[1] = acc;
 
   // Saturate: '<S3>/Saturation6'
-  if (rtb_Normalization_0 > u2_tmp) {
+  if (rtb_Normalization_0 > u2_tmp)
+  {
     rtb_Normalization_0 = u2_tmp;
-  } else if (rtb_Normalization_0 < rtb_Saturation6) {
+  }
+  else if (rtb_Normalization_0 < rtb_Saturation6)
+  {
     rtb_Normalization_0 = rtb_Saturation6;
   }
 
@@ -461,7 +490,8 @@ void StarshotACS::step()
 
   // DotProduct: '<S4>/Dot Product'
   rtb_Normalization_0 = 0.0;
-  for (i = 0; i < 3; i++) {
+  for (i = 0; i < 3; i++)
+  {
     // Sum: '<S6>/Diff' incorporates:
     //   Product: '<S2>/Product1'
     //
@@ -489,10 +519,11 @@ void StarshotACS::step()
     //
     //   Store in Global RAM
 
-    rtDW.DiscreteTimeIntegrator_DSTATE[i] += ((0.0 - (acc - rtDW.UD_DSTATE[i]))
-      - ((tmp_0 * -rtb_Gain2_idx_0 * c * rtb_VectorConcatenate_0[i] + tmp_0 *
-          -rtb_Gain2_idx_1 * c * rtb_VectorConcatenate_0[i + 3]) + tmp_0 *
-         -rtb_Gain2_0 * c * rtb_VectorConcatenate_0[i + 6])) * 0.001;
+    rtDW.DiscreteTimeIntegrator_DSTATE[i] += ((0.0 - (acc - rtDW.UD_DSTATE[i])) - ((tmp_0 * -rtb_Gain2_idx_0 * c * rtb_VectorConcatenate_0[i] + tmp_0 *
+                                                                                                                                                    -rtb_Gain2_idx_1 * c * rtb_VectorConcatenate_0[i + 3]) +
+                                                                                   tmp_0 *
+                                                                                       -rtb_Gain2_0 * c * rtb_VectorConcatenate_0[i + 6])) *
+                                             step_size;
 
     // Update for UnitDelay: '<S6>/UD'
     //
@@ -511,9 +542,12 @@ void StarshotACS::step()
   // Saturate: '<S4>/Saturation3' incorporates:
   //   DotProduct: '<S4>/Dot Product'
 
-  if (rtb_Normalization_0 > 1.0) {
+  if (rtb_Normalization_0 > 1.0)
+  {
     rtb_Normalization_0 = 1.0;
-  } else if (rtb_Normalization_0 < -1.0) {
+  }
+  else if (rtb_Normalization_0 < -1.0)
+  {
     rtb_Normalization_0 = -1.0;
   }
 
@@ -531,7 +565,7 @@ void StarshotACS::step()
 void StarshotACS::initialize()
 {
   // SystemInitialize for Atomic SubSystem: '<Root>/StarshotACS'
-  // InitializeConditions for DiscreteIntegrator: '<S2>/Discrete-Time Integrator' 
+  // InitializeConditions for DiscreteIntegrator: '<S2>/Discrete-Time Integrator'
   rtDW.DiscreteTimeIntegrator_DSTATE[0] = 0.0;
   rtDW.DiscreteTimeIntegrator_DSTATE[1] = 0.0;
   rtDW.DiscreteTimeIntegrator_DSTATE[2] = 1.0;
@@ -539,14 +573,15 @@ void StarshotACS::initialize()
   // End of SystemInitialize for SubSystem: '<Root>/StarshotACS'
 }
 
-void StarshotACS::initialize(double A_input, double Id_input, double Kd_input, double Kp_input, double c_input, double i_max_input, double k_input, double n_input)
+void StarshotACS::initialize(double step_size_input, double A_input, double Id_input, double Kd_input, double Kp_input, double c_input, double i_max_input, double k_input, double n_input)
 {
   // SystemInitialize for Atomic SubSystem: '<Root>/StarshotACS'
   // InitializeConditions for DiscreteIntegrator: '<S2>/Discrete-Time Integrator'
   rtDW.DiscreteTimeIntegrator_DSTATE[0] = 0.0;
   rtDW.DiscreteTimeIntegrator_DSTATE[1] = 0.0;
   rtDW.DiscreteTimeIntegrator_DSTATE[2] = 1.0;
-
+  
+  step_size = step_size_input;
   A = A_input;
   Id = Id_input;
   Kd = Kd_input;
@@ -560,11 +595,10 @@ void StarshotACS::initialize(double A_input, double Id_input, double Kd_input, d
 }
 
 // Constructor
-StarshotACS::StarshotACS() :
-  rtU(),
-  rtY(),
-  rtDW(),
-  rtM()
+StarshotACS::StarshotACS() : rtU(),
+                             rtY(),
+                             rtDW(),
+                             rtM()
 {
   // Currently there is no constructor body generated.
 }
@@ -576,7 +610,7 @@ StarshotACS::~StarshotACS()
 }
 
 // Real-Time Model get method
-RT_MODEL * StarshotACS::getRTM()
+RT_MODEL *StarshotACS::getRTM()
 {
   return (&rtM);
 }

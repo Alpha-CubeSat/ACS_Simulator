@@ -539,6 +539,26 @@ void StarshotACS::initialize()
   // End of SystemInitialize for SubSystem: '<Root>/StarshotACS'
 }
 
+void StarshotACS::initialize(double A_input, double Id_input, double Kd_input, double Kp_input, double c_input, double i_max_input, double k_input, double n_input)
+{
+  // SystemInitialize for Atomic SubSystem: '<Root>/StarshotACS'
+  // InitializeConditions for DiscreteIntegrator: '<S2>/Discrete-Time Integrator'
+  rtDW.DiscreteTimeIntegrator_DSTATE[0] = 0.0;
+  rtDW.DiscreteTimeIntegrator_DSTATE[1] = 0.0;
+  rtDW.DiscreteTimeIntegrator_DSTATE[2] = 1.0;
+
+  A = A_input;
+  Id = Id_input;
+  Kd = Kd_input;
+  Kp = Kp_input;
+  c = c_input;
+  i_max = i_max_input;
+  k = k_input;
+  n = n_input;
+
+  // End of SystemInitialize for SubSystem: '<Root>/StarshotACS'
+}
+
 // Constructor
 StarshotACS::StarshotACS() :
   rtU(),

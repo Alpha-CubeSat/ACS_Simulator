@@ -25,33 +25,35 @@
 
 // Macros for accessing real-time model data structure
 #ifndef rtmGetErrorStatus
-#define rtmGetErrorStatus(rtm)         ((rtm)->errorStatus)
+#define rtmGetErrorStatus(rtm) ((rtm)->errorStatus)
 #endif
 
 #ifndef rtmSetErrorStatus
-#define rtmSetErrorStatus(rtm, val)    ((rtm)->errorStatus = (val))
+#define rtmSetErrorStatus(rtm, val) ((rtm)->errorStatus = (val))
 #endif
 
 // Forward declaration for rtModel
 typedef struct tag_RTMplant RT_MODELplant;
 
 // Block signals and states (default storage) for system '<Root>'
-struct DWplant {
-  real_T DiscreteTimeIntegrator1_DSTAT_m[4];// '<S6>/Discrete-Time Integrator1'
-  real_T Product_DWORK4[9];            // '<S11>/Product'
-  real_T DiscreteTimeIntegrator_DSTATE;// '<S1>/Discrete-Time Integrator'
-  real_T DiscreteTimeIntegrator1_DSTATE;// '<S1>/Discrete-Time Integrator1'
-  real_T DiscreteTimeIntegrator2_DSTATE;// '<S1>/Discrete-Time Integrator2'
-  real_T DiscreteTimeIntegrator1_DSTAT_l;// '<S7>/Discrete-Time Integrator1'
-  real_T DiscreteTimeIntegrator2_DSTAT_e;// '<S7>/Discrete-Time Integrator2'
-  real_T DiscreteTimeIntegrator3_DSTATE;// '<S7>/Discrete-Time Integrator3'
-  real_T DiscreteTimeIntegrator4_DSTATE;// '<S7>/Discrete-Time Integrator4'
-  real_T DiscreteTimeIntegrator5_DSTATE;// '<S7>/Discrete-Time Integrator5'
-  real_T DiscreteTimeIntegrator6_DSTATE;// '<S7>/Discrete-Time Integrator6'
+struct DWplant
+{
+  real_T DiscreteTimeIntegrator1_DSTAT_m[4]; // '<S6>/Discrete-Time Integrator1'
+  real_T Product_DWORK4[9];                  // '<S11>/Product'
+  real_T DiscreteTimeIntegrator_DSTATE;      // '<S1>/Discrete-Time Integrator'
+  real_T DiscreteTimeIntegrator1_DSTATE;     // '<S1>/Discrete-Time Integrator1'
+  real_T DiscreteTimeIntegrator2_DSTATE;     // '<S1>/Discrete-Time Integrator2'
+  real_T DiscreteTimeIntegrator1_DSTAT_l;    // '<S7>/Discrete-Time Integrator1'
+  real_T DiscreteTimeIntegrator2_DSTAT_e;    // '<S7>/Discrete-Time Integrator2'
+  real_T DiscreteTimeIntegrator3_DSTATE;     // '<S7>/Discrete-Time Integrator3'
+  real_T DiscreteTimeIntegrator4_DSTATE;     // '<S7>/Discrete-Time Integrator4'
+  real_T DiscreteTimeIntegrator5_DSTATE;     // '<S7>/Discrete-Time Integrator5'
+  real_T DiscreteTimeIntegrator6_DSTATE;     // '<S7>/Discrete-Time Integrator6'
 };
 
 // Constant parameters (default storage)
-struct ConstPplant {
+struct ConstPplant
+{
   // Pooled Parameter (Expression: eye(3,3))
   //  Referenced by:
   //    '<S8>/Matrix Gain'
@@ -61,22 +63,25 @@ struct ConstPplant {
 };
 
 // External inputs (root inport signals with default storage)
-struct ExtUplant {
-  real_T current[3];                   // '<Root>/current'
+struct ExtUplant
+{
+  real_T current[3]; // '<Root>/current'
 };
 
 // External outputs (root outports fed by signals with default storage)
-struct ExtYplant {
-  real_T angularvelocity[3];           // '<Root>/angular velocity'
-  real_T magneticfield[3];             // '<Root>/magnetic field'
-  real_T xyzposition[3];               // '<Root>/xyzposition'
-  real_T quaternion[4];                // '<Root>/quaternion'
-  real_T pt_error;                     // '<Root>/pt_error'
+struct ExtYplant
+{
+  real_T angularvelocity[3]; // '<Root>/angular velocity'
+  real_T magneticfield[3];   // '<Root>/magnetic field'
+  real_T xyzposition[3];     // '<Root>/xyzposition'
+  real_T quaternion[4];      // '<Root>/quaternion'
+  real_T pt_error;           // '<Root>/pt_error'
 };
 
 // Real-time Model Data Structure
-struct tag_RTMplant {
-  const char_T * volatile errorStatus;
+struct tag_RTMplant
+{
+  const char_T *volatile errorStatus;
 };
 
 // Constant parameters (default storage)
@@ -90,51 +95,51 @@ extern const ConstPplant rtConstPplant;
 //  these parameters and exports their symbols.
 //
 
-extern real_T Altitude;                // Variable: Alt
-                                          //  Referenced by:
-                                          //    '<S7>/Discrete-Time Integrator1'
-                                          //    '<S7>/Discrete-Time Integrator3'
-                                          //    '<S7>/Discrete-Time Integrator4'
-                                          //  Cubesat Altitude (km)
+extern real_T Altitude; // Variable: Alt
+                        //  Referenced by:
+                        //    '<S7>/Discrete-Time Integrator1'
+                        //    '<S7>/Discrete-Time Integrator3'
+                        //    '<S7>/Discrete-Time Integrator4'
+                        //  Cubesat Altitude (km)
 
-extern real_T I[9];                    // Variable: I
-                                          //  Referenced by:
-                                          //    '<S3>/I'
-                                          //    '<S3>/I^-1'
+extern real_T I[9]; // Variable: I
+                    //  Referenced by:
+                    //    '<S3>/I'
+                    //    '<S3>/I^-1'
 
-extern real_T inclination;             // Variable: inclination
-                                          //  Referenced by:
-                                          //    '<S7>/Discrete-Time Integrator1'
-                                          //    '<S7>/Discrete-Time Integrator3'
-                                          //  ISS inclination
+extern real_T inclination; // Variable: inclination
+                           //  Referenced by:
+                           //    '<S7>/Discrete-Time Integrator1'
+                           //    '<S7>/Discrete-Time Integrator3'
+                           //  ISS inclination
 
-extern real_T m;                       // Variable: m
-                                          //  Referenced by: '<S7>/mass gain'
-                                          //  Cubesat Mass
+extern real_T m; // Variable: m
+                 //  Referenced by: '<S7>/mass gain'
+                 //  Cubesat Mass
 
-extern real_T q0[4];                   // Variable: q0
-                                          //  Referenced by: '<S6>/Discrete-Time Integrator1'
-                                          //  Init Quat (Default Euler Angle = pi/6*[1 2 3])
+extern real_T q0[4]; // Variable: q0
+                     //  Referenced by: '<S6>/Discrete-Time Integrator1'
+                     //  Init Quat (Default Euler Angle = pi/6*[1 2 3])
 
-extern real_T wx;                      // Variable: wx
-                                          //  Referenced by: '<S1>/Discrete-Time Integrator'
-                                          //  init angular vel -x
+extern real_T wx; // Variable: wx
+                  //  Referenced by: '<S1>/Discrete-Time Integrator'
+                  //  init angular vel -x
 
-extern real_T wy;                      // Variable: wy
-                                          //  Referenced by: '<S1>/Discrete-Time Integrator1'
-                                          //  init angular vel -y
+extern real_T wy; // Variable: wy
+                  //  Referenced by: '<S1>/Discrete-Time Integrator1'
+                  //  init angular vel -y
 
-extern real_T wz;                      // Variable: wz
-                                          //  Referenced by: '<S1>/Discrete-Time Integrator2'
-                                          //  init angular vel -z
+extern real_T wz; // Variable: wz
+                  //  Referenced by: '<S1>/Discrete-Time Integrator2'
+                  //  init angular vel -z
 
 extern "C"
 {
   static real_T rtGetNaN(void);
   static real32_T rtGetNaNF(void);
-}                                      // extern "C"
+} // extern "C"
 
-#define NOT_USING_NONFINITE_LITERALS   1
+#define NOT_USING_NONFINITE_LITERALS 1
 
 extern "C"
 {
@@ -149,27 +154,33 @@ extern "C"
   static boolean_T rtIsInfF(real32_T value);
   static boolean_T rtIsNaN(real_T value);
   static boolean_T rtIsNaNF(real32_T value);
-  struct BigEndianIEEEDouble {
-    struct {
+  struct BigEndianIEEEDouble
+  {
+    struct
+    {
       uint32_T wordH;
       uint32_T wordL;
     } words;
   };
 
-  struct LittleEndianIEEEDouble {
-    struct {
+  struct LittleEndianIEEEDouble
+  {
+    struct
+    {
       uint32_T wordL;
       uint32_T wordH;
     } words;
   };
 
-  struct IEEESingle {
-    union {
+  struct IEEESingle
+  {
+    union
+    {
       real32_T wordLreal;
       uint32_T wordLuint;
     } wordL;
   };
-}                                      // extern "C"
+} // extern "C"
 
 extern "C"
 {
@@ -177,15 +188,15 @@ extern "C"
   static real32_T rtGetInfF(void);
   static real_T rtGetMinusInf(void);
   static real32_T rtGetMinusInfF(void);
-}                                      // extern "C"
+} // extern "C"
 
 // Class declaration for model Plant
 class Plant
 {
   // public data and function members
- public:
+public:
   // Real-Time Model get method
-  RT_MODELplant * getRTM();
+  RT_MODELplant *getRTM();
 
   // External inputs
   ExtUplant rtU;
@@ -195,7 +206,7 @@ class Plant
 
   // model initialize function
   void initialize();
-
+  void initialize(double Altitude_input, double I_input[9], double inclination_input, double m_input, double q0_input[4], double wx_input, double wy_input, double wz_input);
   // model step function
   void step();
 
@@ -206,7 +217,7 @@ class Plant
   ~Plant();
 
   // private data and function members
- private:
+private:
   // Block states
   DWplant rtDW;
 
@@ -222,7 +233,6 @@ class Plant
 //
 //  Block '<S1>/Scope' : Unused code path elimination
 //  Block '<S12>/Reshape' : Reshape block reduction
-
 
 //-
 //  The generated code includes comments that allow you to trace directly
@@ -260,7 +270,7 @@ class Plant
 //  '<S16>'  : 'starshotsim_dev/Plant/qtoQ/Subsystem'
 //  '<S17>'  : 'starshotsim_dev/Plant/qtoQ1/Subsystem'
 
-#endif                                 // RTW_HEADER_Plant_h_
+#endif // RTW_HEADER_Plant_h_
 
 //
 // File trailer for generated code.

@@ -976,6 +976,74 @@ void Plant::initialize()
     // End of SystemInitialize for SubSystem: '<Root>/Plant'
   }
 }
+// Model initialize function
+void Plant::initialize(double Altitude_input, double I_input[9], double inclination_input, double m_input, double q0_input[4], double wx_input, double wy_input, double wz_input)
+{
+  // Registration code
+
+  // initialize non-finites
+  rt_InitInfAndNaN(sizeof(real_T));
+
+  {
+    real_T DiscreteTimeIntegrator1_DSTAT_l;
+
+    Altitude = Altitude_input;
+
+    for (int i = 0; i < 9; i++)
+    {
+      I[i] = I_input[i];
+    }
+
+    inclination = inclination_input;
+
+    m = m_input;
+
+    for (int i = 0; i < 4; i++)
+    {
+      q0[i] = q0_input[i];
+    }
+
+    wx = wx_input;
+    wy = wy_input;
+    wz = wz_input;
+
+    // SystemInitialize for Atomic SubSystem: '<Root>/Plant'
+    // InitializeConditions for DiscreteIntegrator: '<S1>/Discrete-Time Integrator'
+    rtDW.DiscreteTimeIntegrator_DSTATE = wx_input;
+
+    // InitializeConditions for DiscreteIntegrator: '<S1>/Discrete-Time Integrator1'
+    rtDW.DiscreteTimeIntegrator1_DSTATE = wy_input;
+
+    // InitializeConditions for DiscreteIntegrator: '<S1>/Discrete-Time Integrator2'
+    rtDW.DiscreteTimeIntegrator2_DSTATE = wz_input;
+
+    // SystemInitialize for Atomic SubSystem: '<S1>/Quaternion Integration'
+    // InitializeConditions for DiscreteIntegrator: '<S5>/Discrete-Time Integrator1'
+    rtDW.DiscreteTimeIntegrator1_DSTAT_m[0] = q0_input[0];
+    rtDW.DiscreteTimeIntegrator1_DSTAT_m[1] = q0_input[1];
+    rtDW.DiscreteTimeIntegrator1_DSTAT_m[2] = q0_input[2];
+    rtDW.DiscreteTimeIntegrator1_DSTAT_m[3] = q0_input[3];
+
+    // End of SystemInitialize for SubSystem: '<S1>/Quaternion Integration'
+
+    // SystemInitialize for Atomic SubSystem: '<S1>/Tranlational Dynamics'
+    // InitializeConditions for DiscreteIntegrator: '<S6>/Discrete-Time Integrator1' incorporates:
+    //   DiscreteIntegrator: '<S6>/Discrete-Time Integrator3'
+
+    DiscreteTimeIntegrator1_DSTAT_l = std::sqrt(398600.0 / (Altitude_input + 6371.0)) *
+                                      1000.0;
+    rtDW.DiscreteTimeIntegrator1_DSTAT_l = DiscreteTimeIntegrator1_DSTAT_l * std::cos(inclination_input);
+
+    // InitializeConditions for DiscreteIntegrator: '<S6>/Discrete-Time Integrator3'
+    rtDW.DiscreteTimeIntegrator3_DSTATE = DiscreteTimeIntegrator1_DSTAT_l * std::tan(inclination_input) * std::sin(inclination_input);
+
+    // InitializeConditions for DiscreteIntegrator: '<S6>/Discrete-Time Integrator4'
+    rtDW.DiscreteTimeIntegrator4_DSTATE = Altitude_input * 1000.0 + 6.371E+6;
+
+    // End of SystemInitialize for SubSystem: '<S1>/Tranlational Dynamics'
+    // End of SystemInitialize for SubSystem: '<Root>/Plant'
+  }
+}
 
 // Constructor
 Plant::Plant() :

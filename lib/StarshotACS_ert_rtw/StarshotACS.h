@@ -174,8 +174,9 @@ class StarshotACS
 
   // model initialize function
   void initialize();
+  void initialize(double A_input, double Id_input, double Kd_input, double Kp_input, double c_input, double i_max_input, double k_input, double n_input);
 
-  // model step function
+      // model step function
   void step();
 
   // Constructor

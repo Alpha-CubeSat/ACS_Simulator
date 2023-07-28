@@ -19,7 +19,7 @@ double I_input[9] = {0.00195761450869, -5.836632382E-5, 2.27638093E-6,
                      0.00204697265884};
 
 double inclination_input = 0.90058989402907408; // 51.6 deg in rad
-double m_input = 1.3;
+double m_input = 1.3; // kg
 double q0_input[4] = {0.5, 0.5, -0.18301270189221924, 0.6830127018922193};
 
 double wx_input = 0.0;
@@ -32,7 +32,7 @@ double Id_input = 0.0021;
 double Kd_input = 0.0007935279615795299;
 double Kp_input = 5.2506307629097953E-10;
 double c_input = 0.004;
-double i_max_input = 9999999;
+double i_max_input = 0.25;
 double k_input = 13.5;
 double n_input = 500.0;
 
@@ -45,11 +45,9 @@ int main()
     return -1;
   }
 
-  // plantObj.initialize(altitude_input, I_input, inclination_input, m_input, q0_input, wx_input, wy_input, wz_input);
-  // starshotObj.initialize(A_input, Id_input, Kd_input, Kp_input, c_input, i_max_input, k_input, n_input);
+  plantObj.initialize(altitude_input, I_input, inclination_input, m_input, q0_input, wx_input, wy_input, wz_input);
+  starshotObj.initialize(A_input, Id_input, Kd_input, Kp_input, c_input, i_max_input, k_input, n_input);
 
-  plantObj.initialize();
-  starshotObj.initialize();
 
   std::cout << "TOTAL SIMULATION TIME: " << RUN_TIME_HR << " hours"
             << "\n ";

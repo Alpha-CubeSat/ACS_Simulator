@@ -1,4 +1,4 @@
-/*
+//
 // Academic License - for use in teaching, academic research, and meeting
 // course requirements at degree granting institutions only.  Not for
 // government, commercial, or other organizational use.
@@ -7,23 +7,22 @@
 //
 // Code generated for Simulink model 'StarshotACS'.
 //
-// Model version                  : 1.77
-// Simulink Coder version         : 9.1 (R2019a) 23-Nov-2018
-// C/C++ source code generated on : Sat Oct 23 12:00:04 2021
+// Model version                  : 13.5
+// Simulink Coder version         : 9.9 (R2023a) 19-Nov-2022
+// C/C++ source code generated on : Wed Jul 26 17:42:42 2023
 //
 // Target selection: ert.tlc
-// Embedded hardware selection: ARM Compatible->ARM Cortex
+// Embedded hardware selection: ARM Compatible->ARM Cortex-M
 // Code generation objectives:
 //    1. Execution efficiency
 //    2. RAM efficiency
 // Validation result: Not run
 //
 #include <stddef.h>
-#include <stdio.h>                // This ert_main.c example uses printf/fflush
-#include "StarshotACS.h"               // Model's header file
-#include "rtwtypes.h"
+#include <stdio.h>              // This example main program uses printf/fflush
+#include "StarshotACS.h"               // Model header file
 
-static StarshotACSModelClass rtObj;    // Instance of model class
+static StarshotACS rtObj;              // Instance of model class
 
 //
 // Associating rt_OneStep with a real-time clock or interrupt service routine
@@ -69,9 +68,9 @@ void rt_OneStep(void)
 }
 
 //
-// The example "main" function illustrates what is required by your
+// The example main function illustrates what is required by your
 // application code to initialize, execute, and terminate the generated code.
-// Attaching rt_OneStep to a real-time clock is target specific.  This example
+// Attaching rt_OneStep to a real-time clock is target specific. This example
 // illustrates how you do this relative to initializing the model.
 //
 int_T main(int_T argc, const char *argv[])
@@ -84,8 +83,8 @@ int_T main(int_T argc, const char *argv[])
   rtObj.initialize();
 
   // Attach rt_OneStep to a timer or interrupt service routine with
-  //  period 0.003 seconds (the model's base sample time) here.  The
-  //  call syntax for rt_OneStep is
+  //  period 0.001 seconds (base rate of the model) here.
+  //  The call syntax for rt_OneStep is
   //
   //   rt_OneStep();
 
@@ -94,10 +93,9 @@ int_T main(int_T argc, const char *argv[])
          "To change this behavior select the 'MAT-file logging' option.\n");
   fflush((NULL));
   while (rtmGetErrorStatus(rtObj.getRTM()) == (NULL)) {
-    //  Perform other application tasks here
+    //  Perform application tasks here
   }
 
-  // Disable rt_OneStep() here
   return 0;
 }
 
@@ -106,4 +104,3 @@ int_T main(int_T argc, const char *argv[])
 //
 // [EOF]
 //
-*/

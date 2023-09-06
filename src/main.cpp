@@ -1,56 +1,82 @@
-
-#include "Arduino.h"
-#include <typeinfo>
+#include <Arduino.h>
 #include <math.h>
-
 #include <Wire.h>
-#include <SPI.h>
 #include <Adafruit_LSM9DS1.h>
-#include <Adafruit_Sensor.h>
 
-// #include <Plant.h>
-// #include <StarshotACS.h>
+#include "../lib/ACS_libs/StarshotACS_ert_rtw/StarshotACS.h"
 
-#include "DataLogging.hpp"
 
-// static Plant plantObj;
-// static StarshotACS starshotObj;
+//#include "DataLogging.hpp"
 
+// Pins for all inputs, keep in mind the PWM defines must be on PWM pins
+#define AIN1 28
+#define AIN2 29
+#define PWMA 30
+
+static StarshotACS starshotObj;
 Adafruit_LSM9DS1 imu = Adafruit_LSM9DS1();
 
-// int iteration = 0;
-// double imu_delay = 0.25; // sec
-// double RUN_TIME_HR = 100;
-
-// /// PLANT PARAMETERS///
-// double altitude_input = 400;
-// double I_input[9] = {0.00195761450869, -5.836632382E-5, 2.27638093E-6,
-//                      -5.836632382E-5, 0.00196346658902, 8.8920475E-7, 2.27638093E-6, 8.8920475E-7,
-//                      0.00204697265884};
-
-// double inclination_input = 0.90058989402907408; // 51.6 deg in rad
-// double m_input = 1.3;                           // kg
-// double q0_input[4] = {0.5, 0.5, -0.18301270189221924, 0.6830127018922193};
-
-// double wx_input = 0.0;
-// double wy_input = 0.0;
-// double wz_input = 1.0;
+int current2PWM(float current)
+{
+  if (int(633.5 * pow(fabs(current), 0.6043) + 8.062) < 8.062)
+    return 0;
+  else if (int(633.5 * pow(fabs(current), 0.6043) + 8.062) > 255)
+    return 255;
+  else
+    return int(633.5 * pow(fabs(current), 0.6043) + 8.062);
+}
 
 // /// STARSHOT PARAMETERS///
-// double A_input = 4.0E-5;
-// double Id_input = 0.0021;
-// double Kd_input = 0.0007935279615795299;
-// double Kp_input = 5.2506307629097953E-10;
-// double c_input = 0.004;
-// double i_max_input = 0.25;
-// double k_input = 13.5;
-// double n_input = 500.0;
-// double step_size_input = imu_delay; // sec
+double A_input = 4.0E-5;
+double Id_input = 0.0021;
+double Kd_input = 0.0007935279615795299;
+double Kp_input = 5.2506307629097953E-10;
+double c_input = 0.004;
+double i_max_input = 0.25;
+double k_input = 13.5;
+double n_input = 500.0;
+double step_size_input = 0.2; // sec
 // /// INPUT DATA///
+
+void ACSWrite(float current)
+{
+
+
+  int PWM = current2PWM(current);
+
+  Serial.print("PWM: ");
+  Serial.println(PWM);
+
+  if (PWM == 0)
+  {
+    digitalWrite(AIN1, LOW);
+    digitalWrite(AIN2, LOW);
+  }
+
+  if (current > 0)
+  {
+    digitalWrite(AIN1, HIGH);
+    digitalWrite(AIN2, LOW);
+    analogWrite(PWMA, PWM);
+  }
+  if (current < 0)
+  {
+    digitalWrite(AIN1, LOW);
+    digitalWrite(AIN2, HIGH);
+    analogWrite(PWMA, PWM);
+  }
+}
 
 void setup()
 {
   Serial.begin(9600);
+  pinMode(AIN1, OUTPUT);
+  pinMode(AIN2, OUTPUT);
+  pinMode(PWMA, OUTPUT);
+
+
+  starshotObj.initialize(step_size_input, A_input, Id_input, Kd_input, Kp_input, c_input, i_max_input, k_input, n_input);
+
   // DataLogSetup();
 
   if (!imu.begin())
@@ -72,12 +98,23 @@ void setup()
 
 void loop()
 {
+  Serial.println("test loop");
 
-  sensors_event_t accel, mag, gyro, temp;
-  imu.getEvent(&accel, &mag, &gyro, &temp);
-  double IMUData[6] = {gyro.gyro.x, gyro.gyro.y, gyro.gyro.z, mag.magnetic.x, mag.magnetic.y, mag.magnetic.z};
-  DataLog(IMUData, 6);
-  Serial.printf(" % f, % f, % f, % f, % f, % f,  \n ", gyro.gyro.x, gyro.gyro.y, gyro.gyro.z, mag.magnetic.x, mag.magnetic.y, mag.magnetic.z);
+  //sensors_event_t accel, mag, gyro, temp;
+  //imu.getEvent(&accel, &mag, &gyro, &temp);
+  // double IMUData[6] = {gyro.gyro.x, gyro.gyro.y, gyro.gyro.z, mag.magnetic.x, mag.magnetic.y, mag.magnetic.z};
+  // DataLog(IMUData, 6);
+  //Serial.printf(" % f, % f, % f, % f, % f, % f,  \n ", gyro.gyro.x, gyro.gyro.y, gyro.gyro.z, mag.magnetic.x, mag.magnetic.y, mag.magnetic.z);
 
+  // starshotObj.rtU.w[0] = gyro.gyro.x;
+  // starshotObj.rtU.w[1] = gyro.gyro.y;
+  // starshotObj.rtU.w[2] = gyro.gyro.z;
+
+  // starshotObj.rtU.Bfield_body[0] = mag.magnetic.x;
+  // starshotObj.rtU.Bfield_body[1] = mag.magnetic.y;
+  // starshotObj.rtU.Bfield_body[2] = mag.magnetic.z;
+
+
+  // ACSWrite(starshotObj.rtY.point[2]);
   delay(200);
 }

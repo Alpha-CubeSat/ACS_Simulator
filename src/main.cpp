@@ -5,7 +5,6 @@
 
 #include "../lib/ACS_libs/StarshotACS_ert_rtw/StarshotACS.h"
 
-
 //#include "DataLogging.hpp"
 
 // Pins for all inputs, keep in mind the PWM defines must be on PWM pins
@@ -14,6 +13,7 @@
 #define PWMA 30
 
 static StarshotACS starshotObj;
+static StarshotACS starshotObj2;
 Adafruit_LSM9DS1 imu = Adafruit_LSM9DS1();
 
 int current2PWM(float current)
@@ -41,11 +41,7 @@ double step_size_input = 0.2; // sec
 void ACSWrite(float current)
 {
 
-
   int PWM = current2PWM(current);
-
-  Serial.print("PWM: ");
-  Serial.println(PWM);
 
   if (PWM == 0)
   {
@@ -98,23 +94,32 @@ void setup()
 
 void loop()
 {
-  Serial.println("test loop");
-
-  //sensors_event_t accel, mag, gyro, temp;
-  //imu.getEvent(&accel, &mag, &gyro, &temp);
-  // double IMUData[6] = {gyro.gyro.x, gyro.gyro.y, gyro.gyro.z, mag.magnetic.x, mag.magnetic.y, mag.magnetic.z};
+  sensors_event_t accel, mag, gyro, temp;
+  imu.getEvent(&accel, &mag, &gyro, &temp);
+  //double IMUData[6] = {gyro.gyro.x, gyro.gyro.y, gyro.gyro.z, mag.magnetic.x, mag.magnetic.y, mag.magnetic.z};
   // DataLog(IMUData, 6);
   //Serial.printf(" % f, % f, % f, % f, % f, % f,  \n ", gyro.gyro.x, gyro.gyro.y, gyro.gyro.z, mag.magnetic.x, mag.magnetic.y, mag.magnetic.z);
 
-  // starshotObj.rtU.w[0] = gyro.gyro.x;
-  // starshotObj.rtU.w[1] = gyro.gyro.y;
-  // starshotObj.rtU.w[2] = gyro.gyro.z;
+  //Remap axis
 
-  // starshotObj.rtU.Bfield_body[0] = mag.magnetic.x;
-  // starshotObj.rtU.Bfield_body[1] = mag.magnetic.y;
-  // starshotObj.rtU.Bfield_body[2] = mag.magnetic.z;
+  //
+  starshotObj.rtU.w[0] = gyro.gyro.x;
+  starshotObj.rtU.w[1] = gyro.gyro.y;
+  starshotObj.rtU.w[2] = gyro.gyro.z;
 
+  starshotObj.rtU.Bfield_body[0] = mag.magnetic.x;
+  starshotObj.rtU.Bfield_body[1] = mag.magnetic.y;
+  starshotObj.rtU.Bfield_body[2] = mag.magnetic.z;
 
-  // ACSWrite(starshotObj.rtY.point[2]);
+  starshotObj.step();
+
+  ACSWrite(starshotObj.rtY.point[2]);
+
+  //Serial.printf("Point Error:% f, current: % f mA \n", starshotObj.rtY.pt_error, starshotObj.rtY.point[2] * 1000.0);
+  
+  //serial test
+  int PWM = current2PWM(starshotObj.rtY.point[2]);
+
+  Serial.printf("%f,%f,%d \n",starshotObj.rtY.pt_error, starshotObj.rtY.point[2] * 1000.0, PWM);
   delay(200);
 }

@@ -5,15 +5,14 @@
 
 #include "../lib/ACS_libs/StarshotACS_ert_rtw/StarshotACS.h"
 
-//#include "DataLogging.hpp"
+#include "DataLogging.hpp"
 
 // Pins for all inputs, keep in mind the PWM defines must be on PWM pins
 #define AIN1 28
-#define AIN2 29
+#define AIN2 27
 #define PWMA 30
 
 static StarshotACS starshotObj;
-static StarshotACS starshotObj2;
 Adafruit_LSM9DS1 imu = Adafruit_LSM9DS1();
 
 int current2PWM(float current)
@@ -29,8 +28,10 @@ int current2PWM(float current)
 // /// STARSHOT PARAMETERS///
 double A_input = 4.0E-5;
 double Id_input = 0.0021;
-double Kd_input = 0.0007935279615795299;
-double Kp_input = 5.2506307629097953E-10;
+
+double Kd_input = 0.0001;
+double Kp_input = 5;
+
 double c_input = 0.004;
 double i_max_input = 0.25;
 double k_input = 13.5;
@@ -49,13 +50,14 @@ void ACSWrite(float current)
     digitalWrite(AIN2, LOW);
   }
 
-  if (current > 0)
+  if (current < 0)
   {
     digitalWrite(AIN1, HIGH);
     digitalWrite(AIN2, LOW);
     analogWrite(PWMA, PWM);
   }
-  if (current < 0)
+
+  if (current > 0)
   {
     digitalWrite(AIN1, LOW);
     digitalWrite(AIN2, HIGH);
@@ -66,11 +68,13 @@ void ACSWrite(float current)
 void setup()
 {
   Serial.begin(9600);
+
+  DataLogSetup("test");
+
   pinMode(AIN1, OUTPUT);
   pinMode(AIN2, OUTPUT);
   pinMode(PWMA, OUTPUT);
-
-
+  digitalWrite(AIN2, HIGH);
   starshotObj.initialize(step_size_input, A_input, Id_input, Kd_input, Kp_input, c_input, i_max_input, k_input, n_input);
 
   // DataLogSetup();
@@ -96,30 +100,32 @@ void loop()
 {
   sensors_event_t accel, mag, gyro, temp;
   imu.getEvent(&accel, &mag, &gyro, &temp);
-  //double IMUData[6] = {gyro.gyro.x, gyro.gyro.y, gyro.gyro.z, mag.magnetic.x, mag.magnetic.y, mag.magnetic.z};
-  // DataLog(IMUData, 6);
+
+  double IMUData[6] = {gyro.gyro.x, gyro.gyro.y, gyro.gyro.z, mag.magnetic.x, mag.magnetic.y, mag.magnetic.z};
+  DataLog(IMUData, 6);
   //Serial.printf(" % f, % f, % f, % f, % f, % f,  \n ", gyro.gyro.x, gyro.gyro.y, gyro.gyro.z, mag.magnetic.x, mag.magnetic.y, mag.magnetic.z);
 
-  //Remap axis
+  //Remap axis(rotate around x-axis by 90 deg)
 
-  //
   starshotObj.rtU.w[0] = gyro.gyro.x;
-  starshotObj.rtU.w[1] = gyro.gyro.y;
-  starshotObj.rtU.w[2] = gyro.gyro.z;
+  starshotObj.rtU.w[1] = gyro.gyro.z;
+  starshotObj.rtU.w[2] = -gyro.gyro.y;
 
   starshotObj.rtU.Bfield_body[0] = mag.magnetic.x;
-  starshotObj.rtU.Bfield_body[1] = mag.magnetic.y;
-  starshotObj.rtU.Bfield_body[2] = mag.magnetic.z;
+  starshotObj.rtU.Bfield_body[1] = mag.magnetic.z;
+  starshotObj.rtU.Bfield_body[2] = -mag.magnetic.y;
 
   starshotObj.step();
 
-  ACSWrite(starshotObj.rtY.point[2]);
+  double current_adjust = starshotObj.rtY.point[2] * 5.0;
+
+  ACSWrite(current_adjust);
 
   //Serial.printf("Point Error:% f, current: % f mA \n", starshotObj.rtY.pt_error, starshotObj.rtY.point[2] * 1000.0);
   
   //serial test
-  int PWM = current2PWM(starshotObj.rtY.point[2]);
+  int PWM = current2PWM(current_adjust);
 
-  Serial.printf("%f,%f,%d \n",starshotObj.rtY.pt_error, starshotObj.rtY.point[2] * 1000.0, PWM);
+  Serial.printf("%f,%f,%d \n", starshotObj.rtY.pt_error, current_adjust, PWM);
   delay(200);
 }

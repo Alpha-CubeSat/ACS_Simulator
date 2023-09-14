@@ -4,7 +4,7 @@ const int chipSelect = BUILTIN_SDCARD;
 File DataFile;
 
 
-void DataLogSetup(){
+void DataLogSetup(String s){
     
     if (!SD.begin(chipSelect)) {
         Serial.println("SD Card initialization failed!");
@@ -12,12 +12,10 @@ void DataLogSetup(){
     }
 
     Serial.println("SD Card initialization done.");
-    //SD.remove("Data.txt");
-    DataFile = SD.open("Data.txt", FILE_WRITE);
-    
-    if(DataFile){
-        DataFile.println("---RESTART---");
-    }
+
+    DataFile = SD.open(s.append(".txt").c_str(), FILE_WRITE);
+
+    DataFile.println("---START---");
     
     DataFile.close();
 }
@@ -30,11 +28,11 @@ void DataLog(double Data[], int size)
             DataFile.print(Data[i]);
             DataFile.print(", ");
 
-            Serial.print(Data[i]);
-            Serial.print(", ");
+            //Serial.print(Data[i]);
+            //Serial.print(", ");
         }
         DataFile.println();
-        Serial.println();
+        //Serial.println();
 
         DataFile.close();
         //Serial.println("done.");

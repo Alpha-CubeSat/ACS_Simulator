@@ -11,6 +11,8 @@
 #define AIN1 28
 #define AIN2 27
 #define PWMA 30
+#define LED 13
+#define file_name "test"
 
 static StarshotACS starshotObj;
 Adafruit_LSM9DS1 imu = Adafruit_LSM9DS1();
@@ -38,6 +40,8 @@ double k_input = 13.5;
 double n_input = 500.0;
 double step_size_input = 0.2; // sec
 // /// INPUT DATA///
+
+
 
 void ACSWrite(float current)
 {
@@ -69,12 +73,13 @@ void setup()
 {
   Serial.begin(9600);
 
-  DataLogSetup("test");
-
+  DataLogSetup(file_name);
+  pinMode(LED, OUTPUT);
   pinMode(AIN1, OUTPUT);
   pinMode(AIN2, OUTPUT);
   pinMode(PWMA, OUTPUT);
-  digitalWrite(AIN2, HIGH);
+
+  digitalWrite(LED, HIGH);
   starshotObj.initialize(step_size_input, A_input, Id_input, Kd_input, Kp_input, c_input, i_max_input, k_input, n_input);
 
   // DataLogSetup();
@@ -101,10 +106,6 @@ void loop()
   sensors_event_t accel, mag, gyro, temp;
   imu.getEvent(&accel, &mag, &gyro, &temp);
 
-  double IMUData[6] = {gyro.gyro.x, gyro.gyro.y, gyro.gyro.z, mag.magnetic.x, mag.magnetic.y, mag.magnetic.z};
-  DataLog(IMUData, 6);
-  //Serial.printf(" % f, % f, % f, % f, % f, % f,  \n ", gyro.gyro.x, gyro.gyro.y, gyro.gyro.z, mag.magnetic.x, mag.magnetic.y, mag.magnetic.z);
-
   //Remap axis(rotate around x-axis by 90 deg)
 
   starshotObj.rtU.w[0] = gyro.gyro.x;
@@ -114,18 +115,16 @@ void loop()
   starshotObj.rtU.Bfield_body[0] = mag.magnetic.x;
   starshotObj.rtU.Bfield_body[1] = mag.magnetic.z;
   starshotObj.rtU.Bfield_body[2] = -mag.magnetic.y;
-
+  //////
   starshotObj.step();
 
+  //test bench current adjust due to high B field
   double current_adjust = starshotObj.rtY.point[2] * 5.0;
-
   ACSWrite(current_adjust);
 
-  //Serial.printf("Point Error:% f, current: % f mA \n", starshotObj.rtY.pt_error, starshotObj.rtY.point[2] * 1000.0);
-  
-  //serial test
+  // data
   int PWM = current2PWM(current_adjust);
-
-  Serial.printf("%f,%f,%d \n", starshotObj.rtY.pt_error, current_adjust, PWM);
+  double IMUData[6] = {starshotObj.rtY.pt_error, current_adjust, PWM, mag.magnetic.x, mag.magnetic.y, mag.magnetic.z};
+  DataLog(IMUData, 6, file_name);
   delay(200);
 }

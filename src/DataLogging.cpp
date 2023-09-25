@@ -20,20 +20,20 @@ void DataLogSetup(String s){
     DataFile.close();
 }
 
-void DataLog(double Data[], int size)
+void DataLog(double Data[], int size, String s)
 {
-    DataFile = SD.open("Data.txt", FILE_WRITE);
+    DataFile = SD.open(s.append(".txt").c_str(), FILE_WRITE);
     if (DataFile) {
         for(int i = 0 ; i< size;i++) {
             DataFile.print(Data[i]);
             DataFile.print(", ");
 
-            //Serial.print(Data[i]);
-            //Serial.print(", ");
+            Serial.print(Data[i]);
+            Serial.print(", ");
         }
-        DataFile.println();
-        //Serial.println();
 
+        DataFile.println();
+        Serial.println();
         DataFile.close();
         //Serial.println("done.");
     } else {

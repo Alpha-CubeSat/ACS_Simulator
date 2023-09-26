@@ -36,57 +36,10 @@ double i_max_input = 0.25;
 double k_input = 13.5;
 double n_input = 500.0;
 double step_size_input = imu_delay; // sec
-/// INPUT DATA///
-
-struct IMU_Data
-{
-  double wx, wy, wz, magx, magy, magz;
-};
 
 int main()
 
 {
-
-  ///////////////////////READ//////////////
-  std::ifstream inFile("input/200ms_mag_change.txt");
-  if (!inFile)
-  {
-    std::cerr << "Unable to open file";
-    return 1; // call system to stop
-  }
-
-  std::vector<IMU_Data> imu_data;
-  IMU_Data temp;
-  char comma; // to ignore the comma in the file
-
-  int line_number = 1;
-  while (inFile >> temp.wx >> comma >> temp.wy >> comma >> temp.wz >> comma >> temp.magx >> comma >> temp.magy >> comma >> temp.magz)
-  {
-    if (comma != ',')
-    {
-      std::cerr << "Error reading line " << line_number << ": expected ',' but got '" << comma << "'\n";
-      return 1;
-    }
-    // read every 5 row, so it matches the imu delay 0.25s
-    if (line_number % 5 == 0)
-    {
-      imu_data.push_back(temp);
-    }
-    line_number++;
-  }
-
-  if (inFile.bad())
-  {
-    std::cerr << "Error reading file\n";
-    return 1;
-  }
-
-  inFile.close();
-
-  for (const auto &d : imu_data)
-  {
-    std::cout << d.wx << ", " << d.wy << ", " << d.wz << ", " << d.magx << ", " << d.magy << ", " << d.magz << std::endl;
-  }
 
   ////////////////////////////////////////////////////////////////////////////////
   std::ofstream outfile;
@@ -102,10 +55,7 @@ int main()
   std::cout << "TOTAL SIMULATION TIME: " << RUN_TIME_HR << " hours"
             << "\n ";
 
-  // while ((iteration * imu_delay / 3600.0) < RUN_TIME_HR)
-  // {
-
-  while (iteration < imu_data.size())
+  while ((iteration * imu_delay / 3600.0) < RUN_TIME_HR)
   {
     // /////////////////////////////PROGRESS BAR///////////////////////////////////
     // float progress = (iteration * 0.001 / 3600.0) / RUN_TIME_HR;
@@ -126,33 +76,25 @@ int main()
     // std::cout.flush();
     ////////////////////////////UPDATE PLANT////////////////////////////////////
 
-    // step 0.25s
-    // for (int i = 0; i < (int)(imu_delay / 0.001); i++)
-    // {
+    // step imu_deley
+    for (int i = 0; i < (int)(imu_delay / 0.001); i++)
+    {
 
-    //   plantObj.rtU.current[0] = starshotObj.rtY.point[0];
-    //   plantObj.rtU.current[1] = starshotObj.rtY.point[1];
-    //   plantObj.rtU.current[2] = starshotObj.rtY.point[2];
+      plantObj.rtU.current[0] = starshotObj.rtY.point[0];
+      plantObj.rtU.current[1] = starshotObj.rtY.point[1];
+      plantObj.rtU.current[2] = starshotObj.rtY.point[2];
 
-    //   plantObj.step();
-    // }
+      plantObj.step();
+    }
 
     ///////////////////////////////////////////////////////////////////////////////
-    IMU_Data currentData = imu_data[iteration];
 
-    starshotObj.rtU.w[0] = currentData.wx;
-    starshotObj.rtU.w[1] = currentData.wy;
-    starshotObj.rtU.w[2] = currentData.wz;
-    starshotObj.rtU.Bfield_body[0] = currentData.magx;
-    starshotObj.rtU.Bfield_body[1] = currentData.magy;
-    starshotObj.rtU.Bfield_body[2] = currentData.magz;
-
-    // starshotObj.rtU.w[0] = plantObj.rtY.angularvelocity[0];
-    // starshotObj.rtU.w[1] = plantObj.rtY.angularvelocity[1];
-    // starshotObj.rtU.w[2] = plantObj.rtY.angularvelocity[2];
-    // starshotObj.rtU.Bfield_body[0] = plantObj.rtY.magneticfield[0];
-    // starshotObj.rtU.Bfield_body[1] = plantObj.rtY.magneticfield[1];
-    // starshotObj.rtU.Bfield_body[2] = plantObj.rtY.magneticfield[2];
+    starshotObj.rtU.w[0] = plantObj.rtY.angularvelocity[0];
+    starshotObj.rtU.w[1] = plantObj.rtY.angularvelocity[1];
+    starshotObj.rtU.w[2] = plantObj.rtY.angularvelocity[2];
+    starshotObj.rtU.Bfield_body[0] = plantObj.rtY.magneticfield[0];
+    starshotObj.rtU.Bfield_body[1] = plantObj.rtY.magneticfield[1];
+    starshotObj.rtU.Bfield_body[2] = plantObj.rtY.magneticfield[2];
 
     starshotObj.step();
     // print to console/ write to file
@@ -162,6 +104,7 @@ int main()
       std::cout << "time(s): " << (iteration * imu_delay);
       std::cout << ", pointing error(deg) : " << starshotObj.rtY.pt_error;
       std::cout << ", current(mA): [";
+
       for (int i = 0; i < 3; i++)
       {
         std::cout << starshotObj.rtY.point[i] * 1000.0;
@@ -203,7 +146,7 @@ int main()
 
       std::cout << "\n ";
 
-      outfile << (iteration * imu_delay) << " ," << starshotObj.rtY.pt_error << " ," << starshotObj.rtY.point[2] * 1000.0 << " ," << currentData.magx << " ," << currentData.magy << " ," << currentData.magz << '\n';
+      outfile << (iteration * imu_delay) << " ," << starshotObj.rtY.pt_error << " ," << starshotObj.rtY.point[2] * 1000.0 << std::endl;
     }
 
     iteration++;

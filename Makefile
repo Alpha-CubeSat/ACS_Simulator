@@ -16,4 +16,4 @@ $(EXECUTABLE): $(OBJECTS)
 
 clean:
 	rm -f $(OBJECTS) $(EXECUTABLE)
-	rm output/test.txt
+	# rm output/test.txt

@@ -4,13 +4,32 @@
 #include <chrono>
 #include "../lib/Plant_ert_rtw/Plant.h"
 #include "../lib/StarshotACS_ert_rtw/StarshotACS.h"
+#include <random>
 
-static Plant plantObj;
-static StarshotACS starshotObj;
+// static Plant plantObj;
+// static StarshotACS starshotObj;
 
 int iteration = 0;
 double imu_delay = 0.20; // sec
 double RUN_TIME_HR = 100;
+
+// Monte Carlo
+int num_mc_iterations = 1000;
+double percent_avg = 0.2; // percentage of iterations to consider for average pointing error
+
+double Kp_min = 1e-10; // minimum value for Kp
+double Kp_max = 1e-1;  // maximum value for Kp
+
+double Kd_min = 1e-10; // minimum value for Kd
+double Kd_max = 1e-1;  // maximum value for Kd
+
+std::default_random_engine generator;
+std::uniform_real_distribution<double> distribution_Kp_log(std::log10(Kp_min), std::log10(Kp_max));
+std::uniform_real_distribution<double> distribution_Kd_log(std::log10(Kd_min), std::log10(Kd_max));
+// Duty cycle
+// 10 min on 30min off
+double period = 40;
+double duty_perc = 0.25;
 
 /// PLANT PARAMETERS///
 double altitude_input = 400;
@@ -36,182 +55,120 @@ double i_max_input = 0.25;
 double k_input = 13.5;
 double n_input = 500.0;
 double step_size_input = imu_delay; // sec
-/// INPUT DATA///
 
-struct IMU_Data
+// given period(mins), duty_perc[0,1], and the current_time(mins)
+// output if the current time is in the active range
+bool duty_cyc(double current_time, double period, double duty_perc)
 {
-  double wx, wy, wz, magx, magy, magz;
-};
+  // Calculate the time at which the signal becomes inactive
+  double active_time = period * duty_perc;
+
+  // Calculate the time within the current period 90, 20
+  double time_in_current_period = fmod(current_time, period);
+
+  // Check if the time is within the active range
+  return time_in_current_period < active_time;
+}
 
 int main()
 
 {
 
-  ///////////////////////READ//////////////
-  std::ifstream inFile("input/200ms_mag_change.txt");
-  if (!inFile)
-  {
-    std::cerr << "Unable to open file";
-    return 1; // call system to stop
-  }
-
-  std::vector<IMU_Data> imu_data;
-  IMU_Data temp;
-  char comma; // to ignore the comma in the file
-
-  int line_number = 1;
-  while (inFile >> temp.wx >> comma >> temp.wy >> comma >> temp.wz >> comma >> temp.magx >> comma >> temp.magy >> comma >> temp.magz)
-  {
-    if (comma != ',')
-    {
-      std::cerr << "Error reading line " << line_number << ": expected ',' but got '" << comma << "'\n";
-      return 1;
-    }
-    // read every 5 row, so it matches the imu delay 0.25s
-    if (line_number % 5 == 0)
-    {
-      imu_data.push_back(temp);
-    }
-    line_number++;
-  }
-
-  if (inFile.bad())
-  {
-    std::cerr << "Error reading file\n";
-    return 1;
-  }
-
-  inFile.close();
-
-  for (const auto &d : imu_data)
-  {
-    std::cout << d.wx << ", " << d.wy << ", " << d.wz << ", " << d.magx << ", " << d.magy << ", " << d.magz << std::endl;
-  }
-
-  ////////////////////////////////////////////////////////////////////////////////
   std::ofstream outfile;
-  outfile.open("output/test.txt");
+
+  // open output file
+  outfile.open("output/test.txt", std::ios::app);
   if (!outfile.is_open())
   { // check if file opened successfully
     return -1;
   }
+  ////////
 
-  plantObj.initialize(altitude_input, I_input, inclination_input, m_input, q0_input, wx_input, wy_input, wz_input);
-  starshotObj.initialize(step_size_input, A_input, Id_input, Kd_input, Kp_input, c_input, i_max_input, k_input, n_input);
+  std::cout << "EACH SIMULATION TIME: " << RUN_TIME_HR << " hours"
+            << "\n";
+  std::cout << "Duty Period: " << period << " mins"
+            << ", On for: " << duty_perc * 100 << "\%"
+            << "\n";
+  std::cout << "Monte Carlo Iterations: " << num_mc_iterations << "\n";
 
-  std::cout << "TOTAL SIMULATION TIME: " << RUN_TIME_HR << " hours"
-            << "\n ";
-
-  // while ((iteration * imu_delay / 3600.0) < RUN_TIME_HR)
-  // {
-
-  while (iteration < imu_data.size())
+  for (int mc_iteration = 0; mc_iteration < num_mc_iterations; mc_iteration++)
   {
-    // /////////////////////////////PROGRESS BAR///////////////////////////////////
-    // float progress = (iteration * 0.001 / 3600.0) / RUN_TIME_HR;
-    // int barWidth = 70;
-    // std::cout << "[";
-    // int pos = barWidth * progress;
-    // for (int i = 0; i < barWidth; ++i)
-    // {
-    //   if (i < pos)
-    //     std::cout << "=";
-    //   else if (i == pos)
-    //     std::cout << ">";
-    //   else
-    //     std::cout << " ";
-    // }
+    iteration = 0;
+    double pt_error_sum = 0.0;
 
-    // std::cout << "] " << std::fixed << std::setprecision(1) << (progress * 100.0) << (iteration * imu_delay)<< " % \r";
-    // std::cout.flush();
-    ////////////////////////////UPDATE PLANT////////////////////////////////////
+    // Generate random numbers
+    double Kp_rand_log = distribution_Kp_log(generator);
+    double Kd_rand_log = distribution_Kd_log(generator);
 
-    // step 0.25s
-    // for (int i = 0; i < (int)(imu_delay / 0.001); i++)
-    // {
+    // Convert back to original scale
+    double Kp_rand = std::pow(10, Kp_rand_log);
+    double Kd_rand = std::pow(10, Kd_rand_log);
 
-    //   plantObj.rtU.current[0] = starshotObj.rtY.point[0];
-    //   plantObj.rtU.current[1] = starshotObj.rtY.point[1];
-    //   plantObj.rtU.current[2] = starshotObj.rtY.point[2];
-
-    //   plantObj.step();
-    // }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    IMU_Data currentData = imu_data[iteration];
-
-    starshotObj.rtU.w[0] = currentData.wx;
-    starshotObj.rtU.w[1] = currentData.wy;
-    starshotObj.rtU.w[2] = currentData.wz;
-    starshotObj.rtU.Bfield_body[0] = currentData.magx;
-    starshotObj.rtU.Bfield_body[1] = currentData.magy;
-    starshotObj.rtU.Bfield_body[2] = currentData.magz;
-
-    // starshotObj.rtU.w[0] = plantObj.rtY.angularvelocity[0];
-    // starshotObj.rtU.w[1] = plantObj.rtY.angularvelocity[1];
-    // starshotObj.rtU.w[2] = plantObj.rtY.angularvelocity[2];
-    // starshotObj.rtU.Bfield_body[0] = plantObj.rtY.magneticfield[0];
-    // starshotObj.rtU.Bfield_body[1] = plantObj.rtY.magneticfield[1];
-    // starshotObj.rtU.Bfield_body[2] = plantObj.rtY.magneticfield[2];
-
-    starshotObj.step();
-    // print to console/ write to file
-    if ((int)(iteration * 0.001) % 1 == 0)
+    // default sanity check  (why not 0? Testing if there is states leftover from last mc iteration)
+    // checked so np
+    if (mc_iteration == 0)
     {
-
-      std::cout << "time(s): " << (iteration * imu_delay);
-      std::cout << ", pointing error(deg) : " << starshotObj.rtY.pt_error;
-      std::cout << ", current(mA): [";
-      for (int i = 0; i < 3; i++)
-      {
-        std::cout << starshotObj.rtY.point[i] * 1000.0;
-        if (i < 2)
-        {
-          std::cout << ", ";
-        }
-        else
-        {
-          std::cout << "]";
-        }
-      }
-      std::cout << ", mag: [";
-      for (int i = 0; i < 3; i++)
-      {
-        std::cout << plantObj.rtY.magneticfield[i];
-        if (i < 2)
-        {
-          std::cout << ", ";
-        }
-        else
-        {
-          std::cout << "]";
-        }
-      }
-      std::cout << ", w: [";
-      for (int i = 0; i < 3; i++)
-      {
-        std::cout << plantObj.rtY.angularvelocity[i];
-        if (i < 2)
-        {
-          std::cout << ", ";
-        }
-        else
-        {
-          std::cout << "]";
-        }
-      }
-
-      std::cout << "\n ";
-
-      outfile << (iteration * imu_delay) << " ," << starshotObj.rtY.pt_error << " ," << starshotObj.rtY.point[2] * 1000.0 << " ," << currentData.magx << " ," << currentData.magy << " ," << currentData.magz << '\n';
+      Kp_rand = Kp_input;
+      Kd_rand = Kd_input;
     }
 
-    iteration++;
+    ///////////////
+    std::cout << mc_iteration + 1 << "/" << num_mc_iterations;
+    std::cout << " | Kp: " << Kp_rand << " | Kd: " << Kd_rand;
+    ///////////////
+    Plant plantObj;
+    StarshotACS starshotObj;
+
+    plantObj.initialize(altitude_input, I_input, inclination_input, m_input, q0_input, wx_input, wy_input, wz_input);
+    starshotObj.initialize(step_size_input, A_input, Id_input, Kd_rand, Kp_rand, c_input, i_max_input, k_input, n_input);
+
+    while ((iteration * imu_delay / 3600.0) < RUN_TIME_HR)
+    {
+      // step 0.2s
+      for (int i = 0; i < (int)(imu_delay / 0.001); i++)
+      {
+        if (duty_cyc(iteration * imu_delay / 60.0, period, duty_perc))
+        {
+          plantObj.rtU.current[0] = starshotObj.rtY.point[0];
+          plantObj.rtU.current[1] = starshotObj.rtY.point[1];
+          plantObj.rtU.current[2] = starshotObj.rtY.point[2];
+        }
+        else
+        {
+          plantObj.rtU.current[0] = 0.0;
+          plantObj.rtU.current[1] = 0.0;
+          plantObj.rtU.current[2] = 0.0;
+        }
+
+        plantObj.step();
+      }
+
+      if (duty_cyc(iteration * imu_delay / 60.0, period, duty_perc))
+      {
+        starshotObj.rtU.w[0] = plantObj.rtY.angularvelocity[0];
+        starshotObj.rtU.w[1] = plantObj.rtY.angularvelocity[1];
+        starshotObj.rtU.w[2] = plantObj.rtY.angularvelocity[2];
+        starshotObj.rtU.Bfield_body[0] = plantObj.rtY.magneticfield[0];
+        starshotObj.rtU.Bfield_body[1] = plantObj.rtY.magneticfield[1];
+        starshotObj.rtU.Bfield_body[2] = plantObj.rtY.magneticfield[2];
+        starshotObj.step();
+      }
+
+      // in the last percent_avg
+      if ((iteration * imu_delay / 3600.0) > (1 - percent_avg) * RUN_TIME_HR)
+      {
+        pt_error_sum += starshotObj.rtY.pt_error;
+      }
+      iteration++;
+    }
+
+    double pt_avg = pt_error_sum / (percent_avg * RUN_TIME_HR * 3600 / imu_delay);
+    std::cout << " | Last " << percent_avg * 100 << "\% pt_error averge: " << pt_avg << "\n";
+    // write to file
+    outfile << pt_avg << " ," << Kp_rand << " ," << Kd_rand << std::endl;
+    ////////////////////////////////
   }
 
   outfile.close();
-  std::cout << "\n"
-            << "done."
-            << "\n";
   return 0;
 }

@@ -1,7 +1,9 @@
-# ACS_Simulator C++
+# ACS_Simulator C++ Monte Carlo
 
 ## Settings
-Adjust `RUN_TIME_HR` to change the simulation length
+Adjust `RUN_TIME_HR` to change each simulation length
+And other parameters
+
 ## How to run
 In the project dir
 

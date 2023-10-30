@@ -49,7 +49,7 @@ int main()
     return -1;
   }
 
-  plantObj.initialize(altitude_input, I_input, inclination_input, m_input, q0_input, wx_input, wy_input, wz_input);
+  plantObj.initialize(0.001, altitude_input, I_input, inclination_input, m_input, q0_input, wx_input, wy_input, wz_input);
   starshotObj.initialize(step_size_input, A_input, Id_input, Kd_input, Kp_input, c_input, i_max_input, k_input, n_input);
 
   std::cout << "TOTAL SIMULATION TIME: " << RUN_TIME_HR << " hours"

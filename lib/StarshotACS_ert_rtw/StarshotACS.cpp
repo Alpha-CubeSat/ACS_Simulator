@@ -35,9 +35,9 @@ real_T A = 4.0E-5; // Variable: A
                    //    '<S3>/Saturation6'
                    //  Cross Section Area For magnetorquer
 
-real_T Id = 0.0021; // Variable: Id
-                    //  Referenced by: '<S2>/Id inverse'
-                    //  Id for the Detumble
+real_T Id = 0.196; // Variable: Id
+                   //  Referenced by: '<S2>/Id inverse'
+                   //  Id for the Detumble
 
 real_T Kd = 0.0007935279615795299; // Variable: Kd
                                    //  Referenced by: '<S3>/Kd Gain'
@@ -47,11 +47,11 @@ real_T Kp = 5.2506307629097953E-10; // Variable: Kp
                                     //  Referenced by: '<S3>/Kp Gain'
                                     //  Kp for the pointing
 
-real_T c = 0.004; // Variable: c
-                  //  Referenced by:
-                  //    '<S2>/Gain 8'
-                  //    '<S2>/Kane damping'
-                  //  c for the Detumble
+real_T c = 1.0E-5; // Variable: c
+                   //  Referenced by:
+                   //    '<S2>/Gain 8'
+                   //    '<S2>/Kane damping'
+                   //  c for the Detumble
 
 real_T i_max = 0.25; // Variable: i_max
                      //  Referenced by:

@@ -25,6 +25,7 @@ double q0_input[4] = {0.5, 0.5, -0.18301270189221924, 0.6830127018922193};
 double wx_input = 0.0;
 double wy_input = 0.0;
 double wz_input = 1.0;
+double f_step_size_input = 0.001;
 
 /// STARSHOT PARAMETERS///
 double A_input = 4.0E-5;
@@ -49,7 +50,7 @@ int main()
     return -1;
   }
 
-  plantObj.initialize(altitude_input, I_input, inclination_input, m_input, q0_input, wx_input, wy_input, wz_input);
+  plantObj.initialize(f_step_size_input,altitude_input, I_input, inclination_input, m_input, q0_input, wx_input, wy_input, wz_input);
   starshotObj.initialize(step_size_input, A_input, Id_input, Kd_input, Kp_input, c_input, i_max_input, k_input, n_input);
 
   std::cout << "TOTAL SIMULATION TIME: " << RUN_TIME_HR << " hours"
@@ -57,25 +58,6 @@ int main()
 
   while ((iteration * imu_delay / 3600.0) < RUN_TIME_HR)
   {
-    // /////////////////////////////PROGRESS BAR///////////////////////////////////
-    // float progress = (iteration * 0.001 / 3600.0) / RUN_TIME_HR;
-    // int barWidth = 70;
-    // std::cout << "[";
-    // int pos = barWidth * progress;
-    // for (int i = 0; i < barWidth; ++i)
-    // {
-    //   if (i < pos)
-    //     std::cout << "=";
-    //   else if (i == pos)
-    //     std::cout << ">";
-    //   else
-    //     std::cout << " ";
-    // }
-
-    // std::cout << "] " << std::fixed << std::setprecision(1) << (progress * 100.0) << (iteration * imu_delay)<< " % \r";
-    // std::cout.flush();
-    ////////////////////////////UPDATE PLANT////////////////////////////////////
-
     // step imu_deley
     for (int i = 0; i < (int)(imu_delay / 0.001); i++)
     {

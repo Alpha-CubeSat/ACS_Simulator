@@ -19,8 +19,6 @@
 // Validation result: Not run
 //
 #include "StarshotACS.h"
-#include <cmath>
-#include "rtwtypes.h"
 
 // Exported block parameters
 real_T A = 4.0E-5; // Variable: A
@@ -562,16 +560,16 @@ void StarshotACS::step()
 }
 
 // Model initialize function
-void StarshotACS::initialize()
-{
-  // SystemInitialize for Atomic SubSystem: '<Root>/StarshotACS'
-  // InitializeConditions for DiscreteIntegrator: '<S2>/Discrete-Time Integrator'
-  rtDW.DiscreteTimeIntegrator_DSTATE[0] = 0.0;
-  rtDW.DiscreteTimeIntegrator_DSTATE[1] = 0.0;
-  rtDW.DiscreteTimeIntegrator_DSTATE[2] = 1.0;
+// void StarshotACS::initialize()
+// {
+//   // SystemInitialize for Atomic SubSystem: '<Root>/StarshotACS'
+//   // InitializeConditions for DiscreteIntegrator: '<S2>/Discrete-Time Integrator'
+//   rtDW.DiscreteTimeIntegrator_DSTATE[0] = 0.0;
+//   rtDW.DiscreteTimeIntegrator_DSTATE[1] = 0.0;
+//   rtDW.DiscreteTimeIntegrator_DSTATE[2] = 1.0;
 
-  // End of SystemInitialize for SubSystem: '<Root>/StarshotACS'
-}
+//   // End of SystemInitialize for SubSystem: '<Root>/StarshotACS'
+// }
 
 void StarshotACS::initialize(double step_size_input, double A_input, double Id_input, double Kd_input, double Kp_input, double c_input, double i_max_input, double k_input, double n_input)
 {

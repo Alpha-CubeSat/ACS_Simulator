@@ -21,6 +21,7 @@
 #ifndef RTW_HEADER_StarshotACS_h_
 #define RTW_HEADER_StarshotACS_h_
 #include "rtwtypes.h"
+#include <cmath>
 
 // Macros for accessing real-time model data structure
 #ifndef rtmGetErrorStatus
@@ -173,7 +174,7 @@ class StarshotACS
   ExtY rtY;
 
   // model initialize function
-  void initialize();
+//   void initialize();
   void initialize(double step_size_input, double A_input, double Id_input, double Kd_input, double Kp_input, double c_input, double i_max_input, double k_input, double n_input);
 
       // model step function

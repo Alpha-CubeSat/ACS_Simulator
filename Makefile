@@ -1,7 +1,7 @@
 CXX = g++
-CXXFLAGS = -Ilib/StarshotACS_Ert_rtw -Ilib/eigen/
+CXXFLAGS =-Ilib -std=c++14
 
-SOURCES = src/main.cpp lib/StarshotACS_Ert_rtw/StarshotACS.cpp lib/StarshotACS_Ert_rtw/StarshotACS_data.cpp lib/Plant_ert_rtw/Plant_data.cpp lib/Plant_ert_rtw/Plant.cpp
+SOURCES = src/main.cpp lib/StarshotACS_Ert_rtw/StarshotACS.cpp lib/StarshotACS_Ert_rtw/StarshotACS_data.cpp lib/Plant_ert_rtw/Plant_data.cpp lib/Plant_ert_rtw/Plant.cpp lib/ekf/ekf.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
 EXECUTABLE = main
 

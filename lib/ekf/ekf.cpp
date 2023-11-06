@@ -1,50 +1,77 @@
 #include "ekf.h"
-#include <Eigen/Dense>
 
 EKF::EKF() {}
 
-void EKF::Initialize(const Eigen::VectorXd& initial_state, const Eigen::MatrixXd& initial_covariance, const Eigen::MatrixXd& process_noise_covariance, const Eigen::MatrixXd& magnetometer_noise_covariance, const Eigen::MatrixXd& gyroscope_noise_covariance) {
+void EKF::initialize(const Eigen::VectorXd &initial_state, const Eigen::MatrixXd &initial_covariance, const Eigen::MatrixXd &process_noise_covariance, const Eigen::MatrixXd &Rd, const Eigen::MatrixXd &Hd)
+{
     state = initial_state;
+    Z = initial_state;
+
     covariance = initial_covariance;
     Q = process_noise_covariance;
-    R_mag = magnetometer_noise_covariance;
-    R_gyro = gyroscope_noise_covariance;
+    R_d = Rd;
+    H_d = Hd;
 }
 
-void EKF::Prediction(const Eigen::MatrixXd& A, double delta_t) {
-    Eigen::MatrixXd Ad = (A * delta_t).exp();
-    state = Ad * state;
+void EKF::step()
+{
+    Eigen::MatrixXd J = CalculateJacobian();
+
+    //step size
+    predict(J, 0.2);
+    correct();
+
+}
+
+
+typedef Eigen::VectorXd state_type;
+struct SystemDynamics
+{
+    void operator()(const state_type &x, state_type &dxdt, const double /* t */)
+    {
+        dxdt[0] = -x[2] * x[4] + x[1] * x[5];
+        dxdt[1] = x[2] * x[3] - x[0] * x[5];
+        dxdt[2] = -x[1] * x[3] + x[0] * x[4];
+        dxdt[3] = -x[4] * x[5];
+        dxdt[4] = x[3] * x[5];
+        dxdt[5] = -x[3] * x[4] / 3;
+    }
+};
+
+void EKF::predict(const Eigen::MatrixXd &J_k_k,double delta_t)
+{
+
+    using namespace boost::numeric::odeint;
+    state_type X_k1_k(6);
+    SystemDynamics system_dynamics;
+    double t_start = 0.0;
+    double t_end = delta_t;
+    double dt = 0.001;
+
+    integrate(system_dynamics, state, t_start, t_end, dt, [&X_k1_k](const state_type &x, const double /* t */) { X_k1_k = x; });
+
+
+    Eigen::MatrixXd Ad = (J_k_k * delta_t).exp();
+    state = X_k1_k;
     covariance = Ad * covariance * Ad.transpose() + Q;
 }
 
-void EKF::UpdateWithMagnetometer(const Eigen::VectorXd& magnetometer_measurement, const Eigen::MatrixXd& H_mag) {
-    Eigen::MatrixXd K_mag = covariance * H_mag.transpose() * (H_mag * covariance * H_mag.transpose() + R_mag).inverse(); // Kalman Gain Calculation
-    state += K_mag * (magnetometer_measurement - H_mag * state);
-    covariance = (Eigen::MatrixXd::Identity(state.size(), state.size()) - K_mag * H_mag) * covariance;
+void EKF::correct()
+{
+    Eigen::MatrixXd K_k1 = covariance * H_d.transpose() * (H_d * covariance * H_d.transpose() + R_d).inverse();
+    covariance = covariance - K_k1 * (H_d * covariance * H_d.transpose() + R_d) * K_k1.transpose();
+    state = state + K_k1 * (Z - H_d * state);
 }
 
-void EKF::UpdateWithGyroscope(const Eigen::VectorXd& gyroscope_measurement, const Eigen::MatrixXd& H_gyro) {
-    Eigen::MatrixXd K_gyro = covariance * H_gyro.transpose() * (H_gyro * covariance * H_gyro.transpose() + R_gyro).inverse();
-    state += K_gyro * (gyroscope_measurement - H_gyro * state);
-    covariance = (Eigen::MatrixXd::Identity(state.size(), state.size()) - K_gyro * H_gyro) * covariance;
-}
 
-Eigen::VectorXd EKF::GetState() {
-    return state;
-}
-
-Eigen::MatrixXd EKF::GetCovariance() {
-    return covariance;
-}
-
-Eigen::MatrixXd EKF::CalculateJacobian(const Eigen::VectorXd& B_body, const Eigen::VectorXd& angular_velocities) {
+Eigen::MatrixXd EKF::CalculateJacobian() {
     // Implement Jacobian calculation here just like Soumaryup's matlab code:
-    double Bx = B_body(0);
-    double By = B_body(1);
-    double Bz = B_body(2);
-    double wx = angular_velocities(0);
-    double wy = angular_velocities(1);
-    double wz = angular_velocities(2);
+    double Bx = Z(0);
+    double By = Z(1);
+    double Bz = Z(2);
+    double wx = Z(3);
+    double wy = Z(4);
+    double wz = Z(5);
 
     Eigen::MatrixXd J(6, 6);
     

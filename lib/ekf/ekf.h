@@ -1,24 +1,27 @@
-#include "../Eigen/Dense"
+#include <Eigen/Dense>
+#include <unsupported/Eigen/MatrixFunctions>
+#include <boost/numeric/odeint.hpp>
+#include <boost/numeric/odeint/external/eigen/eigen.hpp>
 #include <vector>
 
 class EKF {
 public:
     EKF();
 
-    void Initialize(const Eigen::VectorXd& initial_state, const Eigen::MatrixXd& initial_covariance, const Eigen::MatrixXd& process_noise_covariance, const Eigen::MatrixXd& magnetometer_noise_covariance, const Eigen::MatrixXd& gyroscope_noise_covariance);
-    void Prediction(const Eigen::MatrixXd& A, double delta_t);
-    void UpdateWithMagnetometer(const Eigen::VectorXd& magnetometer_measurement, const Eigen::MatrixXd& H_mag);
-    void UpdateWithGyroscope(const Eigen::VectorXd& gyroscope_measurement, const Eigen::MatrixXd& H_gyro);
+    void initialize(const Eigen::VectorXd &initial_state, const Eigen::MatrixXd &initial_covariance, const Eigen::MatrixXd &process_noise_covariance, const Eigen::MatrixXd &noise_covariance, const Eigen::MatrixXd &Hd);
+    void step();
 
-    Eigen::VectorXd GetState();
-    Eigen::MatrixXd GetCovariance();
+    Eigen::VectorXd state;
+    Eigen::VectorXd Z;
+    Eigen::MatrixXd covariance;
 
 private:
-    Eigen::VectorXd state;
-    Eigen::MatrixXd covariance;
-    Eigen::MatrixXd Q;  // Process noise covariance
-    Eigen::MatrixXd R_mag;  // Magnetometer measurement noise covariance
-    Eigen::MatrixXd R_gyro;  // Gyroscope measurement noise covariance
 
-    Eigen::MatrixXd CalculateJacobian(const Eigen::VectorXd& B_body, const Eigen::VectorXd& angular_velocities);
+    Eigen::MatrixXd Q;  // Process noise covariance
+    Eigen::MatrixXd R_d; // (measurement noise variance) Matrices
+    Eigen::MatrixXd H_d;
+
+    void predict(const Eigen::MatrixXd &J_k_k, double delta_t);
+    void correct();
+    Eigen::MatrixXd CalculateJacobian();
 };

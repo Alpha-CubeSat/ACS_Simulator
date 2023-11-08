@@ -15,7 +15,7 @@ void DataLogSetup(String s){
 
     DataFile = SD.open(s.append(".txt").c_str(), FILE_WRITE);
 
-    DataFile.println("---START---");
+    //DataFile.println("---START---");
     
     DataFile.close();
 }

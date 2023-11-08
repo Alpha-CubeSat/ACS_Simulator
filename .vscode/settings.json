@@ -1,3 +1,8 @@
 {
-  "cmake.sourceDirectory": "/Users/deemo/Desktop/workspace/Alpha/ACS_Simulator/.pio/libdeps/teensy35/Adafruit BusIO"
+  "cmake.sourceDirectory": "/Users/deemo/Desktop/workspace/Alpha/ACS_Simulator/.pio/libdeps/teensy35/Adafruit BusIO",
+  "files.associations": {
+    "dense": "cpp",
+    "*.ipp": "cpp",
+    "core": "cpp"
+  }
 }

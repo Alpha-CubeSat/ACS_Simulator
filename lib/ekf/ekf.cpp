@@ -36,6 +36,7 @@ struct SystemDynamics
         dxdt[4] = x[3] * x[5];
         dxdt[5] = -x[3] * x[4] / 3;
     }
+    
 };
 
 void EKF::predict(const Eigen::MatrixXd &J_k_k,double delta_t)

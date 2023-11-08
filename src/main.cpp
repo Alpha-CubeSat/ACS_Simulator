@@ -5,7 +5,7 @@
 #include <ArduinoEigen.h>
 
 #include "../lib/ACS_libs/StarshotACS_ert_rtw/StarshotACS.h"
-#include "../lib/ACS_libs/ekf/EKF.h"
+#include "../lib/ekf/EKF.h"
 #include "DataLogging.hpp"
 
 // Pins for all inputs, keep in mind the PWM defines must be on PWM pins

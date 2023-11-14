@@ -114,7 +114,7 @@ int main()
 
   plantObj.initialize(f_step_size_input,altitude_input, I_input, inclination_input, m_input, q0_input, wx_input, wy_input, wz_input);
   starshotObj.initialize(step_size_input, A_input, Id_input, Kd_input, Kp_input, c_input, i_max_input, k_input, n_input);
-  ekfObj.initialize(initial_state, initial_cov, Q, Rd, Hd);
+  ekfObj.initialize(step_size_input, initial_state, initial_cov, Q, Rd, Hd);
 
   std::cout << "TOTAL SIMULATION TIME: " << RUN_TIME_HR << " hours"
             << "\n ";

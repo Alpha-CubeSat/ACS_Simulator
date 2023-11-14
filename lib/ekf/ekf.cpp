@@ -21,10 +21,14 @@ Eigen::VectorXd rk4_step(const Eigen::VectorXd &x, double step_size)
     Eigen::VectorXd k1 = f(x);
     k1 *= step_size;
 
-    Eigen::VectorXd k2 = f(x + 0.5 * k1);
+    Eigen::VectorXd half_k1 = 0.5 * k1;
+
+    Eigen::VectorXd k2 = f(x + half_k1);
     k2 *= step_size;
 
-    Eigen::VectorXd k3 = f(x + 0.5 * k2);
+    Eigen::VectorXd half_k2 = 0.5 * k2;
+
+    Eigen::VectorXd k3 = f(x + half_k2);
     k3 *= step_size;
 
     Eigen::VectorXd k4 = f(x + k3);
@@ -70,22 +74,21 @@ Eigen::MatrixXd matrix_exp(const Eigen::MatrixXd &A, int order = 10)
 {
     int n = A.rows();
     Eigen::MatrixXd result = Eigen::MatrixXd::Identity(n, n);
-    Eigen::MatrixXd A_power = Eigen::MatrixXd::Identity(n, n);
+    Eigen::MatrixXd A_power = A;
     Eigen::MatrixXd identity = Eigen::MatrixXd::Identity(n, n);
 
     for (int i = 1; i <= order; ++i)
     {
-        A_power = A_power * A / static_cast<double>(i);
         result += A_power;
 
         if (i % 2 == 0)
         {
-            A_power = A_power * A / static_cast<double>(i);
             result -= A_power;
         }
-    }
 
-    // Pade approximant. (For speedup: This is what SciPy uses.)
+        A_power = A_power * A / static_cast<double>(i + 1);
+    }
+    // Pade Approximant for Speedup (SciPy+Matlab use this.)
     Eigen::MatrixXd U = A * 0.5;
     Eigen::MatrixXd V = identity - U;
     Eigen::MatrixXd P = result * V + U;
@@ -124,4 +127,5 @@ Eigen::MatrixXd EKF::CalculateJacobian()
 
     return J;
 }
+
 

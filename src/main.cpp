@@ -5,7 +5,7 @@
 #include <ArduinoEigen.h>
 
 #include "../lib/ACS_libs/StarshotACS_ert_rtw/StarshotACS.h"
-#include "../lib/ekf/EKF.h"
+#include "../ekf/ekf.h"
 #include "DataLogging.hpp"
 
 // Pins for all inputs, keep in mind the PWM defines must be on PWM pins
@@ -100,7 +100,7 @@ void setup()
 
   digitalWrite(LED, HIGH);
   starshotObj.initialize(step_size_input, A_input, Id_input, Kd_input, Kp_input, c_input, i_max_input, k_input, n_input);
-  // ekfObj.initialize(step_size_input, initial_state, initial_cov, Q, Rd, Hd);
+  ekfObj.initialize(step_size_input, initial_state, initial_cov, Q, Rd, Hd);
   // DataLogSetup();
 
   if (!imu.begin())
@@ -129,23 +129,23 @@ void loop()
 
   //Remap axis(rotate around x-axis by 90 deg)
 
-  // ekfObj.Z(0) = mag.magnetic.x;
-  // ekfObj.Z(1) = mag.magnetic.y;
-  // ekfObj.Z(2) = mag.magnetic.z;
+  ekfObj.Z(0) = mag.magnetic.x;
+  ekfObj.Z(1) = mag.magnetic.y;
+  ekfObj.Z(2) = mag.magnetic.z;
 
-  // ekfObj.Z(3) = gyro.gyro.x;
-  // ekfObj.Z(4) = gyro.gyro.y;
-  // ekfObj.Z(5) = gyro.gyro.z;
+  ekfObj.Z(3) = gyro.gyro.x;
+  ekfObj.Z(4) = gyro.gyro.y;
+  ekfObj.Z(5) = gyro.gyro.z;
 
-  // ekfObj.step();
+  ekfObj.step();
 
-  // starshotObj.rtU.w[0] = ekfObj.state(3);
-  // starshotObj.rtU.w[1] = ekfObj.state(5);
-  // starshotObj.rtU.w[2] = -ekfObj.state(4);
+  starshotObj.rtU.w[0] = ekfObj.state(3);
+  starshotObj.rtU.w[1] = ekfObj.state(5);
+  starshotObj.rtU.w[2] = -ekfObj.state(4);
 
-  // starshotObj.rtU.Bfield_body[0] = ekfObj.state(0);
-  // starshotObj.rtU.Bfield_body[1] = ekfObj.state(2);
-  // starshotObj.rtU.Bfield_body[2] = -ekfObj.state(1);
+  starshotObj.rtU.Bfield_body[0] = ekfObj.state(0);
+  starshotObj.rtU.Bfield_body[1] = ekfObj.state(2);
+  starshotObj.rtU.Bfield_body[2] = -ekfObj.state(1);
 
   // starshotObj.rtU.w[0] = gyro.gyro.x;
   // starshotObj.rtU.w[1] = gyro.gyro.z;
@@ -158,7 +158,7 @@ void loop()
   // starshotObj.step();
 
   //test bench current adjust due to high B field
-  double current_adjust = starshotObj.rtY.point[2] * 5.0;
+  // double current_adjust = starshotObj.rtY.point[2] * 5.0;
   //ACSWrite(current_adjust);
 
   Serial.print(gyro.gyro.x);
@@ -172,13 +172,25 @@ void loop()
   Serial.print(mag.magnetic.y);
   Serial.print(", ");
   Serial.print(mag.magnetic.z);
-
-  double time_diff = millis()-time;
   Serial.print(", ");
+  Serial.print(ekfObj.state(3));
+  Serial.print(", ");
+  Serial.print(ekfObj.state(4));
+  Serial.print(", ");
+  Serial.print(ekfObj.state(5));
+  Serial.print(", ");
+  Serial.print(ekfObj.state(0));
+  Serial.print(", ");
+  Serial.print(ekfObj.state(1));
+  Serial.print(", ");
+  Serial.print(ekfObj.state(2));
+  Serial.print(", ");
+  double time_diff = millis()-time;
+  // Serial.print("Time took: ");
   Serial.println(time_diff);
   // data
   // int PWM = current2PWM(current_adjust);
   //double IMUData[6] = {starshotObj.rtY.pt_error, current_adjust, PWM, mag.magnetic.x, mag.magnetic.y, mag.magnetic.z};
   //DataLog(IMUData, 6, file_name);
-  delay(200);
+  delay(20);
 }

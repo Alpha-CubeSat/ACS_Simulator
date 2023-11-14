@@ -34,7 +34,7 @@ Eigen::VectorXd rk4_step(const Eigen::VectorXd &x, double step_size)
     Eigen::VectorXd k4 = f(x + k3);
     k4 *= step_size;
 
-    Eigen::VectorXd result = x + (1.0 / 6.0) * (k1 + 2 * k2 + 2 * k3 + k4);
+    Eigen::VectorXd result = x + (1.0 / 6.0) * step_size * (k1 + 2 * k2 + 2 * k3 + k4);
 
     return result;
 }
@@ -88,7 +88,7 @@ Eigen::MatrixXd matrix_exp(const Eigen::MatrixXd &A, int order = 10)
 
         A_power = A_power * A / static_cast<double>(i + 1);
     }
-    // Pade Approximant for Speedup (SciPy+Matlab use this.)
+    // Pade Approximant for Speedup (SciPy+Matlab use this).
     Eigen::MatrixXd U = A * 0.5;
     Eigen::MatrixXd V = identity - U;
     Eigen::MatrixXd P = result * V + U;

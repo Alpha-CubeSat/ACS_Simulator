@@ -184,13 +184,22 @@ void loop()
   Serial.print(ekfObj.state(1));
   Serial.print(", ");
   Serial.print(ekfObj.state(2));
-  Serial.print(", ");
+  Serial.println();
   double time_diff = millis()-time;
-  // Serial.print("Time took: ");
-  Serial.println(time_diff);
+  // Serial.print("Total ACS: ");
+  // Serial.println(time_diff);
   // data
   // int PWM = current2PWM(current_adjust);
   //double IMUData[6] = {starshotObj.rtY.pt_error, current_adjust, PWM, mag.magnetic.x, mag.magnetic.y, mag.magnetic.z};
   //DataLog(IMUData, 6, file_name);
-  delay(20);
+  
+  //always taking 100 ms
+  int delay_time =100 - time_diff;
+
+  if(delay_time<0){
+    Serial.printf("too slow! \n");
+    delay_time = 0;
+  }
+
+  delay(delay_time);
 }

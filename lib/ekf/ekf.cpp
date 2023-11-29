@@ -4,9 +4,9 @@ typedef Eigen::VectorXd state_type;
 
 EKF::EKF() {}
 
-Eigen::VectorXd f(const Eigen::VectorXd &x)
+inline Eigen::Matrix<double, 6, 1> f(const Eigen::Matrix<double, 6, 1> &x)
 {
-    Eigen::VectorXd dxdt(6);
+    Eigen::Matrix<double, 6, 1> dxdt;
     dxdt << -x(2) * x(4) + x(1) * x(5),
         x(2) * x(3) - x(0) * x(5),
         -x(1) * x(3) + x(0) * x(4),
@@ -16,25 +16,26 @@ Eigen::VectorXd f(const Eigen::VectorXd &x)
     return dxdt;
 }
 
-Eigen::VectorXd rk4_step(const Eigen::VectorXd &x, double step_size)
+inline Eigen::Matrix<double, 6, 1> rk4_step(const Eigen::Matrix<double, 6, 1> &x, double step_size)
 {
-    Eigen::VectorXd k1 = f(x);
+    Eigen::Matrix<double, 6, 1> k1 = f(x);
     k1 *= step_size;
 
-    Eigen::VectorXd half_k1 = 0.5 * k1;
+    Eigen::Matrix<double, 6, 1> half_k1 = 0.5 * k1;
 
-    Eigen::VectorXd k2 = f(x + half_k1);
+    Eigen::Matrix<double, 6, 1> k2 = f(x + half_k1);
     k2 *= step_size;
 
-    Eigen::VectorXd half_k2 = 0.5 * k2;
+    Eigen::Matrix<double, 6, 1> half_k2 = 0.5 * k2;
 
-    Eigen::VectorXd k3 = f(x + half_k2);
+    Eigen::Matrix<double, 6, 1> k3 = f(x + half_k2);
     k3 *= step_size;
 
-    Eigen::VectorXd k4 = f(x + k3);
+    Eigen::Matrix<double, 6, 1> k4 = f(x + k3);
     k4 *= step_size;
 
-    Eigen::VectorXd result = x + (1.0 / 6.0) * step_size * (k1 + 2 * k2 + 2 * k3 + k4);
+    // Reuse the result matrix to minimize memory copies
+    Eigen::Matrix<double, 6, 1> result = x + (1.0 / 6.0) * step_size * (k1 + 2 * k2 + 2 * k3 + k4);
 
     return result;
 }
@@ -104,15 +105,16 @@ Eigen::MatrixXd matrix_exp(const Eigen::MatrixXd &A, int order = 5)
 
 void EKF::predict(const Eigen::MatrixXd &J_k_k)
 {
-    // double t1 = millis();
-    Eigen::MatrixXd Ad = matrix_exp(J_k_k * dt);
-    // double t2 = millis();
-    state = rk4(state, 0.01, 0.0, dt);
-    // double t3 = millis();
-    covariance = Ad * covariance * Ad.transpose() + Q;
-    // double t4 = millis();
+    double t1 = millis();
+    //Eigen::MatrixXd Ad = matrix_exp(J_k_k * dt);
+    double t2 = millis();
+    state = rk4(state, 0.1, 0.0, dt);
+    double t3 = millis();
+    covariance = J_k_k * covariance * J_k_k.transpose() + Q;
+    //covariance = Ad * covariance * Ad.transpose() + Q;
+    double t4 = millis();
 
-    // Serial.printf("matrix_exp: %f, rk4: %f, multiply: %f \n", t2-t1, t3-t2, t4-t3);
+    //Serial.printf("matrix_exp: %f, rk4: %f, cov_multiply: %f \n", t2-t1, t3-t2, t4-t3);
 }
 
 void EKF::correct()

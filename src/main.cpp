@@ -13,7 +13,7 @@
 #define AIN2 27
 #define PWMA 30
 #define LED 13
-#define file_name "test"
+#define file_name "100ms"
 
 static StarshotACS starshotObj;
 static EKF ekfObj;
@@ -33,14 +33,14 @@ int current2PWM(float current)
 double A_input = 4.0E-5;
 double Id_input = 0.0021;
 
-double Kd_input = 0.0001;
-double Kp_input = 5;
+double Kd_input = 0.5;
+double Kp_input = 3;
 
 double c_input = 0.004;
 double i_max_input = 0.25;
 double k_input = 13.5;
 double n_input = 500.0;
-double step_size_input = 0.2; // sec
+double step_size_input = 0.1; // sec
 // /// INPUT DATA///
 
 
@@ -127,11 +127,10 @@ void loop()
 
   double time = millis();
 
-  //Remap axis(rotate around x-axis by 90 deg)
-
-  ekfObj.Z(0) = mag.magnetic.x;
-  ekfObj.Z(1) = mag.magnetic.y;
-  ekfObj.Z(2) = mag.magnetic.z;
+  //Remap axis(rotate around x-axis by 90 deg) uT to T
+  ekfObj.Z(0) = mag.magnetic.x /10.0;
+  ekfObj.Z(1) = mag.magnetic.y /10.0;
+  ekfObj.Z(2) = mag.magnetic.z /10.0;
 
   ekfObj.Z(3) = gyro.gyro.x;
   ekfObj.Z(4) = gyro.gyro.y;
@@ -143,9 +142,9 @@ void loop()
   starshotObj.rtU.w[1] = ekfObj.state(5);
   starshotObj.rtU.w[2] = -ekfObj.state(4);
 
-  starshotObj.rtU.Bfield_body[0] = ekfObj.state(0);
-  starshotObj.rtU.Bfield_body[1] = ekfObj.state(2);
-  starshotObj.rtU.Bfield_body[2] = -ekfObj.state(1);
+  starshotObj.rtU.Bfield_body[0] = ekfObj.state(0) ;
+  starshotObj.rtU.Bfield_body[1] = ekfObj.state(2) ;
+  starshotObj.rtU.Bfield_body[2] = -ekfObj.state(1) ;
 
   // starshotObj.rtU.w[0] = gyro.gyro.x;
   // starshotObj.rtU.w[1] = gyro.gyro.z;
@@ -155,46 +154,52 @@ void loop()
   // starshotObj.rtU.Bfield_body[1] = mag.magnetic.z;
   // starshotObj.rtU.Bfield_body[2] = -mag.magnetic.y;
   //////
-  // starshotObj.step();
+  starshotObj.step();
 
   //test bench current adjust due to high B field
   // double current_adjust = starshotObj.rtY.point[2] * 5.0;
-  //ACSWrite(current_adjust);
+  ACSWrite(0.25);
+  // Serial.print(starshotObj.rtY.pt_error);
+  // Serial.print(", ");
+  // Serial.print(starshotObj.rtY.point[2]);
+  // Serial.print(", ");
+  // Serial.print(gyro.gyro.x);
+  // Serial.print(", ");
+  // Serial.print(gyro.gyro.y);
+  // Serial.print(", ");
+  // Serial.print(gyro.gyro.z);
+  // Serial.print(", ");
+  // Serial.print(mag.magnetic.x);
+  // Serial.print(", ");
+  // Serial.print(mag.magnetic.y);
+  // Serial.print(", ");
+  // Serial.print(mag.magnetic.z);
+  // Serial.print(", ");
+  // Serial.print(ekfObj.state(3));
+  // Serial.print(", ");
+  // Serial.print(ekfObj.state(4));
+  // Serial.print(", ");
+  // Serial.print(ekfObj.state(5));
+  // Serial.print(", ");
+  // Serial.print(ekfObj.state(0) );
+  // Serial.print(", ");
+  // Serial.print(ekfObj.state(1) );
+  // Serial.print(", ");
+  // Serial.print(ekfObj.state(2) );
+  // Serial.println();
 
-  Serial.print(gyro.gyro.x);
-  Serial.print(", ");
-  Serial.print(gyro.gyro.y);
-  Serial.print(", ");
-  Serial.print(gyro.gyro.z);
-  Serial.print(", ");
-  Serial.print(mag.magnetic.x);
-  Serial.print(", ");
-  Serial.print(mag.magnetic.y);
-  Serial.print(", ");
-  Serial.print(mag.magnetic.z);
-  Serial.print(", ");
-  Serial.print(ekfObj.state(3));
-  Serial.print(", ");
-  Serial.print(ekfObj.state(4));
-  Serial.print(", ");
-  Serial.print(ekfObj.state(5));
-  Serial.print(", ");
-  Serial.print(ekfObj.state(0));
-  Serial.print(", ");
-  Serial.print(ekfObj.state(1));
-  Serial.print(", ");
-  Serial.print(ekfObj.state(2));
-  Serial.println();
   double time_diff = millis()-time;
   // Serial.print("Total ACS: ");
   // Serial.println(time_diff);
+
+
   // data
   // int PWM = current2PWM(current_adjust);
-  //double IMUData[6] = {starshotObj.rtY.pt_error, current_adjust, PWM, mag.magnetic.x, mag.magnetic.y, mag.magnetic.z};
-  //DataLog(IMUData, 6, file_name);
+  double IMUData[15] = {starshotObj.rtY.point[2], starshotObj.rtY.pt_error, mag.magnetic.x, mag.magnetic.y, mag.magnetic.z, gyro.gyro.x, gyro.gyro.y, gyro.gyro.z, ekfObj.state(3), ekfObj.state(4), ekfObj.state(5), ekfObj.state(0), ekfObj.state(1), ekfObj.state(2)};
+  DataLog(IMUData, 15, file_name);
   
   //always taking 100 ms
-  int delay_time =100 - time_diff;
+  int delay_time = 100 - time_diff;
 
   if(delay_time<0){
     Serial.printf("too slow! \n");

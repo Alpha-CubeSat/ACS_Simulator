@@ -105,14 +105,14 @@ Eigen::MatrixXd matrix_exp(const Eigen::MatrixXd &A, int order = 5)
 
 void EKF::predict(const Eigen::MatrixXd &J_k_k)
 {
-    double t1 = millis();
+    // double t1 = millis();
     //Eigen::MatrixXd Ad = matrix_exp(J_k_k * dt);
-    double t2 = millis();
+    // double t2 = millis();
     state = rk4(state, 0.1, 0.0, dt);
-    double t3 = millis();
+    // double t3 = millis();
     covariance = J_k_k * covariance * J_k_k.transpose() + Q;
     //covariance = Ad * covariance * Ad.transpose() + Q;
-    double t4 = millis();
+    // double t4 = millis();
 
     //Serial.printf("matrix_exp: %f, rk4: %f, cov_multiply: %f \n", t2-t1, t3-t2, t4-t3);
 }

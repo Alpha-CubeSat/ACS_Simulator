@@ -6,13 +6,14 @@
 #include "../lib/ACS_libs/Plant_ert_rtw/Plant.h"
 #include "../lib/ACS_libs/ekf/ekf.h"
 
-
 #define LED 13
-
 
 static StarshotACS starshotObj;
 static Plant plantObj;
 static EKF ekfObj;
+
+// detumble = 0; pointing=1; off=2
+int state = 0;
 
 /// PLANT PARAMETERS///
 double altitude_input = 400;
@@ -25,13 +26,13 @@ double m_input = 1.3;                           // kg
 double q0_input[4] = {0.5, 0.5, -0.18301270189221924, 0.6830127018922193};
 
 // ideally for pointing w xyz is [0,0,1], detumble test init w xyz could be, say, [ 0.008, -0.005, -0.0001] (total <5 deg/s)
-double wx_input = 0.0;
-double wy_input = 0.0;
-double wz_input = 1.0;
+// double wx_input = 0.0;
+// double wy_input = 0.0;
+// double wz_input = 1.0;
 
-// double wx_input = 0.008;
-// double wy_input = -0.005;
-// double wz_input = -0.0001;
+double wx_input = 0.05;
+double wy_input = -0.04;
+double wz_input = 0.01;
 
 /// STARSHOT PARAMETERS///
 double A_input = 4.0E-5;
@@ -43,7 +44,7 @@ double i_max_input = 0.25;
 double k_input = 13.5;
 double n_input = 500.0;
 
-double plant_step_size_input = 0.001; //s
+double plant_step_size_input = 0.001;      // s
 double controller_step_size_input = 0.100; // s
 
 void setup()
@@ -72,8 +73,6 @@ void setup()
   starshotObj.initialize(controller_step_size_input, A_input, Id_input, Kd_input, Kp_input, c_input, i_max_input, k_input, n_input);
   ekfObj.initialize(controller_step_size_input, initial_state, initial_cov, Q, Rd, Hd);
 
-
-
   delay(1000);
 }
 
@@ -81,54 +80,76 @@ int iter = 0;
 void loop()
 {
 
-  for (int i = 0; i < (int)(controller_step_size_input / plant_step_size_input); i++)
+  double time_sec = iter * plant_step_size_input;
+  //<=2hr
+  if (time_sec <= 2 * 60 * 60)
   {
+    state = 0;
+  }
+  else
+  {
+    //>2hr, 20 mins on/ 20 mins off
+    int interval_count = time_sec / (20 * 60);
+    state = (interval_count % 2) + 1;
+  }
 
-    // plantObj.rtU.current[0] = starshotObj.rtY.detumble[0];
-    // plantObj.rtU.current[1] = starshotObj.rtY.detumble[1];
-    // plantObj.rtU.current[2] = starshotObj.rtY.detumble[2];
-
+  switch (state)
+  {
+  case 0:
+    plantObj.rtU.current[0] = starshotObj.rtY.detumble[0];
+    plantObj.rtU.current[1] = starshotObj.rtY.detumble[1];
+    plantObj.rtU.current[2] = starshotObj.rtY.detumble[2];
+    break;
+  case 1:
     plantObj.rtU.current[0] = starshotObj.rtY.point[0];
     plantObj.rtU.current[1] = starshotObj.rtY.point[1];
     plantObj.rtU.current[2] = starshotObj.rtY.point[2];
-
-    plantObj.step();
+    break;
+  case 2:
+    plantObj.rtU.current[0] = 0.0;
+    plantObj.rtU.current[1] = 0.0;
+    plantObj.rtU.current[2] = 0.0;
+  default:
+    plantObj.rtU.current[0] = 0.0;
+    plantObj.rtU.current[1] = 0.0;
+    plantObj.rtU.current[2] = 0.0;
+    break;
   }
-  // uT to T
-  ekfObj.Z(0) = plantObj.rtY.magneticfield[0] * 1000000.0;
-  ekfObj.Z(1) = plantObj.rtY.magneticfield[1] * 1000000.0;
-  ekfObj.Z(2) = plantObj.rtY.magneticfield[2] * 1000000.0;
 
-  ekfObj.Z(3) = plantObj.rtY.angularvelocity[0];
-  ekfObj.Z(4) = plantObj.rtY.angularvelocity[1];
-  ekfObj.Z(5) = plantObj.rtY.angularvelocity[2];
+  plantObj.step();
 
-  ekfObj.step();
+  //if on and is time to step
+  if (state != 2 && iter % (int)(controller_step_size_input/plant_step_size_input)==0)
+  {
 
-  //uT to T
-  starshotObj.rtU.Bfield_body[0] = ekfObj.state(0) / 1000000.0;
-  starshotObj.rtU.Bfield_body[1] = ekfObj.state(1) / 1000000.0;
-  starshotObj.rtU.Bfield_body[2] = ekfObj.state(2) / 1000000.0;
+    // uT to T
+    ekfObj.Z(0) = plantObj.rtY.magneticfield[0] * 1000000.0;
+    ekfObj.Z(1) = plantObj.rtY.magneticfield[1] * 1000000.0;
+    ekfObj.Z(2) = plantObj.rtY.magneticfield[2] * 1000000.0;
 
-  starshotObj.rtU.w[0] = ekfObj.state(3);
-  starshotObj.rtU.w[1] = ekfObj.state(4);
-  starshotObj.rtU.w[2] = ekfObj.state(5);
+    ekfObj.Z(3) = plantObj.rtY.angularvelocity[0];
+    ekfObj.Z(4) = plantObj.rtY.angularvelocity[1];
+    ekfObj.Z(5) = plantObj.rtY.angularvelocity[2];
 
-  starshotObj.step();
+    ekfObj.step();
 
-  // IF STEP THE PLANT THE LAST, ALL DATA WILL BE NAN !!!
-  // for (int i=0; i < (int)(controller_step_size_input / plant_step_size_input); i++)
-  // {
-  //   plantObj.rtU.current[0] = starshotObj.rtY.point[0];
-  //   plantObj.rtU.current[1] = starshotObj.rtY.point[1];
-  //   plantObj.rtU.current[2] = starshotObj.rtY.point[2];
+    // uT to T
+    starshotObj.rtU.Bfield_body[0] = ekfObj.state(0) / 1000000.0;
+    starshotObj.rtU.Bfield_body[1] = ekfObj.state(1) / 1000000.0;
+    starshotObj.rtU.Bfield_body[2] = ekfObj.state(2) / 1000000.0;
 
-  //   plantObj.step();
-  // }
-  
-  Serial.print(iter * controller_step_size_input); // time stamp
+    starshotObj.rtU.w[0] = ekfObj.state(3);
+    starshotObj.rtU.w[1] = ekfObj.state(4);
+    starshotObj.rtU.w[2] = ekfObj.state(5);
+
+    starshotObj.step();
+  }
+
+  Serial.print(time_sec); // time stamp
   Serial.print(", ");
-  Serial.print(starshotObj.rtY.pt_error); //deg
+  Serial.print(state); 
+  Serial.print(", ");
+  Serial.print(starshotObj.rtY.pt_error); // deg
   Serial.print(", ");
   Serial.print(plantObj.rtU.current[0]);
   Serial.print(", ");
@@ -136,7 +157,7 @@ void loop()
   Serial.print(", ");
   Serial.print(plantObj.rtU.current[2]);
   Serial.print(", ");
-  Serial.print(plantObj.rtY.magneticfield[0] * 1000000.0); //uT
+  Serial.print(plantObj.rtY.magneticfield[0] * 1000000.0); // uT
   Serial.print(", ");
   Serial.print(plantObj.rtY.magneticfield[1] * 1000000.0); // uT
   Serial.print(", ");

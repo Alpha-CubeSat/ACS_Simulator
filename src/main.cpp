@@ -5,71 +5,16 @@
 #include <ArduinoEigen.h>
 
 #include "../lib/ACS_libs/StarshotACS_ert_rtw/StarshotACS.h"
-#include "../ekf/ekf.h"
+#include "../lib/ACS_libs/ekf/ekf.h"
 #include "DataLogging.hpp"
 
-// Pins for all inputs, keep in mind the PWM defines must be on PWM pins
-#define AIN1 28
-#define AIN2 27
-#define PWMA 30
-#define LED 13
-#define file_name "100ms"
 
-static StarshotACS starshotObj;
+#define LED 13
+
+
 static EKF ekfObj;
 Adafruit_LSM9DS1 imu = Adafruit_LSM9DS1();
-
-int current2PWM(float current)
-{
-  if (int(633.5 * pow(fabs(current), 0.6043) + 8.062) < 8.062)
-    return 0;
-  else if (int(633.5 * pow(fabs(current), 0.6043) + 8.062) > 255)
-    return 255;
-  else
-    return int(633.5 * pow(fabs(current), 0.6043) + 8.062);
-}
-
-// /// STARSHOT PARAMETERS///
-double A_input = 4.0E-5;
-double Id_input = 0.0021;
-
-double Kd_input = 0.5;
-double Kp_input = 3;
-
-double c_input = 0.004;
-double i_max_input = 0.25;
-double k_input = 13.5;
-double n_input = 500.0;
-double step_size_input = 0.1; // sec
-// /// INPUT DATA///
-
-
-
-void ACSWrite(float current)
-{
-
-  int PWM = current2PWM(current);
-
-  if (PWM == 0)
-  {
-    digitalWrite(AIN1, LOW);
-    digitalWrite(AIN2, LOW);
-  }
-
-  if (current < 0)
-  {
-    digitalWrite(AIN1, HIGH);
-    digitalWrite(AIN2, LOW);
-    analogWrite(PWMA, PWM);
-  }
-
-  if (current > 0)
-  {
-    digitalWrite(AIN1, LOW);
-    digitalWrite(AIN2, HIGH);
-    analogWrite(PWMA, PWM);
-  }
-}
+int iter = 0;
 
 void setup()
 {
@@ -92,16 +37,10 @@ void setup()
 
   Serial.begin(9600);
 
-  DataLogSetup(file_name);
-  pinMode(LED, OUTPUT);
-  pinMode(AIN1, OUTPUT);
-  pinMode(AIN2, OUTPUT);
-  pinMode(PWMA, OUTPUT);
-
   digitalWrite(LED, HIGH);
-  starshotObj.initialize(step_size_input, A_input, Id_input, Kd_input, Kp_input, c_input, i_max_input, k_input, n_input);
-  ekfObj.initialize(step_size_input, initial_state, initial_cov, Q, Rd, Hd);
-  // DataLogSetup();
+
+  ekfObj.initialize(0.1, initial_state, initial_cov, Q, Rd, Hd);
+
 
   if (!imu.begin())
   {
@@ -128,9 +67,9 @@ void loop()
   double time = millis();
 
   //Remap axis(rotate around x-axis by 90 deg) uT to T
-  ekfObj.Z(0) = mag.magnetic.x /10.0;
-  ekfObj.Z(1) = mag.magnetic.y /10.0;
-  ekfObj.Z(2) = mag.magnetic.z /10.0;
+  ekfObj.Z(0) = mag.magnetic.x;
+  ekfObj.Z(1) = mag.magnetic.y ;
+  ekfObj.Z(2) = mag.magnetic.z ;
 
   ekfObj.Z(3) = gyro.gyro.x;
   ekfObj.Z(4) = gyro.gyro.y;
@@ -138,66 +77,42 @@ void loop()
 
   ekfObj.step();
 
-  starshotObj.rtU.w[0] = ekfObj.state(3);
-  starshotObj.rtU.w[1] = ekfObj.state(5);
-  starshotObj.rtU.w[2] = -ekfObj.state(4);
+  Serial.print(iter * 0.1);
+  Serial.print(", ");
 
-  starshotObj.rtU.Bfield_body[0] = ekfObj.state(0) ;
-  starshotObj.rtU.Bfield_body[1] = ekfObj.state(2) ;
-  starshotObj.rtU.Bfield_body[2] = -ekfObj.state(1) ;
+  // Print magnetometer readings
+  Serial.print(mag.magnetic.x);
+  Serial.print(", ");
+  Serial.print(mag.magnetic.y);
+  Serial.print(", ");
+  Serial.print(mag.magnetic.z);
+  Serial.print(", ");
 
-  // starshotObj.rtU.w[0] = gyro.gyro.x;
-  // starshotObj.rtU.w[1] = gyro.gyro.z;
-  // starshotObj.rtU.w[2] = -gyro.gyro.y;
+  // Print gyroscope readings
+  Serial.print(gyro.gyro.x);
+  Serial.print(", ");
+  Serial.print(gyro.gyro.y);
+  Serial.print(", ");
+  Serial.print(gyro.gyro.z);
+  Serial.print(", ");
 
-  // starshotObj.rtU.Bfield_body[0] = mag.magnetic.x;
-  // starshotObj.rtU.Bfield_body[1] = mag.magnetic.z;
-  // starshotObj.rtU.Bfield_body[2] = -mag.magnetic.y;
-  //////
-  starshotObj.step();
+  // Print EKF states
+  Serial.print(ekfObj.state(0));
+  Serial.print(", ");
+  Serial.print(ekfObj.state(1));
+  Serial.print(", ");
+  Serial.print(ekfObj.state(2));
+  Serial.print(", ");
+  Serial.print(ekfObj.state(3));
+  Serial.print(", ");
+  Serial.print(ekfObj.state(4));
+  Serial.print(", ");
+  Serial.print(ekfObj.state(5));
 
-  //test bench current adjust due to high B field
-  // double current_adjust = starshotObj.rtY.point[2] * 5.0;
-  ACSWrite(0.25);
-  // Serial.print(starshotObj.rtY.pt_error);
-  // Serial.print(", ");
-  // Serial.print(starshotObj.rtY.point[2]);
-  // Serial.print(", ");
-  // Serial.print(gyro.gyro.x);
-  // Serial.print(", ");
-  // Serial.print(gyro.gyro.y);
-  // Serial.print(", ");
-  // Serial.print(gyro.gyro.z);
-  // Serial.print(", ");
-  // Serial.print(mag.magnetic.x);
-  // Serial.print(", ");
-  // Serial.print(mag.magnetic.y);
-  // Serial.print(", ");
-  // Serial.print(mag.magnetic.z);
-  // Serial.print(", ");
-  // Serial.print(ekfObj.state(3));
-  // Serial.print(", ");
-  // Serial.print(ekfObj.state(4));
-  // Serial.print(", ");
-  // Serial.print(ekfObj.state(5));
-  // Serial.print(", ");
-  // Serial.print(ekfObj.state(0) );
-  // Serial.print(", ");
-  // Serial.print(ekfObj.state(1) );
-  // Serial.print(", ");
-  // Serial.print(ekfObj.state(2) );
-  // Serial.println();
-
+  // End the line
+  Serial.println();
   double time_diff = millis()-time;
-  // Serial.print("Total ACS: ");
-  // Serial.println(time_diff);
 
-
-  // data
-  // int PWM = current2PWM(current_adjust);
-  double IMUData[15] = {starshotObj.rtY.point[2], starshotObj.rtY.pt_error, mag.magnetic.x, mag.magnetic.y, mag.magnetic.z, gyro.gyro.x, gyro.gyro.y, gyro.gyro.z, ekfObj.state(3), ekfObj.state(4), ekfObj.state(5), ekfObj.state(0), ekfObj.state(1), ekfObj.state(2)};
-  DataLog(IMUData, 15, file_name);
-  
   //always taking 100 ms
   int delay_time = 100 - time_diff;
 
@@ -207,4 +122,5 @@ void loop()
   }
 
   delay(delay_time);
+  iter++;
 }

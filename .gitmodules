@@ -1,0 +1,4 @@
+[submodule "lib/ACS_libs"]
+	path = lib/ACS_libs
+	url = https://github.com/Alpha-CubeSat/ACS.git
+	branch = libs

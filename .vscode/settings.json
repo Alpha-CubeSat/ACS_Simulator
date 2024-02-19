@@ -66,6 +66,12 @@
     "fstream": "cpp",
     "iomanip": "cpp",
     "stack": "cpp",
-    "thread": "cpp"
+    "thread": "cpp",
+    "__tree": "cpp",
+    "charconv": "cpp",
+    "list": "cpp",
+    "map": "cpp",
+    "queue": "cpp",
+    "set": "cpp"
   }
 }

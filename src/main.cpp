@@ -7,10 +7,13 @@
 
 #include "DataLogging.hpp"
 
-// Pins for all inputs, keep in mind the PWM defines must be on PWM pins
-#define AIN1 28
-#define AIN2 27
-#define PWMA 30
+// Pins for all inputs, keep in mind the PWM defines must be on PWM pins, 2.29.24 Note that some of the pins were re-arranged to make a cleaner setup
+// #define AIN1 28
+#define AIN1 37
+// #define AIN2 27
+#define AIN2 36
+// #define PWMA 30
+#define PWMA 35
 #define LED 13
 #define file_name "test"
 

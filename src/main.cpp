@@ -11,20 +11,20 @@ static StarshotACS starshotObj;
 static EKF ekfObj;
 
 int iteration = 0;
-double RUN_TIME_HR = 150;
+double RUN_TIME_HR = 5;
 
 /// PLANT PARAMETERS///
 double altitude_input = 400;
 
 // No weights+wire accounted for correctly (80-20):
-// double I_input[9] = {0.002020, -0.000028, 0.00,
-//                      -0.000028, 0.001979, 0.000030,
-//                      0.00, 0.000030, 0.002337};
+double I_input[9] = {0.002020, -0.000028, 0.00,
+                     -0.000028, 0.001979, 0.000030,
+                     0.00, 0.000030, 0.002337};
 
 // Side weight 1 (-x):
-double I_input[9] = {0.002023, -0.000046, -0.000017,
-                     -0.000046, 0.002010, 0.000041,
-                     -0.000017, 0.000041, 0.002350};
+// double I_input[9] = {0.002023, -0.000046, -0.000017,
+//                      -0.000046, 0.002010, 0.000041,
+//                      -0.000017, 0.000041, 0.002350};
 
 // OG
 //  double I_input[9] = {0.00195761450869, -5.836632382E-5, 2.27638093E-6,
@@ -35,32 +35,30 @@ double inclination_input = 0.90058989402907408; // 51.6 deg in rad
 double m_input = 1.3;                           // kg
 double q0_input[4] = {0.5, 0.5, -0.18301270189221924, 0.6830127018922193};
 
-// double wx_input = 0.05;
-// double wy_input = -0.04;
-// double wz_input = 0.01;
-
-double wx_input = 0.2;
-double wy_input = 0.2;
-double wz_input = 4.0;
+double wx_input = 0.05;
+double wy_input = -0.04;
+double wz_input = 0.01;
 
 /// STARSHOT PARAMETERS///
 double A_input = 4.0E-5;
 double Id_input = 0.196;
 // double Kd_input = 0.0007935279615795299;
 double Kd_input = 0.0;
-double Kp_input = 5.2506307629097953E-10;
+// double Kp_input = 5.2506307629097953E-10;
+double Kp_input = 8.0E-7;
+
 double c_input = 1.0E-5;
 double i_max_input = 0.25;
 double k_input = 13.5;
 double n_input = 500.0;
 
-double plant_step_size_input = 0.00001;     // s
+double plant_step_size_input = 0.0001;     // s
 double controller_step_size_input = 0.100; // s
 
 // Duty cycle
 // period*duty_perc min on
 double period = 40;
-double duty_perc = 0.25;
+double duty_perc = 1;
 
 double current[3] = {0, 0, 0};
 
@@ -142,12 +140,12 @@ int main()
 
       if (duty_cyc(iteration * controller_step_size_input / 60.0, period, duty_perc))
       {
-        current[0] = starshotObj.rtY.point[0];
-        current[1] = starshotObj.rtY.point[1];
-        current[2] = starshotObj.rtY.point[2];
-        // current_x = starshotObj.rtY.detumble[0];
-        // current_y = starshotObj.rtY.detumble[1];
-        // current_z =  starshotObj.rtY.detumble[2];
+        // current[0] = starshotObj.rtY.point[0];
+        // current[1] = starshotObj.rtY.point[1];
+        // current[2] = starshotObj.rtY.point[2];
+        current[0] = starshotObj.rtY.detumble[0] * 0.88;
+        current[1] = starshotObj.rtY.detumble[1] * 0.88;
+        current[2] = starshotObj.rtY.detumble[2] * 0.88;
       }
       else
       {

@@ -44,8 +44,6 @@ double n_input = 500.0;
 double step_size_input = 0.2; // sec
 // /// INPUT DATA///
 
-
-
 void ACSWrite(float current)
 {
 
@@ -106,10 +104,13 @@ void setup()
 
 void loop()
 {
+
+  unsigned long start = millis();
+
   sensors_event_t accel, mag, gyro, temp;
   imu.getEvent(&accel, &mag, &gyro, &temp);
 
-  //Remap axis(rotate around x-axis by 90 deg)
+  // Remap axis(rotate around x-axis by 90 deg)
 
   starshotObj.rtU.w[0] = gyro.gyro.x;
   starshotObj.rtU.w[1] = gyro.gyro.z;
@@ -120,8 +121,8 @@ void loop()
   starshotObj.rtU.Bfield_body[2] = -mag.magnetic.y;
   //////
   starshotObj.step();
-
-  //test bench current adjust due to high B field
+  //
+  // test bench current adjust due to high B field
   double current_adjust = starshotObj.rtY.point[2] * 5.0;
   ACSWrite(current_adjust);
 
@@ -129,5 +130,8 @@ void loop()
   int PWM = current2PWM(current_adjust);
   double IMUData[6] = {starshotObj.rtY.pt_error, current_adjust, PWM, mag.magnetic.x, mag.magnetic.y, mag.magnetic.z};
   DataLog(IMUData, 6, file_name);
-  delay(200);
+
+  unsigned long end = millis();
+  delay(100 - (end - start));
+  // delay(200);
 }

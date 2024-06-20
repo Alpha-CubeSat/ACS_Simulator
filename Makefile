@@ -16,4 +16,4 @@ $(EXECUTABLE): $(OBJECTS)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(OBJECTS) $(EXECUTABLE)
+	for /r %%i in (*.o) do del %%i

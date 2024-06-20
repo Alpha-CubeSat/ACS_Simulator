@@ -8,7 +8,7 @@
 
 #define FILE_NAME "output/mc_detumble_wz1_3openI_2hr.txt"
 
-double imu_delay = 0.10; // sec
+double imu_delay = 0.10; // sec (step size)
 double RUN_TIME_HR = 2;
 
 // Monte Carlo
@@ -163,7 +163,7 @@ int main()
       {
         if (duty_cyc(iteration * imu_delay / 60.0, period, duty_perc))
         {
-          plantObj.rtU.current[0] = starshotObj.rtY.detumble[0] * 0.88;
+          plantObj.rtU.current[0] = starshotObj.rtY.detumble[0] * 0.88; // scaled by 0.88 to account for hardware loss
           plantObj.rtU.current[1] = starshotObj.rtY.detumble[1] * 0.88;
           plantObj.rtU.current[2] = starshotObj.rtY.detumble[2] * 0.88;
         }

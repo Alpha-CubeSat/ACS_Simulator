@@ -6,12 +6,14 @@
 #include "../lib/ACS_libs/StarshotACS_ert_rtw/StarshotACS.h"
 #include <random>
 
+#define FILE_NAME "output/mc_detumble_wz1_3openI_2hr.txt"
+
 double imu_delay = 0.10; // sec
-double RUN_TIME_HR =5;
+double RUN_TIME_HR = 2;
 
 // Monte Carlo
 int num_mc_iterations = 300;
-double percent_avg = 0.05; // percentage of iterations to consider for average 
+double percent_avg = 0.05; // percentage of iterations to consider for average
 
 double Kp_min = 1e-10; // minimum value for Kp
 double Kp_max = 1e-1;  // maximum value for Kp
@@ -19,31 +21,50 @@ double Kp_max = 1e-1;  // maximum value for Kp
 double Kd_min = 1e-10; // minimum value for Kd
 double Kd_max = 1e-1;  // maximum value for Kd
 
-double c_min = 1e-6; // minimum value for c
-double c_max = 1e-3;  // maximum value for c
+double c_min = 1e-8; // minimum value for c
+double c_max = 1e-3; // maximum value for c
 
 double Id_min = 1e-2; // minimum value for Id
-double Id_max = 1.2;     // maximum value for Id
+double Id_max = 1e2;  // maximum value for Id
 
 // Duty cycle
-// period*duty_perc min on 
+// period*duty_perc min on
 double period = 40;
 double duty_perc = 1;
 
 /// PLANT PARAMETERS///
 double altitude_input = 400;
 
-double I_input[9] = {0.0021342, -0.0000596453, 0.0000182133,
-                     -0.0000596453, 0.00210682, 0.0000194886,
-                     0.0000182133, 0.0000194886, 0.00244726};
+// old one
+//  double I_input[9] = {0.0021342, -0.0000596453, 0.0000182133,
+//                       -0.0000596453, 0.00210682, 0.0000194886,
+//                       0.0000182133, 0.0000194886, 0.00244726};
+
+// double I_input[9] = {0.002052, -0.000039, 0.000001,
+//                      -0.000039, 0.002057, 0.000044,
+//                      0.000001, 0.000044, 0.002406};
+
+// 3 steel wights+ wire accounted for correctly 80-20
+// double I_input[9] = {0.002102, -0.000049, 0.000011,
+//                      -0.000049, 0.002084, 0.000019,
+//                      0.000011, 0.000019, 0.002437};
+
+// door open
+double I_input[9] = {0.002253, -0.000048, -0.000031,
+                     -0.000048, 0.002225, 0.000023,
+                     -0.000031, 0.000023, 0.002387};
 
 double inclination_input = 0.90058989402907408; // 51.6 deg in rad
 double m_input = 1.3;                           // kg
 double q0_input[4] = {0.5, 0.5, -0.18301270189221924, 0.6830127018922193};
 
-double wx_input = 0.02;
-double wy_input = -0.04;
-double wz_input = 0.01;
+// double wx_input = 0.02;
+// double wy_input = -0.04;
+// double wz_input = 0.01;
+
+double wx_input = 0.5;
+double wy_input = 3.14159265358979;
+double wz_input = 4.0;
 
 /// STARSHOT PARAMETERS///
 double A_input = 4.0E-5;
@@ -77,7 +98,7 @@ int main()
 
   std::ofstream outfile;
   // open output file
-  outfile.open("output/mc_detumble_wz5.txt", std::ios::app);
+  outfile.open(FILE_NAME, std::ios::app);
   if (!outfile.is_open())
   { // check if file opened successfully
     return -1;
@@ -133,23 +154,18 @@ int main()
     Plant plantObj;
     StarshotACS starshotObj;
 
-    plantObj.initialize(0.01, altitude_input, I_input, inclination_input, m_input, q0_input, wx_input, wy_input, wz_input);
+    plantObj.initialize(0.001, altitude_input, I_input, inclination_input, m_input, q0_input, wx_input, wy_input, wz_input);
     starshotObj.initialize(step_size_input, A_input, Id_rand, Kd_rand, Kp_rand, c_rand, i_max_input, k_input, n_input);
-
 
     while ((iteration * imu_delay / 3600.0) < RUN_TIME_HR)
     {
-      // step 0.2s
       for (int i = 0; i < (int)(imu_delay / 0.001); i++)
       {
         if (duty_cyc(iteration * imu_delay / 60.0, period, duty_perc))
         {
-          // plantObj.rtU.current[0] = starshotObj.rtY.point[0];
-          // plantObj.rtU.current[1] = starshotObj.rtY.point[1];
-          // plantObj.rtU.current[2] = starshotObj.rtY.point[2];
-          plantObj.rtU.current[0] = starshotObj.rtY.detumble[0];
-          plantObj.rtU.current[1] = starshotObj.rtY.detumble[1];
-          plantObj.rtU.current[2] = starshotObj.rtY.detumble[2];
+          plantObj.rtU.current[0] = starshotObj.rtY.detumble[0] * 0.88;
+          plantObj.rtU.current[1] = starshotObj.rtY.detumble[1] * 0.88;
+          plantObj.rtU.current[2] = starshotObj.rtY.detumble[2] * 0.88;
         }
         else
         {
@@ -190,10 +206,10 @@ int main()
 
     // print
     std::cout << mc_iteration + 1 << "/" << num_mc_iterations;
-    //std::cout << " | Kp: " << Kp_rand << " | Kd: " << Kd_rand; 
-    std::cout<< " | c: " << c_rand << " | Id: " << Id_rand;
+    // std::cout << " | Kp: " << Kp_rand << " | Kd: " << Kd_rand;
+    std::cout << " | c: " << c_rand << " | Id: " << Id_rand;
     // std::cout << " | Last " << percent_avg * 100 << "\% pt_error averge: " << pt_avg << "\n";
-    std::cout << " | Last " << percent_avg * 100 << "\% wx averge: " << w_x_avg << " wy averge: " << w_y_avg << " wz averge: " << w_z_avg << "\n";
+    std::cout << " | Last " << percent_avg * 100 << "\% wx average: " << w_x_avg << " wy average: " << w_y_avg << " wz average: " << w_z_avg << "\n";
 
     // write
     // outfile << pt_avg << " ," << Kp_rand << " ," << Kd_rand << ", " << duty_perc << std::endl;

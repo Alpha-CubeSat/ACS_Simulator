@@ -16,5 +16,4 @@ $(EXECUTABLE): $(OBJECTS)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(OBJECTS) $(EXECUTABLE)
-	rm output/test.txt
+	for /r %%i in (*.o) do del %%i

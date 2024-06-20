@@ -6,6 +6,8 @@
 #include "../lib/ACS_libs/StarshotACS_ert_rtw/StarshotACS.h"
 #include "../lib/ACS_libs/ekf/ekf.h"
 
+#define M_PI 3.1415926535
+
 static Plant plantObj;
 static StarshotACS starshotObj;
 static EKF ekfObj;
@@ -21,10 +23,10 @@ double I_input[9] = {0.002020, -0.000028, 0.00,
                      -0.000028, 0.001979, 0.000030,
                      0.00, 0.000030, 0.002337};
 
-//3 weights:
-// double I_input[9] = {0.002052, -0.000039, 0.000001,
-//                      -0.000039, 0.002057, 0.000044,
-//                      0.000001, 0.000044, 0.002406};
+// 3 weights:
+//  double I_input[9] = {0.002052, -0.000039, 0.000001,
+//                       -0.000039, 0.002057, 0.000044,
+//                       0.000001, 0.000044, 0.002406};
 
 // Side weight 1 (-x):
 // double I_input[9] = {0.002023, -0.000046, -0.000017,

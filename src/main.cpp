@@ -15,7 +15,7 @@
 // #define PWMA 30
 #define PWMA 35
 #define LED 13
-#define file_name "test"
+#define file_name "test_apr2024"
 
 static StarshotACS starshotObj;
 Adafruit_LSM9DS1 imu = Adafruit_LSM9DS1();
@@ -112,16 +112,23 @@ void loop()
 
   // Remap axis(rotate around x-axis by 90 deg)
 
-  starshotObj.rtU.w[0] = gyro.gyro.x;
-  starshotObj.rtU.w[1] = gyro.gyro.z;
-  starshotObj.rtU.w[2] = -gyro.gyro.y;
+  float mag_hardiron_x = -4.9547000000000025;
+  float mag_hardiron_y = 49.75155;
+  float mag_hardiron_z = -13.855600000000003;
 
-  starshotObj.rtU.Bfield_body[0] = mag.magnetic.x;
-  starshotObj.rtU.Bfield_body[1] = mag.magnetic.z;
-  starshotObj.rtU.Bfield_body[2] = -mag.magnetic.y;
-  //////
+  float gyro_hardiron_x = 0.07280736884261114;
+  float gyro_hardiron_y = 0.020224269122947534;
+  float gyro_hardiron_z = 0.016019223067681217;
+
+  starshotObj.rtU.w[0] = gyro.gyro.x - gyro_hardiron_x;
+  starshotObj.rtU.w[1] = gyro.gyro.z - gyro_hardiron_z;
+  starshotObj.rtU.w[2] = -gyro.gyro.y - gyro_hardiron_y;
+
+  starshotObj.rtU.Bfield_body[0] = mag.magnetic.x - mag_hardiron_x;
+  starshotObj.rtU.Bfield_body[1] = mag.magnetic.z - mag_hardiron_z;
+  starshotObj.rtU.Bfield_body[2] = -mag.magnetic.y - mag_hardiron_y;
   starshotObj.step();
-  //
+
   // test bench current adjust due to high B field
   double current_adjust = starshotObj.rtY.point[2] * 5.0;
   ACSWrite(current_adjust);
@@ -130,8 +137,8 @@ void loop()
   int PWM = current2PWM(current_adjust);
   double IMUData[6] = {starshotObj.rtY.pt_error, current_adjust, PWM, mag.magnetic.x, mag.magnetic.y, mag.magnetic.z};
   DataLog(IMUData, 6, file_name);
+  Serial.println("data logged");
 
   unsigned long end = millis();
   delay(100 - (end - start));
-  // delay(200);
 }

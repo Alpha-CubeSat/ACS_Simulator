@@ -8,14 +8,12 @@
 #include "DataLogging.hpp"
 
 // Pins for all inputs, keep in mind the PWM defines must be on PWM pins, 2.29.24 Note that some of the pins were re-arranged to make a cleaner setup
-// #define AIN1 28
-#define AIN1 37
-// #define AIN2 27
-#define AIN2 36
-// #define PWMA 30
-#define PWMA 35
+#define AIN1 31
+#define AIN2 32
+#define PWMA 30
+#define STBY 29
 #define LED 13
-#define file_name "test19_sep2024"
+#define file_name "test"
 
 static StarshotACS starshotObj;
 Adafruit_LSM9DS1 imu = Adafruit_LSM9DS1();
@@ -110,7 +108,7 @@ void loop()
   sensors_event_t accel, mag, gyro, temp;
   imu.getEvent(&accel, &mag, &gyro, &temp);
 
-  int pwm_y = 0;
+  int pwm_y = 0; // will be re-assigned to the previous PWM value, previous PWM value needs to be used to calculate the current offset
 
   // Remap axis(rotate around x-axis by 90 deg)
 
@@ -119,15 +117,15 @@ void loop()
   float mag_hardiron_y = 49.75155;
   float mag_hardiron_z = -13.855600000000003;
 
-  float pwmY_ox_1 = 8.47256206e-04;
-  float pwmY_ox_2 = -2.39011680e-07;
-  float pwmY_ox_3 = -1.81875731e-09;
-  float pwmY_oy_1 = -3.20921615e-02;
-  float pwmY_oy_2 = -2.93994540e-07;
-  float pwmY_oy_3 = 1.20748209e-08;
-  float pwmY_oz_1 = -2.05710501e-03;
-  float pwmY_oz_2 = -3.26514033e-07;
-  float pwmY_oz_3 = -5.07562084e-09;
+  float pwmY_ox_1 = 8.83096680e-03;
+  float pwmY_ox_2 = 4.26409072e-07;
+  float pwmY_ox_3 = -6.69370023e-09;
+  float pwmY_oy_1 = -2.64514092e-01;
+  float pwmY_oy_2 = -9.82458813e-06;
+  float pwmY_oy_3 = 9.11136691e-08;
+  float pwmY_oz_1 = -1.90567242e-02;
+  float pwmY_oz_2 = -5.99945842e-06;
+  float pwmY_oz_3 = 7.85718685e-10;
 
   // Change all naming to oop-flight-code naming
   float pwmY_ox = (pwmY_ox_1 * pwm_y) + (pwmY_ox_2 * pow(pwm_y, 2)) + (pwmY_ox_3 * pow(pwm_y, 3));
@@ -148,13 +146,13 @@ void loop()
   starshotObj.rtU.w[2] = -gyro.gyro.y - gyro_hardiron_y;
 
   // Getting battery voltage
-  int voltage_value_pin = 32;
+  int voltage_value_pin = 23;
   float voltage_ref = 3.3;
   int resolution = 1023;
   int r1 = 4700;
   int r2 = 10000;
 
-  float voltage = analogRead(voltage_value_pin) * voltage_ref * (r1 + r2) / resolution / r2;
+  float voltage = analogRead(voltage_value_pin) * voltage_ref / resolution * (r1 + r2) / r2;
 
   // starshotObj.rtU.w[0] = gyro.gyro.x;
   // starshotObj.rtU.w[1] = gyro.gyro.z;
@@ -172,7 +170,7 @@ void loop()
   // data
   int PWM = current2PWM(current_adjust);
   pwm_y = PWM;
-  double IMUData[7] = {starshotObj.rtY.pt_error, current_adjust, PWM, mag.magnetic.x, mag.magnetic.y, mag.magnetic.z, voltage};
+  double IMUData[7] = {starshotObj.rtY.pt_error, current_adjust, PWM, starshotObj.rtU.Bfield_body[0], starshotObj.rtU.Bfield_body[2], starshotObj.rtU.Bfield_body[1], voltage};
   DataLog(IMUData, 7, file_name);
   Serial.println("data logged");
 

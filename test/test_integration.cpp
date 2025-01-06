@@ -1,18 +1,9 @@
 #include <unity.h>
-
-#ifndef EMBEDDED_BUILD
 #include <Arduino.h>
 #include <Wire.h>
 #include <SPI.h>
 #include <SD.h>
 #include <Adafruit_LSM9DS1.h>
-#else
-#include "../NativeMocks/MockArduino.h"
-#include "../NativeMocks/MockWire.h"
-#include "../NativeMocks/MockSPI.h"
-#include "../NativeMocks/MockSD.h"
-#include "../NativeMocks/MockAdafruit_LSM9DS1.h"
-#endif
 #include <ekf.hpp>
 #include "../lib/ACS_libs/StarshotACS_ert_rtw/StarshotACS.h"
 

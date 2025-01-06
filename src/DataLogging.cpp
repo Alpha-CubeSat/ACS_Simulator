@@ -1,7 +1,11 @@
 #include "DataLogging.hpp"
 
 const int chipSelect = BUILTIN_SDCARD;
+#ifndef EMBEDDED_BUILD
 File DataFile;
+#else
+MockFile DataFile;
+#endif
 
 
 void DataLogSetup(String s){

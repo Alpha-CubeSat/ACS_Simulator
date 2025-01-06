@@ -1,6 +1,12 @@
-#include "Arduino.h"
+#ifndef EMBEDDED_BUILD
+#include <Arduino.h>
 #include <SD.h>
 #include <SPI.h>
+#else
+#include "../NativeMocks/MockArduino.h"
+#include "../NativeMocks/MockSD.h"
+#include "../NativeMocks/MockSPI.h"
+#endif
 
 
 //Initializes the SD card
